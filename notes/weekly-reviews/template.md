@@ -1,6 +1,6 @@
 # Weekly Learning Review
 
-## Week: YYYY-MM-DD to YYYY-MM-DD
+## Week: 2025-11-20 to 2025-11-27
 ## Month: [Month Number] - [Topic]
 ## Status: 🔄 In Progress / ✅ Completed
 
@@ -69,3 +69,4 @@
 - [New Resource 1](link)
 - [New Resource 2](link)
 - [New Resource 3](link)
+
