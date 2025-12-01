@@ -1,0 +1,64 @@
+#!/usr/bin/env python3
+"""
+Generate ASCII architecture diagram
+"""
+
+diagram = """
+                    ┌─────────────────────────────────────┐
+                    │      Management Account             │
+                    │        111111111111                 │
+                    ├─────────────────────────────────────┤
+                    │  IAM Users & Groups                │
+                    │  • SecurityAdmins                  │
+                    │  • NetworkAdmins                   │
+                    │  • BillingAdmins                   │
+                    │  • Auditors                        │
+                    │  • BreakGlassAdmins               │
+                    └───────────┬─────────────────────────┘
+                                │ Assume Role
+                                ▼
+                    ┌─────────────────────────────────────┐
+                    │      Production Account             │
+                    │        222222222222                 │
+                    ├─────────────────────────────────────┤
+                    │  IAM Roles                         │
+                    │  • ProductionAdmins               │
+                    │  • ProductionDevelopers           │
+                    │  • ProductionSupport              │
+                    └───────────┬─────────────────────────┘
+                                │ Assume Role
+                                ▼
+                    ┌─────────────────────────────────────┐
+                    │      Development Account            │
+                    │        333333333333                 │
+                    ├─────────────────────────────────────┤
+                    │  IAM Groups                        │
+                    │  • Developers                     │
+                    │  • DevOpsEngineers                │
+                    │  • QAEngineers                    │
+                    └───────────┬─────────────────────────┘
+                                │ Assume Role
+                                ▼
+                    ┌─────────────────────────────────────┐
+                    │      Security Account               │
+                    │        444444444444                 │
+                    ├─────────────────────────────────────┤
+                    │  Central Logging                   │
+                    │  Security Monitoring               │
+                    │  Compliance Reporting              │
+                    └─────────────────────────────────────┘
+
+                    ┌─────────────────────────────────────┐
+                    │         IAM Policies                │
+                    ├─────────────────────────────────────┤
+                    │  • BreakGlassEmergency            │
+                    │  • ReadOnlyAudit                  │
+                    │  • PowerUserDev                   │
+                    │  • CostExplorerReadOnly           │
+                    └─────────────────────────────────────┘
+"""
+
+with open("architecture-diagrams/iam-strategy.txt", "w") as f:
+    f.write(diagram)
+
+print("Architecture diagram created: architecture-diagrams/iam-strategy.txt")
