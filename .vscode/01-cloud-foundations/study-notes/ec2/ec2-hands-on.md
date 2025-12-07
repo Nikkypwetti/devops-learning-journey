@@ -1,4 +1,5 @@
 EC2 Hands-On Lab: Complete Step-by-Step Guide
+
 Created: 2025-11-29
 Updated: 2025-12-1
 🎯 Lab Objectives
