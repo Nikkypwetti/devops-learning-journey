@@ -1,0 +1,30 @@
+{
+  "name": "ha-web-app-load-balancer",
+  "version": "1.0.0",
+  "description": "High Availability Web Application for AWS Week 2 Project",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js",
+    "test": "echo \"No tests specified\" && exit 0"
+  },
+  "keywords": [
+    "aws",
+    "ec2",
+    "load-balancer",
+    "auto-scaling",
+    "nodejs"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "aws-sdk": "^2.1400.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}

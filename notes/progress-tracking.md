@@ -18,6 +18,7 @@
 - Need more practice with CLI
 
 **Insights:**
+
 - Hands-on practice is more effective than just reading
 - Documentation is my best friend
 
@@ -27,6 +28,6 @@
 
 **Goals:**
 
-- [ ] Master EC2 instances
-- [ ] Understand Auto Scaling
+- [X] Master EC2 instances
+- [X] Understand Auto Scaling
 - [ ] Practice Lambda functions.

@@ -2,7 +2,7 @@
 
 ## 2024-01-15
 
-- [ ] Research AWS Organizations for multi-account setup
+- [X] Research AWS Organizations for multi-account setup
 - [ ] Look into Terraform state locking with DynamoDB
 - [ ] Practice IAM policy writing
 

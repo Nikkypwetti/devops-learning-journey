@@ -186,12 +186,15 @@ t3.micro/t2.micro	750 hours/month	Linux/Windows, 12 months
 EBS Storage	30GB	General Purpose (gp2/gp3)
 Elastic IP	Free when attached	Charges when idle
 Snapshots	Pay for storage only	Based on used space
+
 Common Instance Types for Beginners
+
 Instance	vCPU	Memory	Free Tier	Best For
 t3.micro	2	1GB	✅	Learning, small websites
 t3.small	2	2GB	❌	Small applications
 t3.medium	2	4GB	❌	Medium web apps
 t3.large	2	8GB	❌	Production workloads
+
 🎯 Your First EC2: 5-Minute Test Drive
 Mini-Tutorial: Launch, Connect, Terminate
 text
