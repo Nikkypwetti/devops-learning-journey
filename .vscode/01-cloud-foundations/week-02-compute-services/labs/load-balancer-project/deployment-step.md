@@ -29,7 +29,7 @@ Via AWS Console:
 
     Navigate to EC2 → Launch Templates → Create launch template
 
-    Template name: lb-web-app-template
+    Template name: ha-web-app-template
 
     Template version description: Version 1 - Node.js app with ALB
 
@@ -85,7 +85,7 @@ Step 4: Create Application Load Balancer
 
     Select Application Load Balancer
 
-    Name: lb-web-app-alb
+    Name: ha-web-app-alb
 
     Scheme: Internet-facing
 
@@ -107,7 +107,7 @@ Step 5: Create Auto Scaling Group
 
     Navigate to EC2 → Auto Scaling Groups → Create Auto Scaling Group
 
-    Name: lb-web-app-asg
+    Name: ha-web-app-asg
 
     Launch template: Select ha-web-app-template
 
@@ -209,7 +209,7 @@ Common Issues and Solutions:
 bash
 
 # SSH into instance and check:
-sudo systemctl status lb-web-app.service
+sudo systemctl status ha-web-app.service
 curl http://localhost:3000/health
 sudo netstat -tlnp | grep :3000
 
@@ -263,7 +263,7 @@ curl http://169.254.169.254/latest/meta-data/instance-id
 curl http://169.254.169.254/latest/meta-data/placement/availability-zone
 
 # Check application logs
-sudo journalctl -u lb-web-app.service -f
+sudo journalctl -u ha-web-app.service -f
 
 # Test health endpoint
 curl http://localhost:3000/health
