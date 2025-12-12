@@ -1,0 +1,25 @@
+{
+  "name": "devops-learning-journey",
+  "version": "1.0.0",
+  "description": "**Transitioning from Full Stack Developer to DevOps Engineer | Timeline: 6 Months**",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Nikkypwetti/devops-learning-journey.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Nikkypwetti/devops-learning-journey/issues"
+  },
+  "homepage": "https://github.com/Nikkypwetti/devops-learning-journey#readme",
+  "dependencies": {
+    "aws-sdk": "^2.1693.0",
+    "express": "^5.2.1"
+  }
+}
