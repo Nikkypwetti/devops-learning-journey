@@ -1,81 +1,49 @@
 #!/bin/bash
-# Update and install prerequisites
-sudo dnf update -y
-sudo dnf install -y git
+# AWS Launch Template Configuration
+# This script deploys the Node.js application on EC2 instances
+# Copy this ENTIRE script into AWS Launch Template User Data field
 
-# Install Node.js 18 from the official repository
-curl -fsSL https://rpm.nodesource.com/setup_18.x | sudo bash -
-sudo dnf install -y nodejs
+set -e
 
-# Install PM2 process manager globally
-sudo npm install -g pm2
+# System updates and package installation
+dnf update -y
+dnf install -y git
 
-# Switch to the ec2-user and set up the application
-sudo -u ec2-user bash << 'EOF'
+# Node.js installation
+curl -fsSL https://rpm.nodesource.com/setup_18.x | bash -
+dnf install -y nodejs
+
+# PM2 process manager
+npm install -g pm2
+
+# Application deployment as ec2-user
+sudo -u ec2-user bash << 'DEPLOY_EOF'
 cd /home/ec2-user
 
-# Clone the application repository
+# Clone the repository
 git clone https://github.com/Nikkypwetti/devops-learning-journey.git
 cd devops-learning-journey
+
+# Create environment configuration
+cat > .env << 'ENV_CONFIG'
+APP_PORT=3000
+INSTANCE_ID=$(curl -s http://169.254.169.254/latest/meta-data/instance-id)
+AVAILABILITY_ZONE=$(curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone)
+ENV_CONFIG
 
 # Install Node.js dependencies
 npm install
 
-# >>>>>>>> CRITICAL: CREATE THE APP.JS FILE <<<<<<<<<
-# This ensures the app exists and is exactly what the load balancer expects.
-cat > app.js << 'APP_EOF'
-const express = require('express');
-const app = express();
-const http = require('http');
+# Start application with PM2
+pm2 start app.js --name ha-web-app
+pm2 save
+pm2 startup
+DEPLOY_EOF
 
-// Fetch metadata directly from IMDS
-const getMetadata = (path) => {
-    return new Promise((resolve) => {
-        http.get(`http://169.254.169.254/latest/meta-data/${path}`, (resp) => {
-            let data = '';
-            resp.on('data', chunk => data += chunk);
-            resp.on('end', () => resolve(data));
-        }).on('error', () => resolve('unknown'));
-    });
-};
+# Completion message
+echo "Application deployment completed successfully"
 
-// Initialize with values
-let INSTANCE_ID = 'unknown';
-let AVAILABILITY_ZONE = 'unknown';
-const APP_PORT = process.env.APP_PORT || 3000;
-
-// Fetch metadata on startup
-(async () => {
-    INSTANCE_ID = await getMetadata('instance-id');
-    AVAILABILITY_ZONE = await getMetadata('placement/availability-zone');
-    console.log(`Instance: ${INSTANCE_ID} | AZ: ${AVAILABILITY_ZONE}`);
-})();
-
-let requestCount = 0;
-
-app.get('/', (req, res) => {
-    requestCount++;
-    res.send(`
-        <h1>AWS Load Balancer Project - SUCCESS</h1>
-        <p><strong>Instance ID:</strong> ${INSTANCE_ID}</p>
-        <p><strong>Availability Zone:</strong> ${AVAILABILITY_ZONE}</p>
-        <p><strong>Request Count:</strong> ${requestCount}</p>
-        <p><strong>Time:</strong> ${new Date().toISOString()}</p>
-    `);
-});
-
-app.get('/health', (req, res) => {
-    res.status(200).send('OK');
-});
-
-app.listen(APP_PORT, '0.0.0.0', () => {
-    console.log(`Application successfully started on port ${APP_PORT}`);
-});
-APP_EOF
-
-# Final system update check (optional)
-echo "Launch template user data execution completed for instance: $(curl -s http://169.254.169.254/latest/meta-data/instance-id)"
-
-
-# Note:
-use dnf instead of yum for Amazon Linux 2023
+Notes:
+Use the code from app.js in the cloned repository.
+Use dnf for Amazon Linux 2023 package management.
+Use yum for Amazon Linux 2 package management.

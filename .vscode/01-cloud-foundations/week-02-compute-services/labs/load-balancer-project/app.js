@@ -45,3 +45,5 @@ app.get('/health', (req, res) => {
 app.listen(APP_PORT, '0.0.0.0', () => {
     console.log(`Application successfully started on port ${APP_PORT}`);
 });
+
+
