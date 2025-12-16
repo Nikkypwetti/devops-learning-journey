@@ -15,8 +15,8 @@
 | Month | Topic | Status | Projects | Start Date | End Date |
 |-------|-------|--------|----------|------------|----------|
 | 1 | [Cloud Foundations](./01-cloud-foundations/) | 🔄 In Progress | [Static S3 Website](./projects/month1-static-website/) | 2024-01-01 | 2024-01-31 |
-| 2 | [Linux & Networking](./02-linux-networking/) | ⏳ Upcoming | [EC2 Automation](./projects/month2-ec2-automation/) | 2024-02-01 | 2024-02-29 |
-| 3 | [Infrastructure as Code](./03-infrastructure-as-code/) | ⏳ Upcoming | [Terraform Infrastructure](./projects/month3-terraform-infra/) | 2024-03-01 | 2024-03-31 |
+| 2 | [Linux & Networking](./02-linux-networking/) | 🔄 In Progress| [EC2 Automation](./projects/month2-ec2-automation/) | 2024-02-01 | 2024-02-29 |
+| 3 | [Infrastructure as Code](./03-infrastructure-as-code/) | 🔄 In Progress | [Terraform Infrastructure](./projects/month3-terraform-infra/) | 2024-03-01 | 2024-03-31 |
 | 4 | [Containerization](./04-containerization/) | ⏳ Upcoming | Dockerized Apps | 2024-04-01 | 2024-04-30 |
 | 5 | [Kubernetes](./05-kubernetes/) | ⏳ Upcoming | K8s Deployment | 2024-05-01 | 2024-05-31 |
 | 6 | [CI/CD & Monitoring](./06-ci-cd-monitoring/) | ⏳ Upcoming | Complete Pipeline | 2024-06-01 | 2024-06-30 |
