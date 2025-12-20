@@ -1,0 +1,17 @@
+# Week 1: Linux Command Line - Detailed Resources
+
+## Day 1: Filesystem Navigation
+
+### Core Concepts:
+- **/ (root)**: Top-level directory
+- **/home**: User directories
+- **/etc**: Configuration files
+- **/var**: Variable files (logs, databases)
+- **/tmp**: Temporary files
+
+### Essential Commands:
+```bash
+pwd                    # Print working directory
+ls -la                 # List all files with details
+cd /path/to/directory  # Change directory
+mkdir new_folder       # Create directory
