@@ -3,18 +3,21 @@
 ## 🎯 **Tools by Category**
 
 ### **Diagnostic Tools:**
+
 - Ping and connectivity testing
 - Traceroute and path analysis
 - Port scanning
 - Bandwidth testing
 
 ### **Monitoring Tools:**
+
 - Real-time traffic monitoring
 - Connection tracking
 - Bandwidth usage
 - Alert systems
 
 ### **Security Tools:**
+
 - Port scanning
 - Vulnerability scanning
 - Firewall testing

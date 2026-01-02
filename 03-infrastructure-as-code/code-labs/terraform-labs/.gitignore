@@ -1,0 +1,18 @@
+# Local SSH Keys (Very Important!)
+*.pem
+*.pub
+my-key*
+
+# Terraform State Files (Contains your secret data/IPs)
+*.tfstate
+*.tfstate.backup
+.terraform/
+.terraform.lock.hcl
+
+# Variable files (If they contain secrets)
+terraform.tfvars
+*.tfvars
+
+# System files
+.DS_Store
+Thumbs.db

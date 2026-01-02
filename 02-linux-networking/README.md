@@ -1,11 +1,13 @@
 # 🐧 Month 2: Linux & Networking Mastery
 
 ## 🎯 **Month Overview**
+
 **Duration:** 4 Weeks (28 days)  
 **Focus Areas:** Linux System Administration + Networking Fundamentals + AWS Integration  
 **Target Skills:** Command-line proficiency, system administration, network troubleshooting, cloud networking
 
 ## 📊 **Learning Objectives**
+
 By the end of this month, you will be able to:
 - ✅ Navigate and manage Linux systems via command line
 - ✅ Write shell scripts for automation
@@ -18,6 +20,7 @@ By the end of this month, you will be able to:
 ## 📅 **Weekly Breakdown**
 
 ### **Week 1: Linux Command Line Fundamentals**
+
 **Focus:** Core Linux commands and filesystem navigation
 - Day 1-2: Filesystem hierarchy and navigation
 - Day 3-4: File operations and text processing
@@ -25,6 +28,7 @@ By the end of this month, you will be able to:
 - Day 7: Shell scripting basics
 
 ### **Week 2: Advanced Linux Administration**
+
 **Focus:** System administration and automation
 - Day 8-9: Package and user management
 - Day 10-11: Disk management and systemd
@@ -32,6 +36,7 @@ By the end of this month, you will be able to:
 - Day 14: LAMP stack deployment
 
 ### **Week 3: Networking Fundamentals**
+
 **Focus:** Core networking concepts and protocols
 - Day 15-16: OSI/TCP-IP models and subnetting
 - Day 17-18: DNS and HTTP/HTTPS protocols
@@ -39,6 +44,7 @@ By the end of this month, you will be able to:
 - Day 21: Home lab setup
 
 ### **Week 4: Linux Networking & AWS Integration**
+
 **Focus:** Practical networking and cloud integration
 - Day 22-23: Network configuration and SSH
 - Day 24-25: Firewalls and AWS VPC basics
@@ -46,18 +52,22 @@ By the end of this month, you will be able to:
 - Day 28: Complete AWS deployment
 
 ## 🛠️ **Tools & Technologies**
+
 ### **Linux Distributions to Practice:**
+
 - **Ubuntu 20.04/22.04 LTS** (Most cloud-friendly)
 - **CentOS 7/8** (Enterprise standard)
 - **Amazon Linux 2** (AWS optimized)
 
 ### **Essential Tools:**
+
 - **Terminal:** bash, zsh
 - **Text Editors:** vim, nano, VS Code
 - **Networking:** ping, traceroute, netstat, nmap
 - **AWS:** CLI, VPC, EC2, Security Groups
 
 ### **Practice Environments:**
+
 1. **Local:** VirtualBox/VMware with Ubuntu
 2. **Cloud:** AWS Free Tier EC2 instances
 3. **Web-based:** Katacoda, Linux Journey
@@ -65,6 +75,7 @@ By the end of this month, you will be able to:
 ## 📚 **Core Learning Resources**
 
 ### **Primary Learning Platforms:**
+
 1. **[Linux Journey](https://linuxjourney.com/)**
    - Interactive, beginner-friendly tutorials
    - Covers all concepts from basics to advanced
@@ -81,6 +92,7 @@ By the end of this month, you will be able to:
    - Free tier available
 
 ### **Video Tutorial Series:**
+
 4. **[NetworkChuck Linux for Hackers](https://www.youtube.com/playlist?list=PLIhvC56v63IJVXv0GJcl9vO5Z6znCVb1P)**
    - Practical, engaging Linux tutorials
    - Real-world applications
@@ -97,6 +109,7 @@ By the end of this month, you will be able to:
    - Shell scripting tutorials
 
 ### **Documentation & References:**
+
 7. **[Linux Documentation Project](https://tldp.org/)**
    - Comprehensive guides and HOWTOs
    - Community-written documentation
@@ -188,7 +201,6 @@ Day 14: LAMP Stack Project
 ├── Practice: Deploy web application
 └── Resources: https://ubuntu.com/tutorials/install-and-configure-apache
 
-
 ### **Week 3 Resources (Days 15-21): Networking Fundamentals**
 
 Day 15: OSI/TCP-IP Models
@@ -225,7 +237,6 @@ Day 21: Home Lab Project
 ├── Guide: https://www.practicelabs.com/blog/how-to-build-a-home-network-lab/
 ├── Practice: Design network topology
 └── Resources: TryHackMe "Network Fundamentals" module
-
 
 ### **Week 4 Resources (Days 22-28): Linux Networking & AWS**
 
@@ -268,21 +279,25 @@ Day 28: Complete Deployment
 ## 📁 **Project Portfolio for Month 2**
 
 ### **Week 1 Project: System Monitoring Script**
+
 - **Skills Demonstrated:** Shell scripting, process management
 - **Tools:** bash, cron, email alerts
 - **GitHub:** `projects/system-monitor/`
 
 ### **Week 2 Project: LAMP Stack Deployment**
+
 - **Skills Demonstrated:** Package management, service configuration
 - **Tools:** Apache, MySQL, PHP, systemd
 - **GitHub:** `projects/lamp-stack/`
 
 ### **Week 3 Project: Home Network Lab Design**
+
 - **Skills Demonstrated:** Network design, subnetting
 - **Tools:** Network diagrams, configuration files
 - **GitHub:** `projects/home-lab/`
 
 ### **Week 4 Project: AWS EC2 Linux Server**
+
 - **Skills Demonstrated:** Cloud deployment, networking, security
 - **Tools:** AWS VPC, EC2, Security Groups
 - **GitHub:** `projects/ec2-server/`
@@ -301,13 +316,14 @@ Evening Session (6:30-8:00 PM):
 ├── 45 mins: Practice exercises
 └── 15 mins: Document progress
 
-
 ### **Weekly Review Routine:**
+
 1. **Saturday:** Complete weekly project
 2. **Sunday:** Review concepts, update GitHub
 3. **End of Month:** Build comprehensive portfolio
 
 ### **Assessment Methods:**
+
 1. **Command Recall:** Can you recall commands without looking?
 2. **Problem Solving:** Can you troubleshoot common issues?
 3. **Project Completion:** Can you build the weekly projects?
@@ -316,30 +332,36 @@ Evening Session (6:30-8:00 PM):
 ## 🚨 **Common Pitfalls & Solutions**
 
 ### **Pitfall 1: Command Overload**
+
 **Problem:** Too many commands to remember
 **Solution:** Focus on 5-10 essential commands per day, use cheat sheets
 
 ### **Pitfall 2: Network Theory Confusion**
+
 **Problem:** Abstract networking concepts
 **Solution:** Use analogies (OSI model = postal system), practical labs
 
 ### **Pitfall 3: AWS Cost Concerns**
+
 **Problem:** Fear of unexpected AWS charges
 **Solution:** Use Free Tier only, set billing alerts, clean up resources
 
 ### **Pitfall 4: Time Management**
+
 **Problem:** Falling behind schedule
 **Solution:** Stick to timeboxes, prioritize hands-on practice
 
 ## 📈 **Success Metrics**
 
 ### **Weekly Checkpoints:**
+
 - [ ] 80% of daily exercises completed
 - [ ] Weekly project submitted to GitHub
 - [ ] Can explain week's concepts without notes
 - [ ] Successfully troubleshooted at least 3 issues
 
 ### **Month-End Goals:**
+
 - [ ] Complete all 4 portfolio projects
 - [ ] Pass basic Linux certification practice tests
 - [ ] Build and deploy server on AWS
@@ -348,6 +370,7 @@ Evening Session (6:30-8:00 PM):
 ## 🔧 **Setup Instructions**
 
 ### **Local Environment Setup:**
+
 ```bash
 # 1. Install VirtualBox
 # Download from: https://www.virtualbox.org/

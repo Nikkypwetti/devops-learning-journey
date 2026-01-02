@@ -1,0 +1,77 @@
+# Terraform Best Practices - Week 1
+
+## 1. Project Structure
+
+project/
+├── main.tf # Primary resources
+├── variables.tf # Input variables
+├── outputs.tf # Output values
+├── providers.tf # Provider configuration
+├── backend.tf # Remote state config
+├── versions.tf # Version constraints
+├── terraform.tfvars # Variable values
+└── modules/ # Reusable modules
+text
+
+
+## 2. Naming Conventions
+✅ Use descriptive resource names
+✅ Follow snake_case for resources
+✅ Use consistent tagging
+✅ Include environment in names
+
+## 3. State Management
+✅ Always use remote state
+✅ Enable state locking
+✅ Backup state regularly
+✅ Limit state access
+✅ Use workspaces for environments
+
+## 4. Code Organization
+✅ One resource per service
+✅ Use modules for reusability
+✅ Separate environments
+✅ Use locals for calculations
+✅ Implement variable validation
+
+## 5. Security Practices
+✅ Never commit secrets
+✅ Use IAM roles properly
+✅ Enable encryption
+✅ Implement least privilege
+✅ Regular security scans
+
+## 6. Performance Tips
+✅ Use count/for_each for multiple resources
+✅ Parallelize resource creation
+✅ Optimize provider configuration
+✅ Use data sources wisely
+✅ Minimize provisioner usage
+
+## 7. Testing & Validation
+✅ Always run terraform validate
+✅ Use terraform fmt
+✅ Implement plan review
+✅ Test destroy operations
+✅ Use policy as code
+
+## 8. Collaboration
+✅ Use version control
+✅ Implement code reviews
+✅ Document changes
+✅ Use consistent workflows
+✅ Share modules
+
+## 9. Cost Management
+✅ Use cost estimation tools
+✅ Implement budgets
+✅ Clean up test resources
+✅ Monitor usage
+✅ Rightsize resources
+
+## 10. Monitoring & Maintenance
+✅ Enable logging
+✅ Set up alerts
+✅ Regular updates
+✅ Backup configurations
+✅ Disaster recovery plan
