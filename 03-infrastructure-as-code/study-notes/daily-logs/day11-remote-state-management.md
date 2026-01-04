@@ -52,6 +52,10 @@ resource "aws_s3_bucket" "example" {
   }
 }
 
+command used
+bash
+terraform init -migrate-state - to migrate back to local machine 
+
     Video Notes: Backends store state remotely. S3 backend popular for AWS. Enable versioning, encryption. DynamoDB for state locking prevents conflicts. Backend configuration in backend "s3" {} block.
 
     Reading Summary: Backends determine where state is stored. Supported backends: S3, AzureRM, Google Cloud, Terraform Cloud, etc. Partial configuration allows passing credentials at runtime. State locking prevents concurrent operations.

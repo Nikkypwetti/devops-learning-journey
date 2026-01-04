@@ -1,6 +1,6 @@
 output "final_public_ip" {
-  description = "The public IP address of the server" 
-  value = module.my_ec2.public_ip
+  description = "The public IP address of the server"
+  value       = module.my_ec2.public_ip
 }
 
 output "ssh_connection_string" {

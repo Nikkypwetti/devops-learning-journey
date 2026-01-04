@@ -1,29 +1,29 @@
 variable "aws_region" {
-  description = "The AWS region to deploy resources in"
-  type        = string
+  default = "us-east-1"
 }
 
-variable "profile" {
+variable "aws_profile" {
   description = "The AWS CLI profile to use"
   type        = string
 }
 
-variable "key_name" {
-  description = "The name of the SSH key pair in AWS"
-  type        = string
-}
-
 variable "instance_name" {
-  description = "The name tag for the EC2 instance"
+  description = "Name of the EC2 instance"
   type        = string
 }
 
 variable "instance_type" {
-  description = "The type of EC2 instance to create"
+  description = "Type of EC2 instance"
+  type        = string
+  default     = "t2.micro"
+}
+
+variable "key_name" {
+  description = "Name of the SSH key pair"
   type        = string
 }
 
 variable "public_key_path" {
-  description = "The local path to the public key (.pub) file"
+  description = "Path to the public SSH key"
   type        = string
 }
