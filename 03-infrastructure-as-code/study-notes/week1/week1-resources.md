@@ -20,6 +20,7 @@
 ### **📚 Morning Resources (6:00-6:30 AM)**
 
 #### **Video Tutorial (15 mins):**
+
 - [What is Terraform?](https://www.youtube.com/watch?v=SLB_c_ayRMo) (first 15 minutes)
 - **Key Takeaways:** 
   - IaC vs manual infrastructure
@@ -44,6 +45,7 @@
 ### **💻 Evening Practice (6:30-8:00 PM)**
 
 #### **Step 1: Install Terraform (15 mins)**
+
 ```bash
 # For Ubuntu/Debian
 sudo apt update

@@ -181,32 +181,32 @@ Day 14: Project Review & Testing
 ### **Week 3 Resources (Days 15-21): Packer & Ansible**
 
 Day 15: Packer Introduction
-├── Video: <https://www.youtube.com/watch?v=6GIbJtG_9yk> (15 mins)
-├── Reading: <https://learn.hashicorp.com/collections/packer/get-started>
+├── Video: https://www.youtube.com/watch?v=OmQRpi3CSjU (29 mins)
+├── Reading: https://learn.hashicorp.com/collections/packer/get-started
 └── Practice: Install Packer, create first template
 
 Day 16: Packer Builders & Provisioners
-├── Video: <https://www.youtube.com/watch?v=GB3pnzSIfyo> (12 mins)
+├── Video: https://www.youtube.com/watch?v=R5u5IN7RAKg
 ├── Reading: <https://developer.hashicorp.com/packer/docs/templates>
 └── Practice: Build AWS AMI with shell provisioner
 
 Day 17: Ansible Fundamentals
-├── Video: <https://www.youtube.com/watch?v=3b7DODiI-f8> (20 mins)
+├── Video: https://www.youtube.com/watch?v=1id6ERvfozo (16 mins)
 ├── Reading: <https://docs.ansible.com/ansible/latest/user_guide/intro_getting_started.html>
 └── Practice: Install Ansible, write first playbook
 
 Day 18: Ansible Playbooks & Roles
-├── Video: <https://www.youtube.com/watch?v=ZAdJ7CdK7Rc> (18 mins)
+├── Video: https://www.youtube.com/watch?v=tq9sCeQNVYc
 ├── Reading: <https://docs.ansible.com/ansible/latest/user_guide/playbooks.html>
 └── Practice: Create reusable roles
 
 Day 19: Packer + Ansible Integration
-├── Video: <https://www.youtube.com/watch?v=QiTSe6r1gHw> (15 mins)
+├── Video: Video: https://www.youtube.com/watch?v=uOj31vd5IIM (6 mins)
 ├── Reading: <https://developer.hashicorp.com/packer/plugins/provisioners/ansible>
 └── Practice: Use Ansible provisioner in Packer
 
 Day 20: Golden AMI Pipeline
-├── Tutorial: <https://learn.hashicorp.com/tutorials/packer/aws-get-started>
+├── Tutorial: https://learn.hashicorp.com/tutorials/packer/aws-get-started
 ├── Practice: Create automated AMI build pipeline
 └── Resources: Packer, Ansible, AWS AMI
 
@@ -258,7 +258,7 @@ Day 28: Final Project & Review
 
 - **Skills Demonstrated:** Basic Terraform, AWS S3, CloudFront
 - **Technologies:** Terraform, AWS S3, CloudFront, ACM
-- **GitHub:** `projects/static-website/`
+- **GitHub:** `projects/static-website-project/`
 
 ### **Week 2 Project: Multi-Environment VPC**
 
