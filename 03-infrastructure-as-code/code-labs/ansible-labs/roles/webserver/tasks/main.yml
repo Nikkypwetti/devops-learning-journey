@@ -1,0 +1,16 @@
+---
+- name: Update all packages
+  apt:
+    update_cache: yes
+    upgrade: dist
+
+- name: Install essential tools
+  apt:
+    name: [curl, git, nginx]
+    state: present
+
+- name: Start and Enable Nginx
+  service:
+    name: nginx
+    state: started
+    enabled: yes

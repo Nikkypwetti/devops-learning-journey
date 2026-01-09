@@ -1,0 +1,26 @@
+---
+- name: Deploy Web Infrastructure
+  hosts: webservers
+  vars_files:
+    - - group_vars/webservers.yml
+  roles:
+    - webserver
+  tasks:
+    - name: Update all packages (Standard Pro Practice)
+      apt:
+        update_cache: yes
+        upgrade: dist
+
+    - name: Install essential tools
+      apt:
+        name: 
+          - curl
+          - git
+          - nginx
+        state: present
+
+    - name: Start and Enable Nginx
+      service:
+        name: nginx
+        state: started
+        enabled: yes

@@ -1,0 +1,2 @@
+[webservers]
+192.168.122.207 ansible_user=root ansible_password="{{ vm_password }}"
