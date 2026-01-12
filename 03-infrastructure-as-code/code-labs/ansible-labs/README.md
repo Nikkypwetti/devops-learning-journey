@@ -1,142 +1,144 @@
-# Hands-on Lab Note: Ansible Control Node to Ubuntu VM
+Markdown
 
-## 🛠️ Phase 1: Environment Setup
+![Ansible](https://img.shields.io/badge/Ansible-2.16-black?style=for-the-badge&logo=ansible)
+![Platform](https://img.shields.io/badge/Platform-Ubuntu_22.04-orange?style=for-the-badge&logo=ubuntu)
+![Security](https://img.shields.io/badge/Security-Vault_Encrypted-green?style=for-the-badge&logo=keepassxc)
+![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)
 
-Goal: Prepare the Managed Node (VM) to accept instructions from the Control Node (Laptop).
+# 🚀 Automated DevOps Lab Environment
 
-### 1. VM Preparation (Inside the VM)
+This repository documents the end-to-end setup of a local DevOps lab using **KVM/Libvirt** for virtualization and **Ansible** for Configuration Management.
 
-The VM must have SSH installed and allow the root user to log in.
+---
 
-    Command: sudo apt update && sudo apt install openssh-server -y
+## 📖 Table of Contents
 
-        Use: Installs the "listening" service for SSH.
+1. [Architecture Overview](#-architecture-overview)
+2. [Infrastructure Setup](#-infrastructure-setup)
+3. [Project Directory Structure](#-project-directory-structure)
+4. [Operations Runbook (Daily Use)](#-operations-runbook-daily-use)
+5. [Ansible Configuration Details](#-ansible-configuration-details)
+6. [Security & Vault Management](#-security--vault-management)
+7. [Troubleshooting & Maintenance](#-troubleshooting--maintenance)
 
-    Command: echo "PermitRootLogin yes" >> /etc/ssh/sshd_config
+---
 
-        Use: Allows the root user to be accessed via SSH (standard for home labs).
+## 🏗️ Architecture Overview
 
-    Command: systemctl restart ssh
+- **Hypervisor:** KVM/QEMU (managed via `libvirt`)
+- **Control Node:** Local Ubuntu Laptop (HP EliteBook 820 G3)
+- **Managed Node:** Ubuntu 22.04 Minimized VM
+- **Automation:** Ansible (Roles-based architecture)
+- **Networking:** Default NAT Bridge (`virbr0`)
 
-        Use: Applies the configuration changes.
+---
 
-### 2. SSH Key Handshake (Laptop to VM)
+## 🛠️ Infrastructure Setup
 
-    Command: ssh-keygen -t ed25519
+### 1. Storage Strategy
 
-        Use: Creates your "Digital Fingerprint" (Public/Private keys).
+To protect the 40GB system partition (`/`), all virtual machine disks are stored on the 65GB secondary partition:
+- **Path:** `/mnt/storage/libvirt/images/`
 
-    Command: ssh-copy-id root@192.168.122.207
+### 2. VM Provisioning (The "Pro" Import)
 
-        Use: Copies your public key to the VM so you don't need a password later.
+The VM was created using an existing `.qcow2` image. This method is faster than a full network install:
 
-## 📂 Phase 2: Professional Project Structure
+```bash
+sudo virt-install --name ansible-node \
+--ram 1024 --vcpus 1 \
+--disk path=/mnt/storage/libvirt/images/ansible-node.qcow2 \
+--import --os-variant ubuntu22.04 \
+--network network=default \
+--graphics none --noautoconsole
 
-We organized the files according to Ansible Best Practices to make the project "Job Ready."
+3. Connection Prerequisites
 
-Your Folder Layout:
-ansible-labs/
-├── ansible.cfg        # Global settings
-├── hosts              # Inventory of servers
-├── site.yml           # The main Playbook
-├── .vault_pass        # Hidden password for the Vault
-├── group_vars/
-│   └── webservers.yml # Encrypted secrets for the webserver group
-└── roles/
-    └── webserver/
-        └── tasks/
-            └── main.yml # The actual work instructions
+    SSH Access: Configured via ssh-keygen and ssh-copy-id.
 
-## 🔐 Phase 3: Security & Secrets (Ansible Vault)
-
-We used Vault to ensure passwords are never stored in plain text.
-
-    Command: echo "your_password" > .vault_pass
-
-        Use: Stores the "Master Key" to unlock your secrets automatically.
-
-    Command: echo 'vm_password: "1234"' > group_vars/webservers.yml
-
-        Use: Creates the variable file in a "Dictionary" format (key: value).
-
-    Command: ansible-vault encrypt group_vars/webservers.yml --vault-password-file .vault_pass
-
-        Use: Scrambles the file so only Ansible can read it.
-
-## 🚀 Phase 4: The Automation (Playbook)
-
-Your site.yml tells Ansible which hosts to target and which roles to run.
-
-The Inventory (hosts):
-[webservers]
-192.168.122.207 ansible_user=root ansible_password="{{ vm_password }}"
-
-The Playbook Execution:
-
-    Command: ansible-playbook site.yml --vault-password-file .vault_pass
-
-        Use: Runs the automation script using the vault key for authentication.
-
-## ⚠️ Phase 5: Troubleshooting & Error Log
-
-This is the most important part of your notes for a job interview!
-Error Encountered,Cause,Solution
-"""Permission Denied (publickey)""",VM's SSH service was blocking root or keys.,Edited sshd_config to allow PermitRootLogin.
-"""vm_password is undefined""",Variable not loaded because the file wasn't in group_vars.,Moved credentials.yml to group_vars/webservers.yml.
-"""Could not be made into a dictionary""",Vault content was empty or wrongly formatted.,Used echo to ensure key: value format before encrypting.
-"""Vault-ids default, default conflict""",Conflict between ansible.cfg and command line flags.,Removed vault line from cfg and passed it via command line.
-
-## We will create a shortcut so that instead of typing long commands, you just type start-lab and stop-lab.
-
-### Step 1: Open your Bash Configuration
-
-Aliases are stored in a hidden file in your home directory called .bashrc.
-
-    Open the file in VS Code:
+    Sudo Permissions: Configured inside the VM to allow the nikky user to execute commands without a password prompt:
     Bash
 
-    code ~/.bashrc
+    echo "nikky ALL=(ALL) NOPASSWD:ALL" | sudo tee /etc/sudoers.d/nikky
 
-    Scroll to the very bottom of the file.
+📂 Project Directory Structure
 
-### Step 2: Add the Professional Shortcuts
+We use a modular Ansible Roles structure to ensure the code is reusable:
+Plaintext
 
-Paste these lines at the bottom of the file.
+ansible-projects/
+├── ansible.cfg          # Project-specific configurations
+├── inventory.ini        # IP addresses and connection users
+├── site.yml             # Main playbook (The entry point)
+└── roles/
+    └── webserver/
+        ├── tasks/       # main.yml: Installation steps
+        ├── handlers/    # main.yml: Service restarts (Nginx)
+        ├── templates/   # index.html.j2: Dynamic HTML design
+        └── vars/        # main.yml (Public) & secrets.yml (Encrypted)
 
-    Note: Replace YOUR_VM_NAME with the actual name of your VM (probably ubuntu22.04 or similar). If you aren't sure, run virsh list --all to check.
+🚀 Operations Runbook (Daily Use)
+How to Start Working
 
+    Power on the VM:
+    Bash
+
+sudo virsh start ansible-node
+
+Find the current IP:
 Bash
 
-# --- Ansible Lab Shortcuts ---
+virsh domifaddr ansible-node
 
-# 1. Start the VM and check connection
-alias start-lab='virsh start YOUR_VM_NAME && sleep 10 && virsh domifaddr YOUR_VM_NAME'
+Update inventory.ini: Ensure the ansible_host matches the IP from the previous step.
 
-# 2. Go to project and ping
-alias lab-check='cd ~/devops-learning-journey/03-infrastructure-as-code/code-labs/ansible-labs && ansible all -m ping --vault-password-file .vault_pass'
-
-# 3. Shutdown the VM safely
-alias stop-lab='virsh shutdown YOUR_VM_NAME'
-
-## Step 3: Activate the Changes
-
-The terminal only reads that file when it first opens. To make the changes work right now without restarting your laptop, run:
+Run the Playbook:
 Bash
 
-source ~/.bashrc
+    ansible-playbook site.yml
 
-### Step 4: Test your New Powers 🚀
+How to Stop Working
 
-Now, test your workflow using only the shortcuts:
+    Shut down the VM gracefully:
+    Bash
 
-    Type: start-lab
+    sudo virsh shutdown ansible-node
 
-        What happens: The VM starts "headless," waits 10 seconds for it to boot, and then prints the IP address.
+🛡️ Security & Vault Management
+Ansible Vault
 
-    Type: lab-check
+Sensitive data is encrypted using AES256.
 
-        What happens: You are instantly moved into your project folder and Ansible pings the VM to make sure it's ready.
+    View Secrets: ansible-vault view roles/webserver/vars/secrets.yml
 
-    Type: stop-lab
+    Edit Secrets: ansible-vault edit roles/webserver/vars/secrets.yml
 
-        What happens: The VM shuts down cleanly.
+Automatic Decryption
+
+The ansible.cfg file is configured to look for a local password file:
+
+    Vault Pass Path: ~/.ansible_vault_pass (Permission set to 600)
+
+🔧 Troubleshooting & Maintenance
+Common Commands
+Action	Command
+Check VM Status	virsh list --all
+Access VM Console	sudo virsh console ansible-node
+Check Laptop Disk	df -h /
+Test Ansible Link	ansible all -m ping -i inventory.ini
+Maintenance Tasks
+
+    Log Cleanup: The playbook automatically runs apt autoclean to save space on the VM's 5GB disk.
+
+    Reporting: Every successful run generates a deployment_report.txt in the project root.
+
+
+---
+
+### 🚀 Final Steps for You
+1. **Create the file:** In VS Code, save this as `README.md` in your `ansible-projects` folder.
+2. **Check the Preview:** Click the "Open Preview" button in the top right of VS Code to see the Table of Contents in action—you can actually click the links to jump down!
+3. **Commit to Git:**
+   ```bash
+   git add README.md
+   git commit -m "Docs: Complete technical runbook with Table of Contents"
