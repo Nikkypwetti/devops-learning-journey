@@ -45,6 +45,20 @@ To protect the 40GB system partition (`/`), all virtual machine disks are stored
 The VM was created using an existing `.qcow2` image. This method is faster than a full network install:
 
 ```bash
+# # 1. Re-create the 5GB disk on the big partition
+# sudo qemu-img create -f qcow2 /mnt/storage/libvirt/images/ansible-node.qcow2 5G
+
+# # 2. Run the terminal-only installer
+# sudo virt-install --name ansible-node \
+# --ram 2048 \
+# --vcpus 1 \
+# --disk path=/mnt/storage/libvirt/images/ansible-node.qcow2,bus=sata \
+# --os-variant ubuntu22.04 \
+# --network network=default \
+# --graphics none \
+# --console pty,target_type=serial \
+# --location /home/nikky-techies/ubuntu-22.04.5-live-server-amd64.iso,kernel=casper/vmlinuz,initrd=casper/initrd \
+# --extra-args 'console=ttyS0,115200n8 serial'
 sudo virt-install --name ansible-node \
 --ram 1024 --vcpus 1 \
 --disk path=/mnt/storage/libvirt/images/ansible-node.qcow2 \
@@ -58,7 +72,7 @@ sudo virt-install --name ansible-node \
 
     Sudo Permissions: Configured inside the VM to allow the nikky user to execute commands without a password prompt:
     Bash
-
+    
     echo "nikky ALL=(ALL) NOPASSWD:ALL" | sudo tee /etc/sudoers.d/nikky
 
 📂 Project Directory Structure
