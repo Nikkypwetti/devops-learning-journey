@@ -1,0 +1,30 @@
+name: Packer Build Golden AMI
+
+on:
+  push:
+    branches:
+      - main  # Triggers the build whenever you push to main
+
+jobs:
+  packer_build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Packer
+        uses: hashicorp/setup-packer@main
+        with:
+          version: "latest"
+
+      - name: Packer Init
+        run: packer init .
+        working-directory: ./packer
+
+      - name: Packer Build
+        run: packer build .
+        working-directory: ./packer
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: "us-east-1" # Change to your preferred region

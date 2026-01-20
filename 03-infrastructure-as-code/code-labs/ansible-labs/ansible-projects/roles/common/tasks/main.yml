@@ -1,0 +1,99 @@
+---
+# 1. Update All Packages (Security first!)
+- name: Update all apt packages to the latest version
+  apt:
+    upgrade: dist
+    update_cache: yes
+
+# 2. Install Standard DevOps Utilities
+- name: Install essential utilities
+  apt:
+    name:
+      - curl
+      - htop
+      - vim
+      - git
+      - unzip
+      - net-tools
+    state: present
+
+# 3. Monitoring: CloudWatch Agent
+- name: Download CloudWatch Agent
+  get_url:
+    url: https://s3.amazonaws.com/amazoncloudwatch-agent/ubuntu/amd64/latest/amazon-cloudwatch-agent.deb
+    dest: /tmp/amazon-cloudwatch-agent.deb
+
+- name: Install CloudWatch Agent
+  apt:
+    deb: /tmp/amazon-cloudwatch-agent.deb
+
+- name: Deploy CloudWatch Agent Configuration
+  template:
+    src: amazon-cloudwatch-agent.json.j2
+    dest: /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Apply CloudWatch Configuration and Start Agent
+  shell: |
+    /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl \
+    -a fetch-config -m ec2 -s -c file:/opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json
+  args:
+    executable: /bin/bash
+
+- name: Ensure CloudWatch Agent is enabled on boot
+  systemd:
+    name: amazon-cloudwatch-agent
+    enabled: yes
+    state: started
+
+# 4. Security: SSM Agent (For Amazon Inspector & Session Manager)
+- name: Ensure SSM Agent is installed
+  snap:
+    name: amazon-ssm-agent
+    classic: yes
+    state: present
+
+- name: Start and Enable SSM Agent
+  systemd:
+    name: snap.amazon-ssm-agent.amazon-ssm-agent.service
+    state: started
+    enabled: yes
+
+# 5. Best Practices: Timezone
+- name: Set system timezone to UTC
+  community.general.timezone:
+    name: UTC
+
+# 6. Final Cleanup (Runs absolute last to keep image small)
+- name: Final Cleanup Tasks
+  block:
+    - name: Remove temporary Ansible and system files
+      file:
+        path: "{{ item }}"
+        state: absent
+      loop:
+        - /tmp/.ansible
+        - /var/tmp/*
+        - /home/ubuntu/.ansible
+
+    - name: Clear apt cache and remove unused dependencies
+      apt:
+        autoclean: yes
+        autoremove: yes
+
+    - name: Remove SSH authorized_keys (Regenerated on launch)
+      file:
+        path: /home/ubuntu/.ssh/authorized_keys
+        state: absent
+
+    - name: Clear shell history
+      shell: |
+        cat /dev/null > ~/.bash_history
+        history -c
+      args:
+        executable: /bin/bash
+
+    - name: Truncate log files (Zero out logs to save space)
+      shell: find /var/log -type f -exec truncate -s 0 {} \;

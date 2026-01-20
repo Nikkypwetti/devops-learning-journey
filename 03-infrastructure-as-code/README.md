@@ -182,7 +182,7 @@ Day 14: Project Review & Testing
 
 Day 15: Packer Introduction
 ├── Video: https://www.youtube.com/watch?v=OmQRpi3CSjU (29 mins)
-├── Reading: https://learn.hashicorp.com/collections/packer/get-started
+├── Reading: https://developer.hashicorp.com/packer/tutorials/docker-get-started/get-started-install-cli
 └── Practice: Install Packer, create first template
 
 Day 16: Packer Builders & Provisioners
@@ -191,7 +191,7 @@ Day 16: Packer Builders & Provisioners
 └── Practice: Build AWS AMI with shell provisioner
 
 Day 17: Ansible Fundamentals
-├── Video: https://www.youtube.com/watch?v=1id6ERvfozo (16 mins)
+├── Video: https://www.youtube.com/watch?v=5hycyr-8EKs (21 mins)
 ├── Reading: <https://docs.ansible.com/ansible/latest/user_guide/intro_getting_started.html>
 └── Practice: Install Ansible, write first playbook
 

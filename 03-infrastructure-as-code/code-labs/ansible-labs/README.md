@@ -75,8 +75,6 @@ sudo virt-install --name ansible-node \
     
     echo "nikky ALL=(ALL) NOPASSWD:ALL" | sudo tee /etc/sudoers.d/nikky
 
-📂 Project Directory Structure
-
 We use a modular Ansible Roles structure to ensure the code is reusable:
 Plaintext
 
@@ -90,6 +88,39 @@ ansible-projects/
         ├── handlers/    # main.yml: Service restarts (Nginx)
         ├── templates/   # index.html.j2: Dynamic HTML design
         └── vars/        # main.yml (Public) & secrets.yml (Encrypted)
+
+Since you are using VS Code to manage your learning repo, having a clean visual of the folder structure is essential. This is exactly how your devops-learning-journey directory should look once you’ve implemented the "Pro Way."
+📂 The "Pro" Ansible Directory Structure
+Plaintext
+
+devops-learning-journey/
+├── ansible-projects/          # Main project folder
+│   ├── inventory.ini          # List of your VM IPs and users
+│   ├── site.yml               # The main "entry point" playbook
+│   ├── index.html.j2          # (Optional) moved into the role below
+│   └── roles/                 # Folder for all your modular roles
+│       └── webserver/         # Your specific Nginx role
+│           ├── handlers/
+│           │   └── main.yml   # Logic for restarting Nginx
+│           ├── tasks/
+│           │   └── main.yml   # Installation and config steps
+│           ├── templates/
+│           │   └── index.html.j2 # Your dynamic HTML file
+│           └── vars/
+│               └── main.yml   # App title, email, and env variables
+└── .gitignore                 # To keep terraform/ansible junk out of Git
+
+📝 Quick Guide to Each File
+
+Here is a reminder of what goes where in your VS Code editor:
+File	Purpose	Key Content
+inventory.ini	Target List	[webservers] and your VM IP.
+site.yml	The Boss	Calls the webserver role.
+tasks/main.yml	The Worker	apt: name=nginx and template:.
+vars/main.yml	The Settings	app_title: "Nikky's Lab"
+templates/index.j2	The Design	HTML with {{ variables }}.
+handlers/main.yml	The Cleanup	service: name=nginx state=restarted.
+
 
 🚀 Operations Runbook (Daily Use)
 How to Start Working

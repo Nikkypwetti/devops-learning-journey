@@ -177,6 +177,7 @@ resource "aws_instance" "app_server" {
 
 Commands Used
 bash
+export AWS_PROFILE="my-custom-profile" - to use certain environment 
 terraform -version - to check terraform version
 terraform fmt - to format configuration files
 terraform init - to initialize Terraform workspace

@@ -65,7 +65,19 @@
    - Final Portfolio Project
 
 ## 🎓 Certifications
+
 - [AWS Cloud Practitioner](./certificates/aws-cloud-practitioner.md) - Target: 2024-01-31
 - [Terraform Associate](./certificates/terraform-associate.md) - Target: 2024-03-31
 
 ## 📁 Repository Structure
+
+## Check out our learning paths at KodeKloud to get started:
+
+▶️HashiCorp: https://kode.wiki/HashiCorp_LearningP...
+▶️ Kubernetes: https://bit.ly/KubernetesLearningPath
+▶️ Cloud:https://kode.wiki/CloudLearningPath
+▶️ Linux: https://bit.ly/LinuxLearningPath
+▶️ DevOps Learning Path: https://bit.ly/DevOpsLearningPath-YT
+▶️ Docker: https://bit.ly/DockerLearningPath
+▶️ Infrastructure as Code(IAC): https://bit.ly/IACLearningPath
+▶️ Programming: https://bit.ly/ProgrammingLearningPath

@@ -1,0 +1,17 @@
+*.bak
+*.retry
+.aws-creds
+.ansible_vault_pass
+terraform.tfstate*
+.terraform/
+.terraform.lock.hcl
+*.log
+terraform.tfvars
+*.pem
+*.key
+# Ignore AWS credentials and sensitive files
+.aws/
+credentials
+*.pem
+*.tfvars
+.packer/

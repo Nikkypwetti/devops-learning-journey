@@ -83,6 +83,23 @@ packer build example.pkr.hcl
 # Build and provide a variable via CLI
 packer build -var "instance_type=t3.medium" example.pkr.hcl
 
+# 1. Add the box to your local Vagrant list
+vagrant box add my-new-aws-box packer_ubuntu_aws_amd64.box
+
+# 2. Initialize a new directory
+mkdir my-test-env && cd my-test-env
+vagrant init my-new-aws-box
+
+# The Compressed Archive
+
+The compress post-processor took your build output and zipped it up.
+
+    File: packer_ubuntu_amazon-ebs.zip (or .tar.gz)
+
+    Location: This file should be in your current directory (~/devops-learning-journey/03-infrastructure-as-code/code-labs/packer-labs/).
+
+    Why it's there: This is useful for backups or if you need to move the build artifacts to another server or a CI/CD pipeline.
+
 Challenges
 
     Problem: SSH timeout during the build process.
