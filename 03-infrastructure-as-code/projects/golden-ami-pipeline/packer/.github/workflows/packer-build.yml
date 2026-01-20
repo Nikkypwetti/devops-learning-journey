@@ -3,7 +3,7 @@ name: Packer Build Golden AMI
 on:
   push:
     branches:
-      - main  # Triggers the build whenever you push to main
+      - main
 
 jobs:
   packer_build:
@@ -17,6 +17,10 @@ jobs:
         with:
           version: "latest"
 
+      # This creates the vault file dynamically so Ansible doesn't crash
+      - name: Create Ansible Vault Password File
+        run: echo "${{ secrets.ANSIBLE_VAULT_PASSWORD }}" > packer/.ansible_vault_pass
+
       - name: Packer Init
         run: packer init .
         working-directory: ./packer
@@ -25,6 +29,6 @@ jobs:
         run: packer build .
         working-directory: ./packer
         env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: "us-east-1" # Change to your preferred region
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID_DEV }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_DEV }}
+          AWS_REGION: "us-east-1"

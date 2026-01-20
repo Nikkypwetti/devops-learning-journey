@@ -15,7 +15,6 @@ source "amazon-ebs" "ubuntu_nginx" {
   ami_name      = "golden-nginx-v1-${formatdate("YYYY-MM-DD-hhmm", timestamp())}"
   instance_type = var.instance_type
   region        = var.aws_region
-  profile       = "learning"
   associate_public_ip_address = true
   temporary_security_group_source_public_ip = true
 
@@ -31,7 +30,7 @@ source "amazon-ebs" "ubuntu_nginx" {
   }
 
   ssh_username = var.ssh_username
-  ssh_timeout  = "10m"
+  # ssh_timeout  = "10m"
   ssh_interface = "public_ip"
   
   # Professional Tagging (Crucial for Cloud Governance)
@@ -56,9 +55,7 @@ build {
 
   # Step 2: The Pro Ansible Provisioner
   provisioner "ansible" {
-    # Full path is safest
-    playbook_file = "/home/nikky-techies/devops-learning-journey/03-infrastructure-as-code/code-labs/ansible-labs/ansible-projects/site.yml"
-    
+    playbook_file = "../../ansible-labs/ansible-projects/site.yml" 
     user          = "ubuntu"
     use_proxy     = false
     

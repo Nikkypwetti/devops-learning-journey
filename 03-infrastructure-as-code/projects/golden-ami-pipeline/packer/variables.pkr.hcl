@@ -10,7 +10,7 @@ variable "ssh_username" {
 
 variable "vault_password_file" {
   type    = string
-  default = "/home/nikky-techies/.ansible_vault_pass"
+  default = ".ansible_vault_pass"
 }
 
 variable "aws_region" {
