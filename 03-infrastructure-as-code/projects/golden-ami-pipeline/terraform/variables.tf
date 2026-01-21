@@ -7,3 +7,8 @@ variable "my_ip" {
   description = "My current public IP address for SSH access"
   type        = string
 }
+variable "aws_region" {
+  description = "AWS region to deploy resources"
+  type        = string
+  default     = "us-east-1"
+}

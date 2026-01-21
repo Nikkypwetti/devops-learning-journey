@@ -17,6 +17,8 @@ source "amazon-ebs" "ubuntu_nginx" {
   region        = var.aws_region
   associate_public_ip_address = true
   temporary_security_group_source_public_ip = true
+  force_deregister      = true
+  force_delete_snapshot = true
 
   # Professional Filter: Always get the latest official Ubuntu 22.04
   source_ami_filter {
@@ -80,4 +82,10 @@ build {
       "echo 'Smoke Test Passed!'"
     ]
   }
+}
+
+post-processor "amazon-ami-management" {
+  regions       = ["us-east-1"]
+  identifier    = "golden-nginx-v1"
+  keep_releases = 3
 }
