@@ -55,19 +55,19 @@ build {
 
   # Step 2: The Pro Ansible Provisioner
   provisioner "ansible" {
-    playbook_file = "../../../ansible-labs/ansible-projects/site.yml"
+    # Use the absolute path provided by the GITHUB_WORKSPACE variable
+    playbook_file = var.playbook_file_path
     user          = "ubuntu"
     use_proxy     = false
     
     extra_arguments = [
-      # Pro Tip: Use the equals sign for the vault file to avoid parsing errors
       "--vault-password-file=${var.vault_password_file}"
     ]
     
     ansible_env_vars = [
-      "ANSIBLE_ROLES_PATH=../../../ansible-labs/ansible-projects/roles",
+      # Dynamically point to the roles folder
+      "ANSIBLE_ROLES_PATH=${var.ansible_roles_path}",
       "ANSIBLE_HOST_KEY_CHECKING=False",
-      # Ensures Ansible uses the correct Python version on Ubuntu 22.04
       "ANSIBLE_PYTHON_INTERPRETER=/usr/bin/python3"
     ]
   }

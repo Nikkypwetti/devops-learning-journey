@@ -30,10 +30,15 @@ jobs:
         working-directory: 03-infrastructure-as-code/projects/golden-ami-pipeline/packer
 
       - name: Packer Build
-        # We point directly to the password file we just created in the root
-        run: packer build -var "vault_password_file=$GITHUB_WORKSPACE/.ansible_vault_pass" .
+        run: |
+          packer build \
+          -var "vault_password_file=$GITHUB_WORKSPACE/.ansible_vault_pass" \
+          -var "playbook_file_path=$GITHUB_WORKSPACE/03-infrastructure-as-code/ansible-labs/ansible-projects/site.yml" \
+          -var "ansible_roles_path=$GITHUB_WORKSPACE/03-infrastructure-as-code/ansible-labs/ansible-projects/roles" \
+          .
         working-directory: 03-infrastructure-as-code/projects/golden-ami-pipeline/packer
         env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID_DEV}}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID_DEV }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_DEV }}
           AWS_REGION: "us-east-1"
+          
