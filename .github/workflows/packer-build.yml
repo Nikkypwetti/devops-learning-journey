@@ -39,8 +39,8 @@ jobs:
         run: |
           packer build \
           -var "vault_password_file=$GITHUB_WORKSPACE/.ansible_vault_pass" \
-          -var "playbook_file_path=$GITHUB_WORKSPACE/03-infrastructure-as-code/ansible-labs/ansible-projects/site.yml" \
-          -var "ansible_roles_path=$GITHUB_WORKSPACE/03-infrastructure-as-code/ansible-labs/ansible-projects/roles" \
+          -var "playbook_file_path=$GITHUB_WORKSPACE/03-infrastructure-as-code/projects/golden-ami-pipeline/ansible/site.yml" \
+          -var "ansible_roles_path=$GITHUB_WORKSPACE/03-infrastructure-as-code/projects/golden-ami-pipeline/ansible/roles" \
           .
         working-directory: 03-infrastructure-as-code/projects/golden-ami-pipeline/packer
         env:
