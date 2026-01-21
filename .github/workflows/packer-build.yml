@@ -11,13 +11,15 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Ensures git has full history to avoid exit code 128
 
       - name: Setup Packer
         uses: hashicorp/setup-packer@main
         with:
           version: "latest"
 
-      # This creates the vault file dynamically so Ansible doesn't crash
+      # This creates the vault file in the exact folder where Packer runs
       - name: Create Ansible Vault Password File
         run: echo "${{ secrets.ANSIBLE_VAULT_PASSWORD }}" > 03-infrastructure-as-code/projects/golden-ami-pipeline/packer/.ansible_vault_pass
 
