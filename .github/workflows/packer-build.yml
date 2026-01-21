@@ -19,15 +19,15 @@ jobs:
 
       # This creates the vault file dynamically so Ansible doesn't crash
       - name: Create Ansible Vault Password File
-        run: echo "${{ secrets.ANSIBLE_VAULT_PASSWORD }}" > packer/.ansible_vault_pass
+        run: echo "${{ secrets.ANSIBLE_VAULT_PASSWORD }}" > 03-infrastructure-as-code/projects/golden-ami-pipeline/packer/.ansible_vault_pass
 
       - name: Packer Init
         run: packer init .
-        working-directory: ./packer
+        working-directory: 03-infrastructure-as-code/projects/golden-ami-pipeline/packer
 
       - name: Packer Build
         run: packer build .
-        working-directory: ./packer
+        working-directory: 03-infrastructure-as-code/projects/golden-ami-pipeline/packer
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID_DEV }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_DEV }}
