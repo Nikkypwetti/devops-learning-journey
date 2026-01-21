@@ -33,7 +33,7 @@ What I Learned
 Code Practice
 Terraform
 
-# Packer HCL2 Template: aws-ubuntu.pkr.hcl
+## Packer HCL2 Template: aws-ubuntu.pkr.hcl
 
 packer {
   required_plugins {
@@ -71,7 +71,7 @@ build {
     "source.amazon-ebs.ubuntu"
   ]
 
-# Using Ansible to configure the image
+## Using Ansible to configure the image
 
   provisioner "ansible" {
     playbook_file = "./playbook.yml"
@@ -80,6 +80,13 @@ build {
   }
 }
 
+## What to add to packer build to find path
+
+- name: Debug File Structure
+        run: |
+          echo "Current Working Directory: $(pwd)"
+          echo "Listing all files in the repository for debugging:"
+          find . -maxdepth 5 -not -path '*/.*'
 Commands Used
 Bash
 

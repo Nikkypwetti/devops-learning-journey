@@ -47,6 +47,14 @@ resource "aws_security_group" "web_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  # Port 22 for SSH access
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = [var.my_ip]
+  }
+
   # Allow the instance to talk to the internet (to download updates)
   egress {
     from_port   = 0
@@ -56,10 +64,25 @@ resource "aws_security_group" "web_sg" {
   }
 }
 
-resource "aws_instance" "web_server" {
-  ami           = var.ami_id # Your Golden AMI ID
-  instance_type = "t3.micro"
+# Launch an EC2 Instance using the Golden AMI
+data "aws_ami" "golden_nginx" {
+  most_recent = true
+  owners      = ["self"]
 
+  filter {
+    name   = "name"
+    values = ["golden-nginx-v1-*"] 
+  }
+
+  filter {
+    name   = "state"
+    values = ["available"]
+  }
+}
+
+resource "aws_instance" "web_server" {
+  ami           = data.aws_ami.golden_nginx.id
+  instance_type = var.instance_type
   # Attach the IAM Instance Profile
   iam_instance_profile = aws_iam_instance_profile.ec2_profile.name
 

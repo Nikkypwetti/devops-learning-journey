@@ -1,55 +1,65 @@
-Golden AMI Pipeline: Automated Image Factory
+# 🚀 Automated Golden AMI Pipeline
 
-📌 Project Overview
+A professional-grade CI/CD pipeline that automates the creation and deployment of "Golden" Amazon Machine Images (AMIs) using Packer, Ansible, Terraform, and GitHub Actions.
+🏗 Project Architecture
 
-This project automates the creation of "Golden AMIs" (Amazon Machine Images) using HashiCorp Packer and Terraform. A Golden AMI is a pre-configured, hardened image that contains security patches, monitoring agents, and standard configurations, ensuring consistency across a DevOps environment.
-Key Features:
+This project implements the "Immutable Infrastructure" pattern:
 
-    Infrastructure as Code: Uses HCL (HashiCorp Configuration Language) for both image building and infrastructure.
+    Continuous Integration: GitHub Actions triggers on push.
 
-    Automated Provisioning: Uses Shell scripts to install updates, AWS CLI, and CloudWatch agents.
+    Image Baking: Packer spins up a temporary EC2 instance in AWS.
 
-    Version Control: Full pipeline configuration stored in GitHub for auditability.
+    Configuration Management: Ansible installs Nginx, applies security patches, and handles secrets via Ansible Vault.
 
-    Validation: Automated triggers to ensure images are built only when configurations change.
+    Artifact Creation: Packer snapshots the instance to create a versioned Golden AMI.
 
-🏗 Architecture
+    Infrastructure as Code: Terraform dynamically fetches the latest AMI and deploys a secure, monitored EC2 instance.
 
-    Packer launches a temporary EC2 instance in AWS.
+## 🛠 Tech Stack
 
-    Provisioners (Bash scripts) execute to harden the OS and install software.
+    Orchestration: GitHub Actions
 
-    AWS creates an AMI from the running instance.
+    Infrastructure: Packer, Terraform
 
-    Terraform (Optional) references the new AMI ID to deploy a scaling group.
+    Configuration: Ansible (with Vault for secret management)
 
-🚀 How to Run
-1. Initialize Packer
+    Cloud: AWS (EC2, IAM, Security Groups, CloudWatch)
+
+    Scripting: Bash (Dynamic IP management)
+
+## 🔒 Security Features
+
+    Ansible Vault: All sensitive variables (like DB passwords) are encrypted at rest.
+
+    Least Privilege IAM: The EC2 instances use a dedicated IAM Role with scoped-down policies for CloudWatch and SSM.
+
+    Dynamic Firewalls: A custom Bash script updates Terraform security groups to allow SSH access only from the developer's current public IP.
+
+## 🚀 How to Run
+
+1. Build the Image
+
+Push any change to the main branch. GitHub Actions will handle the Packer build automatically.
+
+2. Update Local Environment
+
+Run the IP management script to authorize your current location:
 Bash
 
-packer init .
+chmod +x terraform/update_ip.sh
+./terraform/update_ip.sh
 
-2. Build the Image
+3. Deploy Infrastructure
 Bash
 
-packer build .
+cd terraform
+terraform init
+terraform apply -auto-approve
 
-📸 Evidence of Completion
+## 📈 Key Achievements
 
-    Note to User: This is where you use your new shot command! Replace the placeholders below with your actual screenshots.
+    Successfully resolved complex "Monorepo" pathing issues in GitHub Actions.
 
-Build Success
+    Implemented automated secret decryption in a headless CI/CD environment.
 
-Insert screenshot here showing the "Build 'amazon-ebs.ubuntu' finished" message.
-AWS Console Verification
-
-Insert screenshot of the AWS Console showing your new AMI in the "Available" state.
-🛠 Lessons Learned & Troubleshooting
-
-    Network Debugging: Encountered and resolved DNS resolution issues (archive.ubuntu.com) during the build phase by updating resolv.conf.
-
-    Environment Management: Configured custom Linux aliases (shot) to streamline the documentation and auditing process.
-
-    State Management: Learned the importance of modularizing Packer templates for different environments (Dev vs. Prod).
-
-📂 Repository Structure
+    Reduced deployment time by "baking" configurations into the AMI rather than installing on boot.

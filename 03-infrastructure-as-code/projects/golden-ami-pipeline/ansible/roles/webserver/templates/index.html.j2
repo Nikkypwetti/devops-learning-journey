@@ -1,12 +1,61 @@
 <!DOCTYPE html>
-<html>
-<body style="background-color: #f0f0f0; font-family: sans-serif; text-align: center;">
-    <h1 style="color: #2c3e50;">🚀 {{ app_title }}</h1>
-    <p>Environment: <strong>{{ environment_type }}</strong></p>
-    <hr>
-    <p>Node Name: {{ ansible_hostname }}</p>
-    <p>IP Address: {{ ansible_default_ipv4.address }}</p>
-    <p>Contact: {{ admin_email }}</p>
-    <p>Database Connection String: <strong>{{ db_password }}</strong></p>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infrastructure Status | Nikky</title>
+    <style>
+        :root {
+            --bg: #0d1117;
+            --card: #161b22;
+            --text: #c9d1d9;
+            --accent: #58a6ff;
+            --success: #238636;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background: var(--card);
+            padding: 2rem;
+            border-radius: 12px;
+            border: 1px solid #30363d;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+            width: 420px;
+        }
+        h1 { color: var(--accent); font-size: 1.5rem; margin-bottom: 0.5rem; }
+        .status-badge { background: var(--success); color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; }
+        .info-grid { margin-top: 1.5rem; display: grid; gap: 12px; }
+        .info-item { display: flex; justify-content: space-between; font-size: 0.9rem; border-bottom: 1px solid #30363d; padding-bottom: 8px; }
+        .label { color: #8b949e; }
+        .value { font-family: monospace; color: var(--accent); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Infrastructure <span class="status-badge">Online</span></h1>
+        <p style="color: #8b949e;">Automated Golden AMI Deployment</p>
+        
+        <div class="info-grid">
+            <div class="info-item"><span class="label">Environment</span><span class="value">Production-Lab</span></div>
+            <div class="info-item"><span class="label">Node Name</span><span class="value">{{ ansible_hostname }}</span></div>
+            <div class="info-item"><span class="label">Private IP</span><span class="value">{{ ansible_default_ipv4.address }}</span></div>
+            <div class="info-item">
+                <span class="label">Last Built</span>
+                <span class="value">{{ now(utc=true, fmt='%Y-%m-%d %H:%M') }} UTC</span>
+            </div>
+        </div>
+        
+        <p style="margin-top: 2rem; font-size: 0.7rem; text-align: center; color: #484f58;">
+            Provisioned via Packer, Ansible & Terraform
+        </p>
+    </div>
 </body>
 </html>

@@ -25,12 +25,6 @@ jobs:
       - name: Create Ansible Vault Password File
         run: echo "${{ secrets.ANSIBLE_VAULT_PASSWORD }}" > .ansible_vault_pass
 
-      - name: Debug File Structure
-        run: |
-          echo "Current Working Directory: $(pwd)"
-          echo "Listing all files in the repository for debugging:"
-          find . -maxdepth 5 -not -path '*/.*'
-
       - name: Packer Init
         run: packer init .
         working-directory: 03-infrastructure-as-code/projects/golden-ami-pipeline/packer
