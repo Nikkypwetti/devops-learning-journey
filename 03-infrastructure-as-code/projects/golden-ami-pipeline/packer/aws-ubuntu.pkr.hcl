@@ -55,7 +55,7 @@ build {
 
   # Step 2: The Pro Ansible Provisioner
   provisioner "ansible" {
-    playbook_file = "../../ansible-labs/ansible-projects/site.yml" 
+    playbook_file = "../../../ansible-labs/ansible-projects/site.yml"
     user          = "ubuntu"
     use_proxy     = false
     
@@ -65,7 +65,7 @@ build {
     ]
     
     ansible_env_vars = [
-      "ANSIBLE_ROLES_PATH=/home/nikky-techies/devops-learning-journey/03-infrastructure-as-code/code-labs/ansible-labs/ansible-projects/roles",
+      "ANSIBLE_ROLES_PATH=../../../ansible-labs/ansible-projects/roles",
       "ANSIBLE_HOST_KEY_CHECKING=False",
       # Ensures Ansible uses the correct Python version on Ubuntu 22.04
       "ANSIBLE_PYTHON_INTERPRETER=/usr/bin/python3"
