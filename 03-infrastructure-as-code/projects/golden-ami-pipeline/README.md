@@ -115,14 +115,10 @@ terraform apply -auto-approve
 |:---:|:---:|
 | ![Web UI Success](docs/screenshots/live-application-status.png) | ![CloudWatch Dashboard](docs/screenshots/infrastructure-observability.png) |
 
+| Technical Build Logs |
+|:---:|
+| ![Packer Logs](docs/screenshots/packer-build-logs.png) |
+
 ## 📄 License
 
 This project is licensed under the MIT License. You are free to use, modify, and distribute this code for personal or commercial projects, provided that the original copyright notice and this permission notice are included.
-
-### 🤝 Connect With Me
-
-I am a DevOps Engineer in Training passionate about automation, cloud architecture, and site reliability. If you have questions about this project or want to collaborate, let's connect!
-
-[![LinkedIn](https://img.shields.io/badge/linkedin-%230077B5.svg?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/ganiyu-basirat/)
-[![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Nikkypwetti)
-[![Email](https://img.shields.io/badge/Email-D14836?style=for-the-badge&logo=gmail&logoColor=white)](mailto:olanike.basirat620@gmail.com)
