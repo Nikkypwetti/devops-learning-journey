@@ -8,8 +8,13 @@ packer {
       source  = "github.com/hashicorp/ansible"
       version = "~> 1"
     }
+    amazon-ami-management = {
+      version = ">= 1.0.0"
+      source  = "github.com/wata727/amazon-ami-management"
+    }
   }
 }
+
 
 source "amazon-ebs" "ubuntu_nginx" {
   ami_name      = "golden-nginx-v1-${formatdate("YYYY-MM-DD-hhmm", timestamp())}"
@@ -82,10 +87,11 @@ build {
       "echo 'Smoke Test Passed!'"
     ]
   }
+
+  post-processor "amazon-ami-management" {
+    regions       = ["us-east-1"]
+    identifier    = "golden-nginx-v1"
+    keep_releases = 3
+  }
 }
 
-post-processor "amazon-ami-management" {
-  regions       = ["us-east-1"]
-  identifier    = "golden-nginx-v1"
-  keep_releases = 3
-}
