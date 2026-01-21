@@ -1,0 +1,5 @@
+---
+# Variable definitions for our webserver
+app_title: "Nikky's Automated Infrastructure"
+environment_type: "Production-Lab"
+admin_email: "nikky@techies.local"

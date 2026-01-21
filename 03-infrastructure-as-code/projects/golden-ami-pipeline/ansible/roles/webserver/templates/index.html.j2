@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html>
+<body style="background-color: #f0f0f0; font-family: sans-serif; text-align: center;">
+    <h1 style="color: #2c3e50;">🚀 {{ app_title }}</h1>
+    <p>Environment: <strong>{{ environment_type }}</strong></p>
+    <hr>
+    <p>Node Name: {{ ansible_hostname }}</p>
+    <p>IP Address: {{ ansible_default_ipv4.address }}</p>
+    <p>Contact: {{ admin_email }}</p>
+    <p>Database Connection String: <strong>{{ db_password }}</strong></p>
+</body>
+</html>

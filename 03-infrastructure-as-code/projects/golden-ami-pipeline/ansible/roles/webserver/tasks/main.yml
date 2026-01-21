@@ -1,0 +1,38 @@
+---
+- name: Check VM Disk Space
+  shell: df -h / | awk 'NR==2 {print $5}'
+  register: disk_usage
+  changed_when: false
+
+- name: Show Disk Usage in Terminal
+  debug:
+    msg: "Current Disk Usage on {{ inventory_hostname }} is {{ disk_usage.stdout }}"
+
+- name: Install Nginx
+  apt:
+    name: nginx
+    state: present
+
+- name: Deploy dynamic template
+  template:
+    src: index.html.j2
+    dest: /var/www/html/index.html
+  notify: Restart Nginx
+
+- name: Generate deployment report locally
+  delegate_to: localhost
+  become: no
+  copy:
+    content: |
+      Deployment Summary
+      ------------------
+      Date: {{ ansible_date_time.date }}
+      Node: {{ inventory_hostname }}
+      IP: {{ ansible_default_ipv4.address }}
+      Status: Nginx Deployed Successfully
+    dest: "{{ playbook_dir }}/deployment_report.txt"
+
+- name: Clean up APT cache to save space
+  apt:
+    autoclean: yes
+    autoremove: yes
