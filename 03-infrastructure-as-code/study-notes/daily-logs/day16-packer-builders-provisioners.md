@@ -1,118 +1,85 @@
-# Day 16: [Packer Builders & Provisioners]
+# Day 27: [Three-Tier Application Architecture]
 
-What I Learned
+## What I Learned
 
-    Concept 1: Core Purpose of Packer
+Concept 1: Core Purpose of Three-Tier Architecture
 
-        Packer is an open-source tool used to create identical machine images for multiple platforms (AWS, Azure, GCP, Docker) from a single source configuration. It automates the "Golden Image" creation process.
+    It is the standard software architecture pattern that organizes applications into three logical and physical computing tiers: Presentation, Application, and Data. This separation enhances security, scalability, and ease of maintenance.
 
-    Concept 2: Builders (The "Where")
+Concept 2: The Presentation Tier (ALB)
 
-        Builders are responsible for creating the machine image on specific platforms. For AWS, the amazon-ebs builder launches a temporary EC2 instance, runs configurations, and packages it into an AMI.
+    The external-facing layer. An Application Load Balancer (ALB) sits in the public subnets to receive user traffic (HTTP/HTTPS) and routes it to the application instances. It acts as the "front door" while hiding the backend complexity.
 
-        Key parameters include source_ami, instance_type, and region.
+Concept 3: The Application Tier (ASG)
 
-    Concept 3: Provisioners (The "How")
+    The logic layer where processing happens. An Auto Scaling Group (ASG) manages EC2 instances across multiple Availability Zones in private subnets. This ensures the app can handle traffic spikes and remains highly available if an instance fails.
 
-        Provisioners install and configure software within the running instance before it is turned into a static image.
+Concept 4: The Data Tier (RDS & ElastiCache)
 
-        Shell Provisioner: Executes scripts or inline shell commands to install packages (e.g., Nginx, Docker).
+    The storage layer. Relational Database Service (RDS) handles persistent data storage (e.g., MySQL or PostgreSQL). ElastiCache (Redis) is used to cache frequent queries, reducing the database load and improving response times.
 
-        File Provisioner: Uploads files from your local machine to the image during the build process.
+Concept 5: Security Group Chain
 
-    Concept 4: Templates (HCL)
+    A critical security pattern where access is restricted at every layer. The ALB allows web traffic, the App Tier only accepts traffic from the ALB's Security Group, and the Data Tier only accepts traffic from the App Tier's Security Group.
 
-        Modern Packer uses HCL (HashiCorp Configuration Language). Templates consist of source blocks (defining the builder) and build blocks (defining what provisioners to run on those sources).
+Concept 6: Infrastructure Automation (Atlantis)
 
-    Concept 5: Variables & Locals
+    Atlantis is used for Terraform Pull Request Automation. Instead of running commands locally, it allows teams to run `terraform plan` and `apply` directly via GitHub comments, providing a transparent and collaborative GitOps workflow.
 
-        Variables: Allow users to pass values at runtime (e.g., variable "ami_name" {}).
+Concept 7: High Availability & Fault Tolerance
 
-        Locals: Internal constants used for dynamic values within the template, such as timestamps to give AMIs unique names.
+    By deploying across at least two Availability Zones (AZs) and using a Multi-AZ RDS deployment, the architecture ensures that the application stays online even if a whole AWS data center goes offline.
 
-    Concept 6: Post-Processors
+## Code Practice Terraform
 
-        These run after the image is created. They can be used to compress artifacts, upload to registries, or create a manifest file containing the new AMI ID.
+main.tf (Simplified Architecture Snippets)
 
-    Concept 7: The Packer Lifecycle
+1. Load Balancer (Presentation)
 
-        The process follows: init (install plugins) -> fmt & validate (check syntax) -> build (execute the image creation). Packer automatically cleans up temporary resources (like EC2 instances) after completion.
+module "alb" { source = "terraform-aws-modules/alb/aws" name = "my-app-alb" vpc_id = module.vpc.vpc_id subnets = module.vpc.public_subnets }
 
-Code Practice
-Terraform
+2. Auto Scaling Group (Application)
 
-# example.pkr.hcl
+module "asg" { source = "terraform-aws-modules/autoscaling/aws" name = "my-app-asg" vpc_zone_identifier = module.vpc.private_subnets min_size = 2 max_size = 5 desired_capacity = 2 }
 
-# 1. Define the Source (Builder)
+3. RDS Instance (Data)
 
-source "amazon-ebs" "ubuntu" {
-  ami_name      = "packer-nginx-aws-{{timestamp}}"
-  instance_type = "t2.micro"
-  region        = "us-east-1"
-  source_ami    = "ami-0c55b159cbfafe1f0" # Base Ubuntu AMI
-  ssh_username  = "ubuntu"
-}
+module "db" { source = "terraform-aws-modules/rds/aws" identifier = "my-app-db" engine = "postgres" allocated_storage = 20 db_subnet_group_name = module.vpc.database_subnet_group }
 
-# 2. Define the Build Block (Provisioners)
+## Commands Used 
 
-build {
-  name = "my-first-build"
-  sources = [
-    "source.amazon-ebs.ubuntu"
-  ]
-
-# Shell Provisioner to install Nginx
-
-  provisioner "shell" {
-    inline = [
-      "sudo apt-get update",
-      "sudo apt-get install -y nginx",
-      "sudo systemctl enable nginx"
-    ]
-  }
-
-# File Provisioner to upload a custom index.html
-
-  provisioner "file" {
-    source      = "index.html"
-    destination = "/tmp/index.html"
-  }
-}
-
-Commands Used
 Bash
+Initialize the project and modules
 
-# Initialize Packer plugins (required for new templates)
-packer init .
+terraform init
+Plan and apply changes manually (for initial setup)
 
-# Format and Validate the configuration
-packer fmt .
-packer validate .
+terraform plan terraform apply
+Atlantis workflow (via GitHub PR comments)
 
-# Execute the build process
-packer build example.pkr.hcl
+atlantis plan atlantis apply
+Verify connectivity from App to DB
 
-# Passing variables via CLI
-packer build -var "instance_type=t3.medium" example.pkr.hcl
+nc -zv <rds-endpoint> 5432
 
-Challenges
+## Challenges
 
-    Problem: SSH connection timeout during the build process.
+Problem: App instances could not connect to the RDS database.
 
-    Solution: Ensured the base AMI has the correct ssh_username defined and that the local machine has outbound access to the temporary AWS instance.
+Solution: Verified the Database Security Group. I had to ensure the Inbound rule allowed port 5432 (Postgres) specifically from the Application Tier's Security Group ID, not from the public internet.
 
-Resources
+## Resources
 
-    Video Tutorial
+Video Tutorial
 
-        Video: http://www.youtube.com/watch?v=uNuXAXvSjAc (31 mins)
+    Video: [https://github.com/terraform-aws-modules/terraform-aws-atlantis](https://github.com/terraform-aws-modules/terraform-aws-atlantis) (Repo Guide)
 
-    Documentation
+## Documentation
 
-        Reading: https://developer.hashicorp.com/packer/docs/templates
+    Reading: [https://developer.hashicorp.com/terraform/tutorials/aws/aws-asg](https://developer.hashicorp.com/terraform/tutorials/aws/aws-asg)
 
-Tomorrow's Plan
+## Tomorrow's Plan
 
-    Topic 1: Packer Post-Processors & Manifests
+Topic 1: Monitoring & Logging (CloudWatch & SNS)
 
-    Topic 2: Integrating Packer with CI/CD Pipelines
+Topic 2: Setting up Cost Alerts and Infrastructure Auditing

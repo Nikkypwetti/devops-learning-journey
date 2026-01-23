@@ -1,0 +1,36 @@
+name: "Terraform Action"
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '03-infrastructure-as-code/code-labs/terraform-labs/terraform-ci-cd/**' # Only run if files in this folder change
+  pull_request:
+    paths:
+      - '03-infrastructure-as-code/code-labs/terraform-labs/terraform-ci-cd/**'
+
+jobs:
+  terraform:
+    name: "Terraform"
+    runs-on: ubuntu-latest
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID_DEV }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_DEV }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Plan
+        run: terraform plan
+
+      - name: Terraform Apply
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: terraform apply -auto-approve

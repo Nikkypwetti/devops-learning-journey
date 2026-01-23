@@ -4,6 +4,10 @@ on:
   push:
     branches:
       - main
+    paths:
+      - '03-infrastructure-as-code/projects/golden-ami-pipeline/**'
+  # 🚀 Added: Allows you to trigger the build manually from the GitHub Actions tab
+  workflow_dispatch:
 
 jobs:
   packer_build:
@@ -24,6 +28,13 @@ jobs:
       # We create the password file in the root for maximum reliability
       - name: Create Ansible Vault Password File
         run: echo "${{ secrets.ANSIBLE_VAULT_PASSWORD }}" > .ansible_vault_pass
+
+      - name: Verify Vault Password File
+        run: |
+          if [ ! -s .ansible_vault_pass ]; then
+            echo "Error: Vault password file is empty or missing!"
+            exit 1
+          fi
 
       - name: Packer Init
         run: packer init .

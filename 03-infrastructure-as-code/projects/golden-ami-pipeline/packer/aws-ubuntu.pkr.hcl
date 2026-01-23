@@ -94,9 +94,9 @@ build {
     # 🌟 PRO TIP: Use a prefix search to find all your versioned images
     identifier    = "golden-nginx-v1"
     
-    # Keep the last 5 builds. This gives you a "Rollback" buffer 
+    # Keep the last 2 builds. This gives you a "Rollback" buffer 
     # in case the newest one has a bug.
-    keep_releases = 5
+    keep_releases = 1
     
     # Ensure snapshots are deleted to keep your AWS bill at $0
     tags = {
