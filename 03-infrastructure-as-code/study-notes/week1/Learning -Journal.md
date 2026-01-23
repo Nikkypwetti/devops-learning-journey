@@ -54,6 +54,21 @@
 **Strengths**: Practical implementation, documentation
 **Areas to Improve**: Advanced debugging, performance optimization
 
+## What to do if you see "Merge Conflicts"
+
+If you and the remote version both changed the same line of the same file, Git will pause and ask you to fix it.
+
+    Open the file with the conflict in VS Code (it will be highlighted in red).
+
+    Choose which version to keep.
+
+    Save the file, then run:
+    Bash
+
+git add .
+git rebase --continue
+git push origin main
+
 ## Quote of the Week:
 
  "Infrastructure as Code is not about writing code, it's about thinking in infrastructure as software."

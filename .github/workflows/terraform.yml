@@ -2,10 +2,9 @@ name: "Terraform Action"
 
 on:
   push:
-    branches:
-      - main
-    # paths:
-      # - '03-infrastructure-as-code/code-labs/terraform-labs/terraform-ci-cd/**' # Only run for this project
+    paths:
+      - '**/terraform-ci-cd/**' 
+    
   pull_request:
     # paths:
       # - '03-infrastructure-as-code/code-labs/terraform-labs/terraform-ci-cd/**'
@@ -27,6 +26,17 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+      - name: Setup TFLint
+        uses: terraform-linters/setup-tflint@v3
+        with:
+          tflint_version: v0.44.1
+
+      - name: Init TFLint
+        run: tflint --init
+
+      - name: Run TFLint
+        run: tflint -f compact
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
 
@@ -39,3 +49,8 @@ jobs:
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: terraform apply -auto-approve
+
+      - name: Run tfsec
+        uses: aquasecurity/tfsec-action@v1.0.0
+        with:
+          working_directory: ./03-infrastructure-as-code/code-labs/terraform-labs/terraform-ci-cd
