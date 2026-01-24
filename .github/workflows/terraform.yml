@@ -40,10 +40,14 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
       
-      - name: Run tfsec
-        uses: aquasecurity/tfsec-action@v1.0.0
+      - name: Run Trivy vulnerability scanner in IaC mode
+        uses: aquasecurity/trivy-action@master
         with:
-          working_directory: ./03-infrastructure-as-code/code-labs/terraform-labs/terraform-ci-cd
+          scan-type: 'config'
+          hide-progress: false
+          format: 'table'
+          exit-code: '1' # Fails the build if security issues are found
+          scan-ref: './03-infrastructure-as-code/code-labs/terraform-labs/terraform-ci-cd'
 
       - name: Terraform Init
         run: terraform init
