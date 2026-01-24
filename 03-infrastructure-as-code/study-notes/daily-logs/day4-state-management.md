@@ -39,13 +39,24 @@ terraform {
     bucket         = "my-terraform-state"
     key            = "prod/terraform.tfstate"
     region         = "us-east-1"
+    profile        = ""
+    use_lockfile   = true 
     encrypt        = true
-    dynamodb_table = "terraform-locks"
+    
   }
 }
 
 Commands Used
 bash
+# Migrates local state to the S3 bucket
+terraform init -migrate-state
+
+# Manually checks the content of the S3 state bucket
+aws s3 ls s3://your-bucket-name --recursive
+
+# Runs security scan locally
+tfsec .
+
 terraform output - has a -json option, for obtaining either the full set of root module output values or a specific named output value from the latest state snapshot.
 
 terraform show - has a -json option for inspecting the latest state snapshot in full, and also for inspecting saved plan files which include a copy of the prior state at the time the plan was made.
