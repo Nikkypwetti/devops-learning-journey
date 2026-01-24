@@ -48,6 +48,7 @@ source "amazon-ebs" "ubuntu_nginx" {
     Project     = "DevOps-Journey"
   }
 }
+
 # The Build Section
 build {
   sources = ["source.amazon-ebs.ubuntu_nginx"]

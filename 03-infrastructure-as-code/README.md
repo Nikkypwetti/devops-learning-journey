@@ -280,7 +280,7 @@ Day 28: Final Project & Review
 
 ## 🎯 **Daily Learning Pattern**
 
-### **Morning Session (6:00-6:30 AM):**
+### **Morning Session (8:00-8:30 AM):**
 
 ├── 10 mins: Watch concept video
 ├── 10 mins: Read documentation
@@ -347,18 +347,18 @@ Day 28: Final Project & Review
 
 ### **Technical Skills:**
 
-- [ ] Write Terraform configurations from memory
-- [ ] Debug common Terraform errors
-- [ ] Create reusable modules
-- [ ] Implement CI/CD pipelines
+- [X] Write Terraform configurations from memory
+- [X] Debug common Terraform errors
+- [X] Create reusable modules
+- [X] Implement CI/CD pipelines
 - [ ] Follow security best practices
 
 ### **Soft Skills:**
 
-- [ ] Document infrastructure clearly
-- [ ] Collaborate using Git workflow
-- [ ] Explain IaC concepts to others
-- [ ] Troubleshoot deployment issues
+- [X] Document infrastructure clearly
+- [X] Collaborate using Git workflow
+- [X] Explain IaC concepts to others
+- [X] Troubleshoot deployment issues
 
 ## 🚀 **Setup Instructions**
 
