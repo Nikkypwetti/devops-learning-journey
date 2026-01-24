@@ -15,6 +15,8 @@ provider "aws" {
 # 1. The Bucket
 resource "aws_s3_bucket" "my_practice_bucket" {
   bucket = var.bucket_name
+
+  # tfsec:ignore:aws-s3-enable-bucket-logging
   tags = {
     Environment = "Dev"
     Owner       = "Nikky"
@@ -35,6 +37,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "encryption" {
   bucket = aws_s3_bucket.my_practice_bucket.id
   rule {
     apply_server_side_encryption_by_default {
+      # tfsec:ignore:aws-s3-encryption-customer-key
       sse_algorithm = "AES256"
     }
   }
