@@ -1,0 +1,53 @@
+name: Multi-Stage Deployment
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  # STAGE 1: BUILD
+  build-job:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Simulate Build
+        run: |
+          mkdir build-assets
+          echo "Build Version 1.0.23" > build-assets/version.txt
+          echo "App files ready." > build-assets/index.html
+
+      - name: Save Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-artifact
+          path: build-assets/
+
+  # STAGE 2: STAGING (Depends on Build)
+  deploy-staging:
+    needs: build-job
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+      - name: Download Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: app-artifact
+
+      - name: Deploy to Staging
+        run: cat version.txt && echo "Deployed to Staging!"
+
+  # STAGE 3: PRODUCTION (Depends on Staging)
+  deploy-production:
+    needs: deploy-staging
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Download Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: app-artifact
+
+      - name: Deploy to Production
+        run: cat version.txt && echo "Live on Production!"
