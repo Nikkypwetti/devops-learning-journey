@@ -318,8 +318,8 @@ Day 28: Final Project & Review
 
 - [ ] All 4 projects completed
 - [ ] Terraform Associate practice tests passed
-- [ ] GitHub portfolio updated
-- [ ] Can deploy production-ready infrastructure
+- [X] GitHub portfolio updated
+- [X] Can deploy production-ready infrastructure
 
 ## 🚨 **Common Pitfalls & Solutions**
 
