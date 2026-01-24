@@ -6,7 +6,7 @@ on:
       - main
     paths:
       - '03-infrastructure-as-code/projects/golden-ami-pipeline/**'
-  # 🚀 Added: Allows you to trigger the build manually from the GitHub Actions tab
+  #Added: Allows you to trigger the build manually from the GitHub Actions tab
   workflow_dispatch:
 
 jobs:

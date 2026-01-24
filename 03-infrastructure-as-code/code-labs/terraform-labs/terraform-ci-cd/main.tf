@@ -11,7 +11,7 @@ terraform {
 provider "aws" {
   region = var.aws_region
 }
-# trigger testing
+
 # 1. The Bucket
 # tfsec:ignore:aws-s3-enable-bucket-logging
 resource "aws_s3_bucket" "my_practice_bucket" {
