@@ -65,8 +65,10 @@ jobs:
         id: deploy_step
         run: |
           echo "Attempting to deploy Build Version 1.0.23..."
-          # To test success, change this to exit 0
-          exit 1 
+          # Simulate a deployment failure for demonstration
+          echo "ERROR: Deployment failed due to network issue."
+          # Change 1 to 0 to simulate success
+          exit 0 
 
       # 3. ROLLBACK IF DEPLOY FAILED
       - name: Rollback to Last Stable Version
