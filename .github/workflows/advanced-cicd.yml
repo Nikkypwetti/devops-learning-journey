@@ -5,6 +5,7 @@ on:
     branches: [ main ]
 
     paths:
+      - '**/ci-cd-labs/**'
       - '.github/workflows/advanced-cicd.yml' # Also trigger if the workflow itself changes
 
   # This allows you to run it manually from the "Actions" tab for testing
@@ -22,6 +23,8 @@ jobs:
         uses: aquasecurity/trivy-action@master
         with:
           scan-type: 'fs' # Scan the filesystem
+          scanners: 'vuln,config,secret' # Adds secret and config scanning
+          exit-code: '1' # This forces the job to FAIL if it finds anything
           ignore-unfixed: true
           format: 'table'
           severity: 'CRITICAL,HIGH'
@@ -70,7 +73,7 @@ jobs:
       - name: Upload to GitHub Pages
         uses: actions/upload-pages-artifact@v3
         with:
-          path: './03-infrastructure-as-code/code-labs/ci-cd-labs/web-app-project' # Deploys the current folder containing index.html
+          path: '.' # Deploys the current folder containing index.html
 
       - name: Deploy to GitHub Pages
         id: deployment
