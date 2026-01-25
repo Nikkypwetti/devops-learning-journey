@@ -49,5 +49,41 @@ jobs:
         with:
           name: app-artifact
 
+      # 1. VERIFY FIRST: Make sure we have the right file before touching production
+      - name: Verify Version
+        run: |
+          VERSION=$(cat version.txt)
+          if [ "$VERSION" == "Build Version 1.0.23" ]; then
+            echo "SUCCESS: Version matches. Proceeding..."
+          else
+            echo "ERROR: Version mismatch!"
+            exit 1
+          fi
+
+      # 2. ATTEMPT DEPLOY
       - name: Deploy to Production
-        run: cat version.txt && echo "Live on Production!"
+        id: deploy_step
+        run: |
+          echo "Attempting to deploy Build Version 1.0.23..."
+          # To test success, change this to exit 0
+          exit 1 
+
+      # 3. ROLLBACK IF DEPLOY FAILED
+      - name: Rollback to Last Stable Version
+        if: failure() && steps.deploy_step.outcome == 'failure'
+        run: |
+          echo "CRITICAL: Production deployment failed!"
+          echo "Action: Reverting to previous stable build..."
+  notifications:
+    needs: [deploy-production]
+    if: always() # This ensures it runs even if a previous step failed
+    runs-on: ubuntu-latest
+    steps:
+      - name: Discord Notification
+        uses: sarisia/actions-status-discord@v1
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          status: ${{ job.status }}
+          title: "Day 23: Deployment Pipeline Status"
+          description: "Production deploy finished with status: ${{ job.status }}"
+          color: 0x00ff00
