@@ -76,14 +76,13 @@ jobs:
           echo "Action: Reverting to previous stable build..."
   notifications:
     needs: [deploy-production]
-    if: always() # This ensures it runs even if a previous step failed
+    if: always() 
     runs-on: ubuntu-latest
     steps:
       - name: Discord Notification
         uses: sarisia/actions-status-discord@v1
         with:
           webhook: ${{ secrets.DISCORD_WEBHOOK }}
-          status: ${{ job.status }}
-          title: "Day 23: Deployment Pipeline Status"
-          description: "Production deploy finished with status: ${{ job.status }}"
-          color: 0x00ff00
+          status: ${{ needs.deploy-production.result }} 
+          title: "Deployment Pipeline Status"
+          description: "Production deploy finished with status: ${{ needs.deploy-production.result }}"
