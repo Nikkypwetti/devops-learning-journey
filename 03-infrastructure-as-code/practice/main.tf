@@ -28,6 +28,10 @@ resource "aws_instance" "first_instance" {
   instance_type = var.instance_type
   key_name      = var.key_name
 
+    metadata_options {
+  http_tokens = "required"
+}
+
   # LINK TO YOUR NETWORK
   subnet_id                   = aws_subnet.public_subnet.id
   vpc_security_group_ids      = [aws_security_group.allow_tls.id]

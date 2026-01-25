@@ -23,6 +23,7 @@ jobs:
         uses: aquasecurity/trivy-action@master
         with:
           scan-type: 'fs' # Scan the filesystem
+          scan-ref: './03-infrastructure-as-code/code-labs/ci-cd-labs/web-app-project'
           scanners: 'vuln,config,secret' # Adds secret and config scanning
           exit-code: '1' # This forces the job to FAIL if it finds anything
           ignore-unfixed: true
