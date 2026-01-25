@@ -4,7 +4,28 @@ on:
   push:
     branches: [ main ]
 
+    paths:
+      - '.github/workflows/advanced-cicd.yml' # Also trigger if the workflow itself changes
+
+  # This allows you to run it manually from the "Actions" tab for testing
+  workflow_dispatch:
+
 jobs:
+  #Security Scan (Runs in parallel with Build)
+  security-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs' # Scan the filesystem
+          ignore-unfixed: true
+          format: 'table'
+          severity: 'CRITICAL,HIGH'
+
   # STAGE 1: BUILD
   build-job:
     runs-on: ubuntu-latest
@@ -26,17 +47,34 @@ jobs:
 
   # STAGE 2: STAGING (Depends on Build)
   deploy-staging:
-    needs: build-job
+    needs: [build-job, security-scan]
     runs-on: ubuntu-latest
-    environment: staging
+    environment: 
+      name: staging
+      url: ${{ steps.deployment.outputs.page_url }} # This creates a clickable link in GitHub!
+    permissions:
+      pages: write      # Required for deploying to Pages
+      id-token: write   # Required for security OIDC
     steps:
       - name: Download Artifact
         uses: actions/download-artifact@v4
         with:
           name: app-artifact
 
-      - name: Deploy to Staging
-        run: cat version.txt && echo "Deployed to Staging!"
+      - name: Customize for Staging
+        run: sed -i 's/.../Staging Environment/g' index.html
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload to GitHub Pages
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './03-infrastructure-as-code/code-labs/ci-cd-labs/web-app-project' # Deploys the current folder containing index.html
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
 
   # STAGE 3: PRODUCTION (Depends on Staging)
   deploy-production:
