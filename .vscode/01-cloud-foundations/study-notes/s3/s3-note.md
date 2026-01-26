@@ -1,13 +1,13 @@
-Amazon S3 (Simple Storage Service) - Cloud Foundation
+# Amazon S3 (Simple Storage Service) - Cloud Foundation
 
 Created: 2025-12-6
 Updated: 2025-12-6
 
-# AWS S3 Comprehensive Study Notes
+## AWS S3 Comprehensive Study Notes
 
-📚 Introduction to S3
+## 📚 Introduction to S3
 
-What is S3?
+**What is S3?**
 
 Amazon Simple Storage Service (S3) is an object storage service that offers industry-leading scalability, data availability, security, and performance.
 
@@ -75,7 +75,7 @@ my-bucket/
 │   └── logo.png            (Key: "images/logo.png")
 └── index.html              (Key: "index.html")
 
-📦 S3 Storage Classes
+## 📦 S3 Storage Classes
 
 1. STANDARD (Default)
 text
@@ -135,7 +135,7 @@ Minimum storage duration: 180 days
 Lowest cost storage
 Best for: Regulatory/long-term data that rarely needs access
 
-🔐 Security & Access Control
+## 🔐 Security & Access Control
 
 1. Bucket Policies (JSON-based)
 
@@ -171,7 +171,7 @@ Legacy method for granular permissions
 
 3. IAM Policies
 
-Identity-based permissions for users/roles
+**Identity-based permissions for users/roles**
 json
 
 {
@@ -195,8 +195,10 @@ Four settings to prevent accidental public access:
 
     Block public cross-account access via policies
 
-Best Practice: Always enable all four for non-public buckets
-⚡ S3 Features
+## Best Practice: Always enable all four for non-public buckets
+
+**⚡ S3 Features**
+
 1. Versioning
 
     Keep multiple versions of objects
@@ -209,7 +211,8 @@ Best Practice: Always enable all four for non-public buckets
 
 2. Lifecycle Rules
 
-Automate transitions between storage classes
+## Automate transitions between storage classes
+
 json
 
 {
@@ -278,8 +281,9 @@ Destinations:
 
     Expires after specified time
 
-💰 S3 Pricing Model
-Cost Components:
+## 💰 S3 Pricing Model
+
+**Cost Components:**
 
     Storage (per GB/month)
 
@@ -307,13 +311,14 @@ Cost Optimization Tips:
 
     Use S3 Select to retrieve only needed data
 
-🚀 Hands-On: Creating Your First Bucket
-Step 1: Access S3 Console
+## 🚀 Hands-On: Creating Your First Bucket
+
+**Step 1: Access S3 Console**
 text
 
 AWS Console → Services → S3
 
-Step 2: Create Bucket
+**Step 2: Create Bucket**
 text
 
 1. Click "Create bucket"
@@ -326,7 +331,7 @@ text
 8. Default encryption: Enable (SSE-S3)
 9. Click "Create bucket"
 
-Step 3: Upload Your First Object
+**Step 3: Upload Your First Object**
 text
 
 1. Click bucket name
@@ -339,7 +344,7 @@ text
 5. Permissions: Keep default (private)
 6. Click "Upload"
 
-Step 4: Make Object Public (if needed)
+**Step 4: Make Object Public (if needed)**
 text
 
 1. Select object → Actions → Make public using ACL
@@ -355,9 +360,9 @@ text
      }]
    }
 
-🏗️ Common Use Cases & Architectures
+## 🏗️ Common Use Cases & Architectures
 
-Use Case 1: Static Website Hosting
+**Use Case 1: Static Website Hosting**
 text
 
 Steps:
@@ -793,3 +798,12 @@ Best Practice: Always design applications for S3's object storage model, not tra
     Regularly review S3 Storage Lens dashboards
 
 S3 is the foundation of storage in AWS. Master it, and you unlock capabilities across data lakes, backups, web  hosting, and much more. Start simple, practice the basics, then explore advanced features as your needs grow.
+
+Action,Command
+List all buckets,aws s3 ls
+List contents of a bucket,aws s3 ls s3://your-bucket-name
+Upload a file,aws s3 cp filename.txt s3://your-bucket-name
+Delete a file,aws s3 rm s3://your-bucket-name/filename.txt
+Delete an empty bucket,aws s3 rb s3://your-bucket-name
+create bucket,aws s3 mb s3://your-unique-bucket-name
+Create bucket with region,aws s3 mb s3://your-unique-bucket-name --region us-west-2

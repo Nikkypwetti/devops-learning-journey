@@ -127,6 +127,7 @@ jobs:
         run: |
           echo "CRITICAL: Production deployment failed!"
           echo "Action: Reverting to previous stable build..."
+          
   notifications:
     # 1. Listen to ALL critical jobs
     needs: [security-scan, build-job, deploy-staging, deploy-production]

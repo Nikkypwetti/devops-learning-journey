@@ -1,0 +1,27 @@
+name: AWS Connection Test
+
+on:
+  workflow_dispatch: # Allows you to run this manually from the Actions tab
+
+permissions:
+  id-token: write # REQUIRED for OIDC
+  contents: read
+
+jobs:
+  test-connection:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: us-east-1 # Change to your region if different
+          
+      - name: Run Ping Test
+        run: |
+          echo "Connecting to AWS..."
+          aws sts get-caller-identity
+          echo "Connection Successful! GitHub is now authorized to act in your AWS account."
