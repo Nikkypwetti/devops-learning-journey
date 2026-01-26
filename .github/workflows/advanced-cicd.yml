@@ -36,17 +36,17 @@ jobs:
 
   # STAGE 1: BUILD
   build-job:
-    # runs-on: ubuntu-latest
-    # steps:
-    #   - name: Checkout code
-    #     uses: actions/checkout@v4
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    #   - name: Simulate Build
-    #     run: |
-    #       mkdir build-assets
-    #       echo "Build Version 1.0.23" > build-assets/version.txt
-    #       # Copy your existing index.html instead of overwriting it
-    #       cp 03-infrastructure-as-code/code-labs/ci-cd-labs/web-app-project/index.html build-assets/
+      - name: Simulate Build
+        run: |
+          mkdir build-assets
+          echo "Build Version 1.0.23" > build-assets/version.txt
+          # Copy your existing index.html instead of overwriting it
+          cp 03-infrastructure-as-code/code-labs/ci-cd-labs/web-app-project/index.html build-assets/
 
       - name: Save Artifact
         uses: actions/upload-artifact@v4
@@ -152,6 +152,11 @@ jobs:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
           aws-region: us-east-1
 
+      - name: Force Failure for Notification Test
+        run: |
+          echo "Testing DevOps Alerting System..."
+          exit 1 # This forces the job to fail with a non-zero exit code
+
       - name: Debug and Customize
         run: |
           echo "--- LISTING ALL FILES (Recursive) ---"
@@ -185,7 +190,7 @@ jobs:
         with:
           webhook: ${{ secrets.DISCORD_WEBHOOK }}
           # Logic: If 'failure' is found anywhere in the results, send 'failure' status
-          status: ${{ contains(needs.*.result, 'failure') && 'failure' || 'success' }}
+          status: ${{ (contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled')) && 'failure' || 'success' }}
           title: "Pipeline Status"
           description: |
             **Current Results:**
