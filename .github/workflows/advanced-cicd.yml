@@ -41,7 +41,8 @@ jobs:
         run: |
           mkdir build-assets
           echo "Build Version 1.0.23" > build-assets/version.txt
-          echo "App files ready." > build-assets/index.html
+          # Copy your existing index.html instead of overwriting it
+          cp 03-infrastructure-as-code/code-labs/ci-cd-labs/web-app-project/index.html build-assets/
 
       - name: Save Artifact
         uses: actions/upload-artifact@v4
