@@ -1,8 +1,58 @@
 <!DOCTYPE html>
-<html>
-<body>
-    <h1>My DevOps Portfolio App</h1>
-    <p>Status: Successfully Deployed to <span id="env">__ENVIRONMENT__</span></p>
-    <p>Version: 1.0.23</p>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevOps Pipeline | Live Status</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Fira Code', monospace; }
+        .gradient-bg { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); }
+    </style>
+</head>
+<body class="gradient-bg min-h-screen flex items-center justify-center text-slate-200 p-4">
+
+    <div class="max-w-xl w-full">
+        <div class="bg-slate-900/90 border border-slate-700 rounded-2xl shadow-2xl overflow-hidden backdrop-blur-md">
+            
+            <div class="bg-slate-800/50 px-6 py-4 border-b border-slate-700 flex justify-between items-center">
+                <div class="flex items-center gap-2">
+                    <div class="h-3 w-3 rounded-full bg-red-500"></div>
+                    <div class="h-3 w-3 rounded-full bg-yellow-500"></div>
+                    <div class="h-3 w-3 rounded-full bg-green-500"></div>
+                </div>
+                <span class="text-xs text-slate-400">pipeline_status.log</span>
+            </div>
+
+            <div class="p-8">
+                <div class="mb-8">
+                    <p class="text-xs uppercase tracking-widest text-blue-400 font-bold mb-3">Deployment Target</p>
+                    <div class="flex items-baseline gap-2">
+                        <span class="text-3xl font-extrabold text-white">__ENVIRONMENT__</span>
+                        <span class="text-green-400 animate-pulse">● Live</span>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-slate-950/50 p-4 rounded-xl border border-slate-800">
+                        <p class="text-[10px] text-slate-500 uppercase mb-1">Artifact Version</p>
+                        <p class="text-blue-300 font-semibold">v1.0.23</p>
+                    </div>
+                    <div class="bg-slate-950/50 p-4 rounded-xl border border-slate-800">
+                        <p class="text-[10px] text-slate-500 uppercase mb-1">Commit Hash</p>
+                        <p class="text-purple-300 font-semibold truncate">__COMMIT_ID__</p>
+                    </div>
+                </div>
+
+                <div class="mt-8 p-4 bg-green-500/10 border border-green-500/20 rounded-xl">
+                    <p class="text-sm text-green-400">
+                        <span class="mr-2">🚀</span> Web assets successfully synchronized via GitHub Actions.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </body>
 </html>

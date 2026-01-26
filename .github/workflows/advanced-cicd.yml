@@ -65,10 +65,12 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: app-artifact
-
       - name: Customize for Staging
-        run: sed -i 's/__ENVIRONMENT__/Staging Environment/g' index.html
-
+        run: |
+          # Inject the Environment Name
+          sed -i 's/__ENVIRONMENT__/STAGING_SERVER/g' index.html
+          # Inject the Short Commit SHA (First 7 characters)
+          sed -i "s/__COMMIT_ID__/${GITHUB_SHA::7}/g" index.html
       - name: Setup Pages
         uses: actions/configure-pages@v4
 
@@ -103,8 +105,12 @@ jobs:
             exit 1
           fi
       - name: Customize for Production
-        run: sed -i 's/__ENVIRONMENT__/Production Environment/g' index.html
-
+        run: |
+          # Inject the Environment Name
+          sed -i 's/__ENVIRONMENT__/PRODUCTION_RELEASE/g' index.html
+          # Inject the Short Commit SHA
+          sed -i "s/__COMMIT_ID__/${GITHUB_SHA::7}/g" index.html
+          
       # 2. ATTEMPT DEPLOY
       - name: Deploy to Production
         id: deploy_step
