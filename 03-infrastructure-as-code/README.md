@@ -309,9 +309,9 @@ Day 28: Final Project & Review
 
 ### **Weekly Goals:**
 
-- [ ] Complete weekly project
-- [ ] Pass practice quizzes
-- [ ] Contribute to documentation
+- [X] Complete weekly project
+- [X] Pass practice quizzes
+- [X] Contribute to documentation
 - [ ] Help others in community
 
 ### **Month-End Objectives:**
