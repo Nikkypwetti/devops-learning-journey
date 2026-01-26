@@ -3,13 +3,14 @@ name: Multi-Stage Deployment
 on:
   push:
     branches: [ main ]
-
     paths:
-      - '**/ci-cd-labs/**'
-      - '.github/workflows/advanced-cicd.yml' # Also trigger if the workflow itself changes
+      # Only trigger on changes to the web app or this workflow file
+      - '03-infrastructure-as-code/code-labs/ci-cd-labs/**'
+      - '.github/workflows/advanced-cicd.yml'
   pull_request:
      paths:
-      - '**/ci-cd-labs/**'
+      - '03-infrastructure-as-code/code-labs/ci-cd-labs/**'
+  
 
   # This allows you to run it manually from the "Actions" tab for testing
   workflow_dispatch:
