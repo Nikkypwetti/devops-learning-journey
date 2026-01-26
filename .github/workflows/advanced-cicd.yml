@@ -152,10 +152,10 @@ jobs:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
           aws-region: us-east-1
 
-      - name: Force Failure for Notification Test
-        run: |
-          echo "Testing DevOps Alerting System..."
-          exit 1 # This forces the job to fail with a non-zero exit code
+      # - name: Force Failure for Notification Test
+      #   run: |
+      #     echo "Testing DevOps Alerting System..."
+      #     exit 1 # This forces the job to fail with a non-zero exit code
 
       - name: Debug and Customize
         run: |
