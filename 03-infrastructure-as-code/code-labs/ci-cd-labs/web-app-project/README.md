@@ -147,3 +147,45 @@ This project is transitioning toward a fully automated "Click-less" infrastructu
     Live Staging: View Staging
 
     Live Production: View on CloudFront
+
+1. Prepare the Shell
+
+In your new terraform-oidc-lab folder, make sure you have the iam.tf file I sent you. Then run:
+Bash
+
+terraform init
+
+2. Run the Import Commands
+
+You need to run two imports: one for the OIDC Provider and one for the IAM Role. Replace the placeholders with your actual details.
+
+Import the OIDC Provider:
+Bash
+
+terraform import aws_iam_openid_connect_provider.github arn:aws:iam::YOUR_ACCOUNT_ID:oidc-provider/token.actions.githubusercontent.com
+
+Import the IAM Role:
+Bash
+
+terraform import aws_iam_role.github_actions_role GitHub-AWS-OIDC-Role
+
+3. The "Drift" Check
+
+After importing, run:
+Bash
+
+terraform plan
+
+Terraform will compare your code to the manual settings in AWS.
+
+    If they match perfectly, it will say: No changes. Your infrastructure matches the configuration.
+
+    If there are differences (e.g., a missing tag or a slightly different policy), Terraform will show you exactly what it wants to change to make them match. This is called Fixing Configuration Drift.
+
+Refining your README for Day 25
+
+To make your GitHub profile stand out, add this to your "Terraform Experience" section tomorrow:
+Markdown
+
+> [!TIP]
+> **Advanced Task Completed:** Performed **Infrastructure Import** to migrate manually created AWS IAM roles into Terraform state, ensuring zero downtime while achieving 100% Infrastructure as Code (IaC) compliance.

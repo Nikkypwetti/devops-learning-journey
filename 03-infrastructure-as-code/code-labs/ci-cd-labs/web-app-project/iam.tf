@@ -29,10 +29,30 @@ resource "aws_iam_role" "github_actions_role" {
   })
 }
 
-# 3. Attach S3 Full Access (The "Key" to your portfolio)
-resource "aws_iam_role_policy_attachment" "s3_access" {
-  role       = aws_iam_role.github_actions_role.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
+# 2. Create a specific policy for ONLY your portfolio bucket
+resource "aws_iam_role_policy" "s3_limited_access" {
+  name = "S3PortfolioUploadPolicy"
+  role = aws_iam_role.github_actions_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect   = "Allow"
+        Action   = [
+          "s3:PutObject",
+          "s3:GetObject",
+          "s3:ListBucket",
+          "s3:DeleteObject"
+        ]
+        # Replace with your actual bucket ARN
+        Resource = [
+          "arn:aws:s3:::nikky-techies-devops-portfolio",
+          "arn:aws:s3:::nikky-techies-devops-portfolio/*"
+        ]
+      }
+    ]
+  })
 }
 
 resource "aws_iam_role_policy" "cloudfront_invalidation" {
