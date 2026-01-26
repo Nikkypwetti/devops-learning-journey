@@ -177,21 +177,19 @@ jobs:
           aws cloudfront create-invalidation --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"
   notifications:
     needs: [security-scan, build-job, deploy-staging, deploy-production]
-    if: always() && !cancelled()
+    if: always() # This ensures the job RUNS even if others fail
     runs-on: ubuntu-latest
     steps:
       - name: Discord Notification
         uses: sarisia/actions-status-discord@v1
         with:
           webhook: ${{ secrets.DISCORD_WEBHOOK }}
-          # This logic handles success, failure, and skipped jobs correctly
-          status: ${{ (contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled')) && 'failure' || 'success' }}
-          title: "Day 24: Pipeline Overall Status"
+          # Logic: If 'failure' is found anywhere in the results, send 'failure' status
+          status: ${{ contains(needs.*.result, 'failure') && 'failure' || 'success' }}
+          title: "Day 24 Pipeline Status"
           description: |
-            **Environment Details:**
+            **Current Results:**
+            • Security: ${{ needs.security-scan.result }}
+            • Build: ${{ needs.build-job.result }}
             • Staging: ${{ needs.deploy-staging.result }}
             • Production: ${{ needs.deploy-production.result }}
-            
-            **Security & Build:**
-            • Security Scan: ${{ needs.security-scan.result }}
-            • Build: ${{ needs.build-job.result }}
