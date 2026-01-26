@@ -87,51 +87,85 @@ jobs:
         id: deployment
         uses: actions/deploy-pages@v4
 
-  # STAGE 3: PRODUCTION (Depends on Staging)
+  # # STAGE 3: PRODUCTION (Depends on Staging)
+  # deploy-production:
+  #   needs: deploy-staging
+  #   runs-on: ubuntu-latest
+  #   environment: production
+  #   steps:
+  #     - name: Download Artifact
+  #       uses: actions/download-artifact@v4
+  #       with:
+  #         name: app-artifact
+
+  #     # 1. VERIFY FIRST: Make sure we have the right file before touching production
+  #     - name: Verify Version
+  #       run: |
+  #         VERSION=$(cat version.txt)
+  #         if [ "$VERSION" == "Build Version 1.0.23" ]; then
+  #           echo "SUCCESS: Version matches. Proceeding..."
+  #         else
+  #           echo "ERROR: Version mismatch!"
+  #           exit 1
+  #         fi
+  #     - name: Customize for Production
+  #       run: |
+  #         # Inject the Environment Name
+  #         sed -i 's/__ENVIRONMENT__/PRODUCTION_RELEASE/g' index.html
+  #         # Inject the Short Commit SHA
+  #         sed -i "s/__COMMIT_ID__/${GITHUB_SHA::7}/g" index.html
+          
+  #     # 2. ATTEMPT DEPLOY
+  #     - name: Deploy to Production
+  #       id: deploy_step
+  #       run: |
+  #         echo "Attempting to deploy Build Version 1.0.23..."
+  #         # Simulate a deployment failure for demonstration
+  #         echo "ERROR: Deployment failed due to network issue."
+  #         # Change 1 to 0 to simulate success
+  #         exit 0 
+
+  #     # 3. ROLLBACK IF DEPLOY FAILED
+  #     - name: Rollback to Last Stable Version
+  #       if: failure() && steps.deploy_step.outcome == 'failure'
+  #       run: |
+  #         echo "CRITICAL: Production deployment failed!"
+  #         echo "Action: Reverting to previous stable build..."
+  
+# STAGE 3: PRODUCTION (AWS S3 + CloudFront)
   deploy-production:
     needs: deploy-staging
     runs-on: ubuntu-latest
     environment: production
+    permissions:
+      id-token: write # Required for OIDC
+      contents: read
     steps:
       - name: Download Artifact
         uses: actions/download-artifact@v4
         with:
           name: app-artifact
 
-      # 1. VERIFY FIRST: Make sure we have the right file before touching production
-      - name: Verify Version
-        run: |
-          VERSION=$(cat version.txt)
-          if [ "$VERSION" == "Build Version 1.0.23" ]; then
-            echo "SUCCESS: Version matches. Proceeding..."
-          else
-            echo "ERROR: Version mismatch!"
-            exit 1
-          fi
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: us-east-1
+
       - name: Customize for Production
         run: |
-          # Inject the Environment Name
-          sed -i 's/__ENVIRONMENT__/PRODUCTION_RELEASE/g' index.html
-          # Inject the Short Commit SHA
+          sed -i 's/STAGING_SERVER/PRODUCTION_RELEASE/g' index.html
           sed -i "s/__COMMIT_ID__/${GITHUB_SHA::7}/g" index.html
-          
-      # 2. ATTEMPT DEPLOY
-      - name: Deploy to Production
-        id: deploy_step
-        run: |
-          echo "Attempting to deploy Build Version 1.0.23..."
-          # Simulate a deployment failure for demonstration
-          echo "ERROR: Deployment failed due to network issue."
-          # Change 1 to 0 to simulate success
-          exit 0 
 
-      # 3. ROLLBACK IF DEPLOY FAILED
-      - name: Rollback to Last Stable Version
-        if: failure() && steps.deploy_step.outcome == 'failure'
+      # 1. Sync files to S3 (This is the actual deployment)
+      - name: Deploy to S3
         run: |
-          echo "CRITICAL: Production deployment failed!"
-          echo "Action: Reverting to previous stable build..."
+          aws s3 sync . s3://${{ secrets.AWS_S3_BUCKET }} --delete --exclude ".git/*"
 
+      # 2. Clear the CloudFront Cache (So changes show up immediately)
+      - name: Invalidate CloudFront
+        run: |
+          aws cloudfront create-invalidation --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"
   notifications:
     # 1. Listen to ALL critical jobs
     needs: [security-scan, build-job, deploy-staging, deploy-production]
