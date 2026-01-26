@@ -152,11 +152,19 @@ jobs:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
           aws-region: us-east-1
 
-      - name: Customize for Production
+      - name: Debug and Customize
         run: |
-          # Use find to make sure we hit the file wherever it is
-          find . -name "index.html" -exec sed -i 's/__ENVIRONMENT__/PRODUCTION_RELEASE/g' {} +
-          find . -name "index.html" -exec sed -i "s/__COMMIT_ID__/${GITHUB_SHA::7}/g" {} +
+          echo "--- LISTING ALL FILES (Recursive) ---"
+          ls -R
+          
+          echo "--- STARTING REPLACEMENT ---"
+          # This finds any index.html in any folder and runs sed on it
+          find . -name "index.html" -type f -exec sed -i 's/__ENVIRONMENT__/PRODUCTION_RELEASE/g' {} +
+          find . -name "index.html" -type f -exec sed -i "s/__COMMIT_ID__/${GITHUB_SHA::7}/g" {} +
+          
+          echo "--- VERIFYING CHANGE ---"
+          # This helps us see if the replacement actually happened in the logs
+          find . -name "index.html" -type f -exec grep -H "PRODUCTION_RELEASE" {} +
 
       # 1. Sync files to S3 (This is the actual deployment)
       - name: Deploy to S3
@@ -168,23 +176,22 @@ jobs:
         run: |
           aws cloudfront create-invalidation --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"
   notifications:
-    # 1. Listen to ALL critical jobs
     needs: [security-scan, build-job, deploy-staging, deploy-production]
-    
-    # 2. This ensures it runs even if any of the above jobs fail or are skipped
-    if: always() 
-    
+    if: always() && !cancelled()
     runs-on: ubuntu-latest
     steps:
       - name: Discord Notification
         uses: sarisia/actions-status-discord@v1
         with:
           webhook: ${{ secrets.DISCORD_WEBHOOK }}
-          # 3. Use this logic to report the overall pipeline result
-          status: ${{ (contains(needs.*.result, 'failure')) && 'failure' || 'success' }}
-          title: "Pipeline Overall Status"
+          # This logic handles success, failure, and skipped jobs correctly
+          status: ${{ (contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled')) && 'failure' || 'success' }}
+          title: "Day 24: Pipeline Overall Status"
           description: |
-            Security: ${{ needs.security-scan.result }}
-            Build: ${{ needs.build-job.result }}
-            Staging: ${{ needs.deploy-staging.result }}
-            Production: ${{ needs.deploy-production.result }}
+            **Environment Details:**
+            • Staging: ${{ needs.deploy-staging.result }}
+            • Production: ${{ needs.deploy-production.result }}
+            
+            **Security & Build:**
+            • Security Scan: ${{ needs.security-scan.result }}
+            • Build: ${{ needs.build-job.result }}
