@@ -66,7 +66,7 @@ jobs:
           name: app-artifact
 
       - name: Customize for Staging
-        run: sed -i 's/.../Staging Environment/g' index.html
+        run: sed -i 's/__ENVIRONMENT__/Staging Environment/g' index.html
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
@@ -101,6 +101,8 @@ jobs:
             echo "ERROR: Version mismatch!"
             exit 1
           fi
+      - name: Customize for Production
+        run: sed -i 's/__ENVIRONMENT__/Production Environment/g' index.html
 
       # 2. ATTEMPT DEPLOY
       - name: Deploy to Production
@@ -119,14 +121,23 @@ jobs:
           echo "CRITICAL: Production deployment failed!"
           echo "Action: Reverting to previous stable build..."
   notifications:
-    needs: [deploy-production]
+    # 1. Listen to ALL critical jobs
+    needs: [security-scan, build-job, deploy-staging, deploy-production]
+    
+    # 2. This ensures it runs even if any of the above jobs fail or are skipped
     if: always() 
+    
     runs-on: ubuntu-latest
     steps:
       - name: Discord Notification
         uses: sarisia/actions-status-discord@v1
         with:
           webhook: ${{ secrets.DISCORD_WEBHOOK }}
-          status: ${{ needs.deploy-production.result }} 
-          title: "Deployment Pipeline Status"
-          description: "Production deploy finished with status: ${{ needs.deploy-production.result }}"
+          # 3. Use this logic to report the overall pipeline result
+          status: ${{ (contains(needs.*.result, 'failure')) && 'failure' || 'success' }}
+          title: "Day 23: Pipeline Overall Status"
+          description: |
+            Security: ${{ needs.security-scan.result }}
+            Build: ${{ needs.build-job.result }}
+            Staging: ${{ needs.deploy-staging.result }}
+            Production: ${{ needs.deploy-production.result }}
