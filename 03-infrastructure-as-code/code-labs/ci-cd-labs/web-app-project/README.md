@@ -38,3 +38,112 @@ Draft Post:
     Moving closer to my goal of becoming a DevOps Engineer. Check out the project on my GitHub: [Your Repo Link]
 
     #DevOps #CICD #GitHubActions #DevSecOps #LearningJourney #AWS
+
+## 🚀 Enterprise-Grade DevSecOps & Cloud Deployment Pipeline
+
+Day 24: Automated CI/CD with OIDC, S3, and CloudFront
+
+This repository demonstrates a modern, production-ready CI/CD workflow. It automates the security scanning, building, and global deployment of a web application using GitHub Actions and Amazon Web Services (AWS).
+
+### 🏗 Project Architecture
+
+This project implements a Security-First approach to cloud deployment:
+
+    Source: Version control in GitHub.
+
+    Security (DevSecOps): Automated filesystem, vulnerability, and secret scanning using Trivy.
+
+    Authentication: Secure, passwordless authentication between GitHub and AWS using OpenID Connect (OIDC).
+
+    Storage: Static assets stored in a private Amazon S3 bucket.
+
+    CDN (Global Delivery): Amazon CloudFront serves the app via HTTPS with an Origin Access Control (OAC) policy to keep the S3 bucket private.
+
+    Observability: Real-time pipeline status notifications integrated with Discord.
+
+### 🛠 Tech Stack
+
+    Infrastructure: AWS (S3, CloudFront, IAM/OIDC)
+
+    CI/CD: GitHub Actions
+
+    Security: Aquasecurity Trivy
+
+    Automation: Bash Scripting, sed for Environment Tokenization
+
+    Communication: Discord Webhooks
+
+### ⚡ Key Features
+
+    Build Once, Deploy Many: Uses GitHub Artifacts to ensure the exact same code tested in Staging is deployed to Production.
+
+    Environment Tokenization: Dynamically injects the ENVIRONMENT_NAME and COMMIT_SHA into the HTML frontend during the deployment phase.
+
+    Cache Invalidation: Automatically clears the CloudFront Edge Cache upon successful deployment so users always see the latest version.
+
+    Zero-Trust Security: No long-term AWS Access Keys are stored in GitHub; the pipeline uses short-lived IAM roles.
+
+### 🚀 Deployment Workflow
+
+    Security Scan: Runs Trivy to check for vulnerabilities.
+
+    Build: Packages assets and uploads them as a pipeline artifact.
+
+    Staging Deploy: Deploys to GitHub Pages for internal testing.
+
+    Production Deploy: * Authenticates to AWS via OIDC.
+
+        Synchronizes files to S3 using aws s3 sync.
+
+        Triggers a CloudFront invalidation for the distribution.
+
+    Notification: Sends a detailed status report to Discord.
+
+### The Architecture Diagram
+
+Code snippet
+
+graph TD
+    subgraph GitHub_Actions_Pipeline
+        A[Push to Main] --> B{Trivy Security Scan}
+        B -- Pass --> C[Build & Artifact Upload]
+        C --> D[Deploy to Staging: GH Pages]
+        D --> E{Manual Approval}
+        E -- Approved --> F[Deploy to Production: AWS]
+    end
+
+    subgraph AWS_Cloud_Infrastructure
+        F --> G[OIDC Authentication]
+        G --> H[S3 Bucket: Private Storage]
+        H --> I[CloudFront CDN: Edge Delivery]
+        I --> J[User: Global Access via HTTPS]
+    end
+
+    subgraph Monitoring
+        F --> K[Discord Webhook: Status Alerts]
+        B -- Fail --> K
+    end
+
+### Professional "Terraform Experience" Section
+
+Since you've used Terraform before, add this section to your README to show recruiters you understand Infrastructure as Code (IaC):
+Markdown
+
+### 🔧 Infrastructure as Code (IaC)
+
+This project is transitioning toward a fully automated "Click-less" infrastructure. 
+
+* **Current State:** Manual AWS Configuration with OIDC.
+* **Target State:** Using **Terraform** to manage S3 Buckets, CloudFront Distributions, and IAM Roles to ensure environment parity and prevent configuration drift.
+
+### 📈 Future Roadmap
+
+    [ ] Implement a Blue/Green Deployment strategy.
+
+    [ ] Integrate Unit Testing in the build phase.
+
+### 🔗 Links
+
+    Live Staging: View Staging
+
+    Live Production: View on CloudFront
