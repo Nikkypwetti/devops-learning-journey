@@ -131,7 +131,7 @@ jobs:
   #       run: |
   #         echo "CRITICAL: Production deployment failed!"
   #         echo "Action: Reverting to previous stable build..."
-
+  
 # STAGE 3: PRODUCTION (AWS S3 + CloudFront)
   deploy-production:
     needs: deploy-staging
@@ -154,8 +154,9 @@ jobs:
 
       - name: Customize for Production
         run: |
-          sed -i 's/STAGING_SERVER/PRODUCTION_RELEASE/g' index.html
-          sed -i "s/__COMMIT_ID__/${GITHUB_SHA::7}/g" index.html
+          # Use find to make sure we hit the file wherever it is
+          find . -name "index.html" -exec sed -i 's/__ENVIRONMENT__/PRODUCTION_RELEASE/g' {} +
+          find . -name "index.html" -exec sed -i "s/__COMMIT_ID__/${GITHUB_SHA::7}/g" {} +
 
       # 1. Sync files to S3 (This is the actual deployment)
       - name: Deploy to S3
@@ -167,16 +168,23 @@ jobs:
         run: |
           aws cloudfront create-invalidation --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"
   notifications:
-    # 1. Listen to the specific job that is failing
-    needs: [deploy-production]
+    # 1. Listen to ALL critical jobs
+    needs: [security-scan, build-job, deploy-staging, deploy-production]
+    
+    # 2. This ensures it runs even if any of the above jobs fail or are skipped
     if: always() 
+    
     runs-on: ubuntu-latest
     steps:
       - name: Discord Notification
         uses: sarisia/actions-status-discord@v1
         with:
           webhook: ${{ secrets.DISCORD_WEBHOOK }}
-          # 2. This checks the actual result of the deploy job
-          status: ${{ needs.deploy-production.result }}
-          title: "Day 24: AWS Deployment Status"
-          description: "Production deploy finished with status: ${{ needs.deploy-production.result }}"
+          # 3. Use this logic to report the overall pipeline result
+          status: ${{ (contains(needs.*.result, 'failure')) && 'failure' || 'success' }}
+          title: "Pipeline Overall Status"
+          description: |
+            Security: ${{ needs.security-scan.result }}
+            Build: ${{ needs.build-job.result }}
+            Staging: ${{ needs.deploy-staging.result }}
+            Production: ${{ needs.deploy-production.result }}
