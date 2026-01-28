@@ -34,9 +34,14 @@ jobs:
         with:
           terraform_version: "1.7.0"
 
+      - name: Cleanup Old Terraform Files
+        # This removes any leftover .terraform folder that might be causing the "file exists" error
+        run: rm -rf .terraform .terraform.lock.hcl
+        working-directory: ./03-infrastructure-as-code/code-labs/terraform-testing-lab
+
       - name: Terraform Init
         run: terraform init
-
+        working-directory: ./03-infrastructure-as-code/code-labs/terraform-testing-lab
       - name: Terraform Format Check
         run: terraform fmt -check
 
