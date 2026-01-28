@@ -12,4 +12,9 @@ run "validate_security_group" {
     condition     = aws_instance.web_server.instance_type == "t3.micro"
     error_message = "Invalid instance type. Only t3.micro is allowed for testing."
   }
+
+  assert {
+    condition     = 1 == 2
+    error_message = "If this doesn't fail, the test isn't running at all!"
+  }
 }
