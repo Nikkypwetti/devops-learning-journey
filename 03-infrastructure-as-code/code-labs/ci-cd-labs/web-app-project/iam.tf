@@ -21,7 +21,7 @@ resource "aws_iam_role" "github_actions_role" {
         }
         Condition = {
           StringLike = {
-            "token.actions.githubusercontent.com:sub" = "repo:Nikkypwetti/devops-learning-journey:*"
+            "token.actions.githubusercontent.com:sub" = "repo:${var.github_repo}:*"
           }
         }
       }
@@ -43,13 +43,14 @@ resource "aws_iam_role_policy" "s3_limited_access" {
           "s3:PutObject",
           "s3:GetObject",
           "s3:ListBucket",
-          "s3:DeleteObject"
+          "s3:DeleteObject",
         ]
+        
         # Replace with your actual bucket ARN
-        Resource = [
-          "arn:aws:s3:::nikky-techies-devops-portfolio",
-          "arn:aws:s3:::nikky-techies-devops-portfolio/*"
-        ]
+       Resource = [
+          "arn:aws:s3:::${var.s3_bucket_name}",
+          "arn:aws:s3:::${var.s3_bucket_name}/*"
+      ]
       }
     ]
   })
@@ -65,7 +66,33 @@ resource "aws_iam_role_policy" "cloudfront_invalidation" {
       {
         Action   = "cloudfront:CreateInvalidation"
         Effect   = "Allow"
-        Resource = "arn:aws:cloudfront::701573843345:distribution/E3N2N64Y0SFSQI"
+        Resource = "arn:aws:cloudfront::${var.aws_account_id}:distribution/${var.cloudfront_distribution_id}"
+      }
+    ]
+  })
+}
+
+# 3. Create a policy for EC2 testing lab
+resource "aws_iam_role_policy" "ec2_testing_access" {
+  name = "EC2TestingLabPolicy"
+  role = aws_iam_role.github_actions_role.id # This attaches it to your existing role
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect   = "Allow"
+        Action   = [
+          "ec2:RunInstances",
+          "ec2:TerminateInstances",
+          "ec2:DescribeInstances",
+          "ec2:CreateSecurityGroup",
+          "ec2:DeleteSecurityGroup",
+          "ec2:DescribeSecurityGroups",
+          "ec2:AuthorizeSecurityGroupIngress",
+          "ec2:RevokeSecurityGroupIngress"
+        ]
+        Resource = "*" # EC2 actions often require "*" to allow creation across the region
       }
     ]
   })

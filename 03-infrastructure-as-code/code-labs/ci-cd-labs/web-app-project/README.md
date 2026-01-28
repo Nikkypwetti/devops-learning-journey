@@ -189,3 +189,4 @@ Markdown
 
 > [!TIP]
 > **Advanced Task Completed:** Performed **Infrastructure Import** to migrate manually created AWS IAM roles into Terraform state, ensuring zero downtime while achieving 100% Infrastructure as Code (IaC) compliance.
+![Terraform CI](https://github.com/Nikkypwetti/devops-learning-journey/actions/workflows/terraform-test.yml/badge.svg)

@@ -189,6 +189,12 @@ terraform show - to print out your workspace's entire state
 terraform plan -var instance_type=t2.large - to changed your EC2 instance type from t2.micro to t2.large
 terraform refresh - to query infrastructure provider to get the current state
 terraform destroy - to destroy resources/infrastructure
+##Final Re-Initialization
+
+Whenever you change the backend block, you must tell Terraform to re-sync:
+Bash
+
+terraform init -reconfigure
 
 Challenges
 
