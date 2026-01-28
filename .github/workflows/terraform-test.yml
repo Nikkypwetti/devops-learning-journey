@@ -14,6 +14,10 @@ jobs:
   test:
     name: Run Terraform Tests
     runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ./03-infrastructure-as-code/code-labs/terraform-testing-lab
     
     steps:
       - name: Checkout Code
@@ -22,7 +26,7 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::701573843345:role/GitHubAction-Terraform-Managed-Role
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
           aws-region: us-east-1
 
       - name: Setup Terraform
