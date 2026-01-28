@@ -68,6 +68,17 @@ data "aws_ami" "selected" {
   }
 }
 
+resource "aws_security_group" "allow_web" {
+  name        = "allow_web_traffic"
+  description = "Allow inbound web traffic"
+
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
 resource "aws_instance" "web_server" {
   ami           = data.aws_ami.selected.id
   instance_type = "t3.micro"
