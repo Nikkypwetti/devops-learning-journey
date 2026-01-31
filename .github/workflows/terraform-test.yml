@@ -47,9 +47,6 @@ jobs:
   security_scans:
     name: Security Scans (tfsec & Checkov)
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./03-infrastructure-as-code/code-labs/terraform-testing-lab
         
     steps:
       - name: Checkout Code
@@ -58,27 +55,28 @@ jobs:
       - name: Run tfsec
         uses: aquasecurity/tfsec-sarif-action@v0.1.4
         with:
-          sarif_file: tfsec.sarif
+          # This tells tfsec WHERE to scan, but the output usually goes to the root
           working_directory: ./03-infrastructure-as-code/code-labs/terraform-testing-lab
+          sarif_file: tfsec.sarif 
 
-      - name: Run Checkov (SARIF + PR Comments)
+      - name: Run Checkov
         uses: bridgecrewio/checkov-action@master
         with:
           directory: ./03-infrastructure-as-code/code-labs/terraform-testing-lab
-          output_format: sarif,cli
-          output_file_path: checkov.sarif
+          output_format: sarif
+          output_file_path: checkov.sarif # Just the name, no path prefix
           soft_fail: true
 
       - name: Upload tfsec Results
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4 # Updated to v4
         if: always()
         with:
-          sarif_file: ./03-infrastructure-as-code/code-labs/terraform-testing-lab/tfsec.sarif
+          sarif_file: tfsec.sarif # Look in the root
           category: tfsec
 
       - name: Upload Checkov Results
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4 # Updated to v4
         if: always()
         with:
-          sarif_file: ./03-infrastructure-as-code/code-labs/terraform-testing-lab/checkov.sarif
+          sarif_file: checkov.sarif # Look in the root
           category: checkov
