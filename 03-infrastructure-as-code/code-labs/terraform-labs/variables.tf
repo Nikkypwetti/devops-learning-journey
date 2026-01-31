@@ -1,5 +1,7 @@
 variable "aws_region" {
-  default = "us-east-1"
+  default     = "us-east-1"
+  description = "The AWS region to deploy resources in"
+  type        = string
 }
 
 variable "aws_profile" {
@@ -15,7 +17,7 @@ variable "instance_name" {
 variable "instance_type" {
   description = "Type of EC2 instance"
   type        = string
-  default     = "t2.micro"
+  default     = "t3.micro"
 }
 
 variable "key_name" {

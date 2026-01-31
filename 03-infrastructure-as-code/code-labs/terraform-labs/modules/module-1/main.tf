@@ -1,3 +1,17 @@
+terraform {
+  required_version = ">= 1.0"
+
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.0"
+    }
+    http = {
+      source  = "hashicorp/http"
+      version = ">= 3.0"
+    }
+  }
+}
 # Find the latest Amazon Linux 2023 AMI
 data "aws_ami" "amazon_linux" {
   most_recent = true
@@ -25,8 +39,20 @@ resource "aws_instance" "this" {
   ami           = data.aws_ami.amazon_linux.id
   instance_type = var.instance_type
   key_name      = aws_key_pair.this.key_name
+  monitoring    = true
 
   vpc_security_group_ids = [aws_security_group.main.id]
+
+  metadata_options {
+    http_endpoint = "enabled"
+    http_tokens   = "required"
+  }
+
+  root_block_device {
+    encrypted   = true # Fix: Enables encryption
+    volume_type = "gp3"
+  }
+
 
   tags = {
     Name = var.instance_name
@@ -51,13 +77,16 @@ resource "aws_security_group" "main" {
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
-    cidr_blocks = ["${chomp(data.http.my_ip.response_body)}/32"]
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
+
   egress {
+    description = "Allow all outbound traffic to the internet" # Adding this fixes the warning
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = ["${chomp(data.http.my_ip.response_body)}/32"]
+
   }
 }

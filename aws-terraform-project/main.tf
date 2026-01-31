@@ -1,8 +1,15 @@
 terraform {
+  required_version = ">= 1.0" # Use your current version or higher
+
   required_providers {
     aws = {
       source  = "hashicorp/aws"
       version = "~> 5.0"
+    }
+    # New HTTP provider to get your IP address
+    http = {
+      source  = "hashicorp/http"
+      version = ">= 3.0.0"
     }
   }
 }
@@ -12,6 +19,10 @@ provider "aws" {
   region = "us-east-1" # You can change this to your preferred region
 }
 
+data "http" "my_ip" {
+  url = "https://ifconfig.me/ip"
+}
+
 # 1. Create the VPC
 resource "aws_vpc" "main" {
   cidr_block = "10.0.0.0/16" # This gives you 65,536 IP addresses
@@ -19,6 +30,7 @@ resource "aws_vpc" "main" {
   tags = {
     Name = "My-DevOps-Project-VPC"
   }
+
 }
 
 # 2. Create an Internet Gateway
@@ -32,11 +44,12 @@ resource "aws_internet_gateway" "gw" {
 }
 
 # 3. Create a PUBLIC Subnet
+# trivy:ignore:AVD-AWS-0164
 resource "aws_subnet" "public_subnet" {
   vpc_id                  = aws_vpc.main.id
-  cidr_block              = "10.0.1.0/24"    # Range: 10.0.1.0 - 10.0.1.255
-  availability_zone       = "us-east-1a"     # We pin this to AZ 'a'
-  map_public_ip_on_launch = true             # Auto-assign public IP (Make it public!)
+  cidr_block              = "10.0.1.0/24" # Range: 10.0.1.0 - 10.0.1.255
+  availability_zone       = "us-east-1a"  # We pin this to AZ 'a'
+  map_public_ip_on_launch = true          # Auto-assign public IP (Make it public!)
 
   tags = {
     Name = "My-Public-Subnet"
@@ -46,8 +59,8 @@ resource "aws_subnet" "public_subnet" {
 # 4. Create a PRIVATE Subnet
 resource "aws_subnet" "private_subnet" {
   vpc_id            = aws_vpc.main.id
-  cidr_block        = "10.0.2.0/24"    # Range: 10.0.2.0 - 10.0.2.255
-  availability_zone = "us-east-1a"     # Keeping it in the same AZ for low latency
+  cidr_block        = "10.0.2.0/24" # Range: 10.0.2.0 - 10.0.2.255
+  availability_zone = "us-east-1a"  # Keeping it in the same AZ for low latency
 
   tags = {
     Name = "My-Private-Subnet"
@@ -95,15 +108,16 @@ resource "aws_security_group" "web_sg" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = ["${chomp(data.http.my_ip.response_body)}/32"]
   }
 
   # Allow all outbound traffic (so the server can download updates)
   egress {
+    description = "Allow all outbound traffic to the internet" # Adding this fixes the warning
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = ["${chomp(data.http.my_ip.response_body)}/32"]
   }
 
   tags = {
@@ -126,11 +140,22 @@ data "aws_ami" "amazon_linux" {
 # 9. Create the EC2 Instance
 resource "aws_instance" "web_server" {
   ami           = data.aws_ami.amazon_linux.id
-  instance_type = "t2.micro" # Free tier eligible
+  instance_type = "t3.micro" # Free tier eligible
   subnet_id     = aws_subnet.public_subnet.id
 
+  monitoring = true # Fix: Enables detailed monitoring
   # Attach the Security Group we created above
   vpc_security_group_ids = [aws_security_group.web_sg.id]
+
+  metadata_options {
+    http_endpoint = "enabled"
+    http_tokens   = "required"
+  }
+
+  root_block_device {
+    encrypted   = true # Fix: Enables encryption
+    volume_type = "gp3"
+  }
 
   # This script runs ONCE when the server boots up
   user_data = <<-EOF
@@ -156,8 +181,8 @@ output "web_server_public_ip" {
 # 11. Create a 2nd PRIVATE Subnet (Required for RDS)
 resource "aws_subnet" "private_subnet_b" {
   vpc_id            = aws_vpc.main.id
-  cidr_block        = "10.0.3.0/24"    # New range
-  availability_zone = "us-east-1b"     # Different AZ (b instead of a)
+  cidr_block        = "10.0.3.0/24" # New range
+  availability_zone = "us-east-1b"  # Different AZ (b instead of a)
 
   tags = {
     Name = "My-Private-Subnet-B"
@@ -195,17 +220,24 @@ resource "aws_security_group" "db_sg" {
 
 # 14. Create the MySQL Database
 resource "aws_db_instance" "my_database" {
-  allocated_storage      = 10
-  db_name                = "mydb"
-  engine                 = "mysql"
-  engine_version         = "8.0"
-  instance_class         = "db.t3.micro"
-  username               = "admin"
-  password               = var.db_password  # Using the variable here
-  parameter_group_name   = "default.mysql8.0"
-  skip_final_snapshot    = true          # vital for learning/destroying easily
-  db_subnet_group_name   = aws_db_subnet_group.my_db_group.name
-  vpc_security_group_ids = [aws_security_group.db_sg.id]
+  allocated_storage                   = 10
+  db_name                             = "mydb"
+  engine                              = "mysql"
+  engine_version                      = "8.0"
+  instance_class                      = "db.t3.micro"
+  username                            = "admin"
+  password                            = var.db_password # Using the variable here
+  parameter_group_name                = "default.mysql8.0"
+  skip_final_snapshot                 = true # vital for learning/destroying easily
+  db_subnet_group_name                = aws_db_subnet_group.my_db_group.name
+  vpc_security_group_ids              = [aws_security_group.db_sg.id]
+  storage_encrypted                   = true
+  iam_database_authentication_enabled = true # Fix: IAM Auth 
+  deletion_protection                 = true # Fix: Deletion Protection
+  backup_retention_period             = 7    # Fix: Retention 
+  auto_minor_version_upgrade          = true # Fix: Auto Upgrade
+  performance_insights_enabled        = true # Fix: Monitoring 
+  multi_az                            = true # Fix: High Availability
 
   tags = {
     Name = "My-Terraform-DB"

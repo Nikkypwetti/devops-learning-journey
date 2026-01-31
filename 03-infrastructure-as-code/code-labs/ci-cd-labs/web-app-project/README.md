@@ -190,3 +190,60 @@ Markdown
 > [!TIP]
 > **Advanced Task Completed:** Performed **Infrastructure Import** to migrate manually created AWS IAM roles into Terraform state, ensuring zero downtime while achieving 100% Infrastructure as Code (IaC) compliance.
 ![Terraform CI](https://github.com/Nikkypwetti/devops-learning-journey/actions/workflows/terraform-test.yml/badge.svg)
+[![Security Scan](https://github.com/Nikkypwetti/devops-learning-journey/actions/workflows/terraform-test.yml/badge.svg)](https://github.com/Nikkypwetti/devops-learning-journey/security/code-scanning)
+## 🛠 Engineering Standards
+
+| Feature | Status | Tool |
+| :--- | :--- | :--- |
+| **CI/CD Pipeline** | ![Terraform CI](https://github.com/Nikkypwetti/devops-learning-journey/actions/workflows/terraform-test.yml/badge.svg) | GitHub Actions |
+| **Security Scanning** | ![Security](https://img.shields.io/badge/Security-Checkov/tfsec-blue) | Checkov & tfsec |
+| **Code Style** | ![Style](https://img.shields.io/badge/Style-HCL--fmt-orange) | Terraform fmt |
+<!-- BEGIN_TF_DOCS -->
+## Requirements
+
+| Name | Version |
+|------|---------|
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | ~> 5.0 |
+
+## Providers
+
+| Name | Version |
+|------|---------|
+| <a name="provider_aws"></a> [aws](#provider\_aws) | 5.100.0 |
+
+## Modules
+
+No modules.
+
+## Resources
+
+| Name | Type |
+|------|------|
+| [aws_dynamodb_table.terraform_locks](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/dynamodb_table) | resource |
+| [aws_iam_openid_connect_provider.github](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_openid_connect_provider) | resource |
+| [aws_iam_role.github_actions_role](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
+| [aws_iam_role_policy.cloudfront_invalidation](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy) | resource |
+| [aws_iam_role_policy.ec2_testing_access](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy) | resource |
+| [aws_iam_role_policy.s3_limited_access](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy) | resource |
+| [aws_s3_bucket_server_side_encryption_configuration.state_encryption](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_server_side_encryption_configuration) | resource |
+| [aws_s3_bucket_versioning.state_versioning](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_versioning) | resource |
+
+## Inputs
+
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| <a name="input_aws_account_id"></a> [aws\_account\_id](#input\_aws\_account\_id) | The AWS Account ID | `string` | n/a | yes |
+| <a name="input_aws_profile"></a> [aws\_profile](#input\_aws\_profile) | The AWS CLI profile to use | `string` | n/a | yes |
+| <a name="input_aws_region"></a> [aws\_region](#input\_aws\_region) | The AWS region to deploy resources in | `string` | `"us-east-1"` | no |
+| <a name="input_cloudfront_distribution_id"></a> [cloudfront\_distribution\_id](#input\_cloudfront\_distribution\_id) | The ID of the CloudFront distribution | `string` | n/a | yes |
+| <a name="input_github_repo"></a> [github\_repo](#input\_github\_repo) | The GitHub repository allowed to assume the role | `string` | `"Nikkypwetti/devops-learning-journey"` | no |
+| <a name="input_s3_bucket_name"></a> [s3\_bucket\_name](#input\_s3\_bucket\_name) | The name of the S3 bucket for deployment | `string` | n/a | yes |
+
+## Outputs
+
+| Name | Description |
+|------|-------------|
+| <a name="output_github_actions_role_arn"></a> [github\_actions\_role\_arn](#output\_github\_actions\_role\_arn) | The ARN of the IAM Role for GitHub Actions. Copy this to your GitHub Secrets. |
+| <a name="output_oidc_provider_arn"></a> [oidc\_provider\_arn](#output\_oidc\_provider\_arn) | The ARN of the OIDC Provider. |
+<!-- END_TF_DOCS -->

@@ -1,0 +1,20 @@
+repos:
+  - repo: https://github.com/antonbabenko/pre-commit-terraform
+    rev: v1.105.0 
+    hooks:
+      - id: terraform_fmt
+      - id: terraform_validate
+      - id: terraform_tflint
+       
+      - id: terraform_trivy
+        args:
+          - --args=--severity=CRITICAL,HIGH
+      - id: terraform_checkov
+        args:
+          - --args=--quiet # Hides passed checks to keep your terminal clean
+          - --args=--compact
+          - --args=--soft-fail # Optional: allows commit but shows warnings
+      - id: terraform_docs
+        args:
+          - --hook-config=--add-to-existing-file=true
+          - --hook-config=--create-file-if-not-exist=true

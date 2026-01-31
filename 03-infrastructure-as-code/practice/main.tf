@@ -1,8 +1,15 @@
 terraform {
+  required_version = ">= 1.0" # Use your current version or higher
+
   required_providers {
     aws = {
       source  = "hashicorp/aws"
       version = "~> 5.0"
+    }
+    # New HTTP provider to get your IP address
+    http = {
+      source  = "hashicorp/http"
+      version = ">= 3.0.0"
     }
   }
 }
@@ -11,6 +18,10 @@ terraform {
 provider "aws" {
   region  = var.aws_region
   profile = "practice"
+}
+
+data "http" "my_ip" {
+  url = "https://ifconfig.me/ip"
 }
 
 data "aws_ami" "amazon_linux" {
@@ -27,12 +38,19 @@ resource "aws_instance" "first_instance" {
   ami           = data.aws_ami.amazon_linux.id
   instance_type = var.instance_type
   key_name      = var.key_name
+  monitoring    = true
+  metadata_options {
+    http_endpoint = "enabled"
+    http_tokens   = "required"
+  }
 
-    metadata_options {
-  http_tokens = "required"
-}
+  root_block_device {
+    encrypted   = true # Fix: Enables encryption
+    volume_type = "gp3"
+  }
 
   # LINK TO YOUR NETWORK
+  # trivy:ignore:AVD-AWS-0164
   subnet_id                   = aws_subnet.public_subnet.id
   vpc_security_group_ids      = [aws_security_group.allow_tls.id]
   associate_public_ip_address = true # Crucial for SSH access
@@ -86,19 +104,19 @@ resource "aws_security_group" "allow_tls" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = ["${chomp(data.http.my_ip.response_body)}/32"]
   }
 
   # Allow all outbound traffic (so the server can download updates)
   egress {
+    description = "Allow all outbound traffic to the internet" # Adding this fixes the warning
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = ["${chomp(data.http.my_ip.response_body)}/32"]
   }
-
   tags = {
-    Name = "allow_web_traffic"
+    Name = "allow_web_traffic_sg"
   }
 }
 
@@ -112,9 +130,10 @@ resource "aws_vpc" "practice" {
 }
 
 # create public subnet
+# trivy:ignore:AVD-AWS-0164
 resource "aws_subnet" "public_subnet" {
-  vpc_id     = aws_vpc.practice.id
-  cidr_block = "10.0.1.0/24"
+  vpc_id            = aws_vpc.practice.id
+  cidr_block        = "10.0.1.0/24"
   availability_zone = "us-east-1a"
 
   tags = {

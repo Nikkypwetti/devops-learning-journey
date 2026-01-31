@@ -1,9 +1,9 @@
 # 1. Create the OIDC Identity Provider
 resource "aws_iam_openid_connect_provider" "github" {
-  url             = "https://token.actions.githubusercontent.com"
-  client_id_list  = ["sts.amazonaws.com"]
+  url            = "https://token.actions.githubusercontent.com"
+  client_id_list = ["sts.amazonaws.com"]
   # AWS now handles thumbprints automatically in the background
-  thumbprint_list = ["6938fd4d98bab03faadb97b34396831e3780aea1"] 
+  thumbprint_list = ["6938fd4d98bab03faadb97b34396831e3780aea1"]
 }
 
 # 2. Define the IAM Role for GitHub Actions
@@ -38,19 +38,19 @@ resource "aws_iam_role_policy" "s3_limited_access" {
     Version = "2012-10-17"
     Statement = [
       {
-        Effect   = "Allow"
-        Action   = [
+        Effect = "Allow"
+        Action = [
           "s3:PutObject",
           "s3:GetObject",
           "s3:ListBucket",
           "s3:DeleteObject",
         ]
-        
+
         # Replace with your actual bucket ARN
-       Resource = [
+        Resource = [
           "arn:aws:s3:::${var.s3_bucket_name}",
           "arn:aws:s3:::${var.s3_bucket_name}/*"
-      ]
+        ]
       }
     ]
   })
@@ -75,24 +75,51 @@ resource "aws_iam_role_policy" "cloudfront_invalidation" {
 # 3. Create a policy for EC2 testing lab
 resource "aws_iam_role_policy" "ec2_testing_access" {
   name = "EC2TestingLabPolicy"
-  role = aws_iam_role.github_actions_role.id # This attaches it to your existing role
+  role = aws_iam_role.github_actions_role.id
 
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
       {
-        Effect   = "Allow"
-        Action   = [
-          "ec2:RunInstances",
-          "ec2:TerminateInstances",
+        # 1. Read-only actions that MUST use "*"
+        Effect = "Allow"
+        Action = [
           "ec2:DescribeInstances",
+          "ec2:DescribeSecurityGroups",
+          "ec2:DescribeSubnets",
+          "ec2:DescribeVpcs"
+        ]
+        Resource = "*"
+      },
+      {
+        # 2. Restrict RunInstances by Instance Type (Limits cost/damage)
+        Effect = "Allow"
+        Action = "ec2:RunInstances"
+        Resource = [
+          "arn:aws:ec2:${var.aws_region}:${var.aws_account_id}:instance/*",
+          "arn:aws:ec2:${var.aws_region}:${var.aws_account_id}:network-interface/*",
+          "arn:aws:ec2:${var.aws_region}:${var.aws_account_id}:security-group/*",
+          "arn:aws:ec2:${var.aws_region}:${var.aws_account_id}:volume/*",
+          "arn:aws:ec2:${var.aws_region}::image/ami-*",
+          "arn:aws:ec2:${var.aws_region}:${var.aws_account_id}:subnet/*"
+        ]
+        Condition = {
+          "StringEquals" = {
+            "ec2:InstanceType" = ["t2.micro", "t3.micro"] # Limits to Free Tier
+          }
+        }
+      },
+      {
+        # 3. Restrict Management actions to your specific Region
+        Effect = "Allow"
+        Action = [
+          "ec2:TerminateInstances",
           "ec2:CreateSecurityGroup",
           "ec2:DeleteSecurityGroup",
-          "ec2:DescribeSecurityGroups",
           "ec2:AuthorizeSecurityGroupIngress",
           "ec2:RevokeSecurityGroupIngress"
         ]
-        Resource = "*" # EC2 actions often require "*" to allow creation across the region
+        Resource = "arn:aws:ec2:${var.aws_region}:${var.aws_account_id}:*"
       }
     ]
   })

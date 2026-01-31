@@ -8,6 +8,10 @@ on:
     paths:
       - '**/terraform-ci-cd/**'
   workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write  # Required for AWS OIDC
 jobs:
   terraform:
     name: "Terraform"

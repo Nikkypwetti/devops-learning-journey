@@ -1,12 +1,14 @@
 terraform {
-#   backend "s3" {
-#     bucket         = "nikky-techies-terraform-state-bucket-21"
-#     key            = "terraform.tfstate"
-#     region         = "us-east-1"
-#     encrypt        = true
-#     use_lockfile   = true
-#     profile        = "practice"
-#  }
+  #   backend "s3" {
+  #     bucket         = "nikky-techies-terraform-state-bucket-21"
+  #     key            = "terraform.tfstate"
+  #     region         = "us-east-1"
+  #     encrypt        = true
+  #     use_lockfile   = true
+  #     profile        = "practice"
+  #  }
+
+  required_version = ">= 1.0" # Use your current version or higher
   required_providers {
     aws = {
       source  = "hashicorp/aws"
@@ -21,3 +23,4 @@ provider "aws" {
   profile = var.aws_profile
 
 }
+

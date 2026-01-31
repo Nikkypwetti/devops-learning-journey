@@ -12,6 +12,11 @@ on:
   #Added: Allows you to trigger the build manually from the GitHub Actions tab
   workflow_dispatch:
 
+
+permissions:
+  contents: read
+  id-token: write  # Necessary for OIDC to work
+
 jobs:
   packer_build:
     runs-on: ubuntu-latest

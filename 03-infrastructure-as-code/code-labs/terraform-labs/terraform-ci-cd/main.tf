@@ -1,5 +1,5 @@
 terraform {
-  required_version = ">= 1.5.0" # Use your current version or higher
+  required_version = ">= 1.0" # Use your current version or higher
 
   required_providers {
     aws = {
@@ -32,7 +32,7 @@ resource "aws_s3_bucket_public_access_block" "public_access" {
 }
 
 # 3. Enable Encryption 
-# tfsec:ignore:aws-s3-encryption-customer-key
+# trivy:ignore:AVD-AWS-0132
 resource "aws_s3_bucket_server_side_encryption_configuration" "encryption" {
   bucket = aws_s3_bucket.my_practice_bucket.id
   rule {

@@ -94,6 +94,97 @@ To master this day, follow these steps in your local environment:
 
     Documentation: Add a "Security" section to your Project README on GitHub, explaining that you use tfsec or Checkov to ensure compliant infrastructure. This is a highly sought-after skill for Cloud Engineering roles.
 
+## Pro-Tip: How to "Ignore" a Check
+
+Sometimes you know a port is open for a reason (like our lab). You can tell tfsec to ignore a specific resource by adding a comment in your main.tf:
+Terraform
+
+resource "aws_security_group" "allow_web" {
+  #tfsec:ignore:aws-vpc-no-public-ingress-sgr
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+## Pro-Tip: Skipping a Checkov Rule
+
+Just like tfsec, if Checkov flags something you intentionally want (like a public test bucket), you can add an inline comment to ignore it:
+Terraform
+
+# checkov:skip=CKV_AWS_20: "I need this bucket public for my portfolio static site"
+resource "aws_s3_bucket" "portfolio" {
+  bucket = "my-awesome-portfolio-bucket"
+}
+
+1. The "Public Access" Fail (S3 & Security Groups)
+
+Checkov hates 0.0.0.0/0 (the whole internet).
+
+The Fail: CKV_AWS_24: Ensure no security groups allow ingress from 0.0.0.0:0 to port 22. The Fix: Instead of opening SSH to the world, restrict it to your specific IP address.
+Terraform
+
+resource "aws_security_group" "allow_web" {
+  name        = "allow_web_traffic"
+  description = "Allow inbound web traffic"
+
+  ingress {
+    description = "SSH from my home office"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    # Replace with your actual public IP followed by /32
+    cidr_blocks = ["1.2.3.4/32"] 
+  }
+}
+
+2. The "Encryption at Rest" Fail (S3)
+
+If you have an S3 bucket in your portfolio, Checkov will insist it is encrypted.
+
+The Fail: CKV_AWS_19: Ensure all data stored in the S3 bucket is securely encrypted at rest. The Fix: Add a server-side encryption configuration block.
+Terraform
+
+resource "aws_s3_bucket_server_side_encryption_configuration" "example" {
+  bucket = aws_s3_bucket.my_bucket.id
+
+  rule {
+    apply_server_side_encryption_by_default {
+      sse_algorithm = "AES256"
+    }
+  }
+}
+
+3. The "Missing Metadata Service" Fail (EC2)
+
+This is a modern security standard (IMDSv2) that prevents certain types of cloud attacks.
+
+The Fail: CKV_AWS_79: Ensure Instance Metadata Service Version 2 (IMDSv2) is enabled. The Fix: Add a metadata_options block to your aws_instance.
+Terraform
+
+resource "aws_instance" "web_server" {
+  ami           = data.aws_ami.selected.id
+  instance_type = "t3.micro"
+
+  # Fix for CKV_AWS_79
+  metadata_options {
+    http_endpoint = "enabled"
+    http_tokens   = "required"
+  }
+}
+
+How to handle these results in your Workflow
+
+    Run the check: pre-commit run --all-files
+
+    Analyze the Fail: Look at the "Resource" and the "Check ID" (e.g., CKV_AWS_79).
+
+    Apply the Fix: Update your code as shown above.
+
+    Re-run: The check should now turn Green.
+
 ## Tomorrow's Plan
 
 Topic 1: Terraform Cloud & Enterprise (Remote Operations)
