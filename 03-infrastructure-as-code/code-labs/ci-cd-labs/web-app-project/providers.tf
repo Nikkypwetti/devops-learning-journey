@@ -7,11 +7,11 @@ terraform {
     }
   }
   backend "s3" {
-    bucket         = "nikky-techies-devops-portfolio"
-    key            = "dev/terraform.tfstate"
-    region         = "us-east-1" # The region where your S3 bucket is located
-    dynamodb_table = "terraform-state-locking"
-    encrypt        = true
+    bucket       = "nikky-techies-devops-portfolio"
+    key          = "dev/terraform.tfstate"
+    region       = "us-east-1" # The region where your S3 bucket is located
+    use_lockfile = true
+    encrypt      = true
   }
 }
 provider "aws" {
