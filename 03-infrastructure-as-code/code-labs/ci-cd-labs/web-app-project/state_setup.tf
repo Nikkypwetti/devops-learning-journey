@@ -19,6 +19,24 @@ resource "aws_dynamodb_table" "terraform_locks" {
   }
 }
 
+resource "aws_s3_bucket" "state_bucket" {
+  bucket = "nikky-techies-devops-portfolio"
+
+  # Optional: Prevents accidental deletion of your state
+  lifecycle {
+    prevent_destroy = true
+  }
+}
+
+resource "aws_s3_bucket_public_access_block" "state_bucket_access" {
+  bucket = aws_s3_bucket.state_bucket.id
+
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
+}
+
 resource "aws_s3_bucket_versioning" "state_versioning" {
   bucket = "nikky-techies-devops-portfolio" # Use your actual bucket name
   versioning_configuration {
