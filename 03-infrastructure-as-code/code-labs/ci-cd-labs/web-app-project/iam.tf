@@ -87,7 +87,8 @@ resource "aws_iam_role_policy" "ec2_testing_access" {
           "ec2:DescribeInstances",
           "ec2:DescribeSecurityGroups",
           "ec2:DescribeSubnets",
-          "ec2:DescribeVpcs"
+          "ec2:DescribeVpcs",
+          "ec2:DescribeImages"
         ]
         Resource = "*"
       },

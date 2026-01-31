@@ -9,7 +9,7 @@ terraform {
   backend "s3" {
     bucket         = "nikky-techies-devops-portfolio"
     key            = "dev/terraform.tfstate"
-    region         = var.aws_region # The region where your S3 bucket is located
+    region         = "us-east-1" # The region where your S3 bucket is located
     dynamodb_table = "terraform-state-locking"
     encrypt        = true
   }
