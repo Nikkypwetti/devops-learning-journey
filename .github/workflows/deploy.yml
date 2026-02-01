@@ -4,7 +4,14 @@ on:
   push:
     branches:
       - main
+    paths:
+      - '03-infrastructure-as-code/projects/three-tier-app/**'
   pull_request:
+    paths:
+      - '**/three-tier-app/**'
+  #Added: Allows you to trigger the build manually from the GitHub Actions tab
+  workflow_dispatch:
+    
 
 permissions:
   id-token: write # Required for requesting the JWT (OIDC)
