@@ -1,0 +1,22 @@
+# Local .terraform folder (contains binaries and plugins)
+.terraform/
+
+# Terraform State files (contains your infrastructure's "DNA" and secrets)
+*.tfstate
+*.tfstate.backup
+
+# Terraform Lock file (can be committed, but often ignored in small projects)
+.terraform.lock.hcl
+
+# THE MOST IMPORTANT: Your actual secrets file
+*.tfvars
+*.tfvars.json
+
+# Sensitive log files
+crash.log
+terraform.tfvars
+override.tf
+override.tf.json
+
+# OS specific files
+.DS_Store

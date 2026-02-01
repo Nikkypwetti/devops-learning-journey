@@ -1,0 +1,14 @@
+# --- NETWORK CONFIGURATION ---
+aws_region = "us-east-1"
+
+# --- COMPUTE CONFIGURATION ---
+# This should be the ID of the AMI you built with Packer
+packer_ami_id = "ami-xxxxxxxxxxxxxxxxx"
+
+# --- DATABASE CONFIGURATION ---
+# DO NOT put your real password here. Use a dummy value.
+db_password = "ReplaceMeWithASecurePassword"
+
+# --- PROJECT TAGS ---
+project_name = "three-tier-app"
+environment  = "dev"

@@ -25,6 +25,7 @@ source "amazon-ebs" "ubuntu_nginx" {
   force_deregister      = true
   force_delete_snapshot = true
 
+
   # Professional Filter: Always get the latest official Ubuntu 22.04
   source_ami_filter {
     filters = {
@@ -34,7 +35,9 @@ source "amazon-ebs" "ubuntu_nginx" {
     }
     most_recent = true
     owners      = ["099720109477"] # Canonical
+
   }
+
 
   ssh_username = var.ssh_username
   # ssh_timeout  = "10m"
@@ -43,6 +46,7 @@ source "amazon-ebs" "ubuntu_nginx" {
   # Professional Tagging (Crucial for Cloud Governance)
   tags = {
     Name        = "Golden-Nginx-Image"
+    Version     = "1.0.0"            # Update this when you make big changes
     Environment = "Production"
     BuildBy     = "Packer"
     Project     = "DevOps-Journey"
