@@ -24,6 +24,10 @@ jobs:
     env:
       AWS_REGION: "us-east-1" # Change to your preferred region
 
+    defaults:
+      run:
+        working-directory: 03-infrastructure-as-code/projects/three-tier-app
+        
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
