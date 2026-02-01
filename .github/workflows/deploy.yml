@@ -11,7 +11,7 @@ on:
       - '**/three-tier-app/**'
   #Added: Allows you to trigger the build manually from the GitHub Actions tab
   workflow_dispatch:
-    
+
 
 permissions:
   id-token: write # Required for requesting the JWT (OIDC)
@@ -32,8 +32,8 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v4
         with:
           # Using the role you already created and imported!
-          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/GitHubAction-Terraform-Managed-Role
-          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: us-east-1
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
