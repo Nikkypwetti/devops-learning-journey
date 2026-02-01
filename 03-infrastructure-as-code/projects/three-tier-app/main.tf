@@ -67,7 +67,7 @@ resource "aws_security_group" "app_sg" {
     security_groups = [aws_security_group.alb_sg.id]
   }
   egress {
-    description = "Allow all outbound traffic"
+    description = "Allow outbound traffic to the internet"
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
