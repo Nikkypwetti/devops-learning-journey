@@ -40,22 +40,40 @@ resource "aws_iam_role_policy" "s3_limited_access" {
       {
         Effect = "Allow"
         Action = [
+          "s3:ListBucket",
+          "s3:GetBucketLocation" # Added this for 'terraform init'
+        ],
+        # ListBucket applies to the BUCKET itself
+        Resource = [
+          "arn:aws:s3:::${var.s3_bucket_name}"
+        ]
+      },
+      {
+        Effect = "Allow"
+        Action = [
           "s3:PutObject",
           "s3:GetObject",
-          "s3:ListBucket",
-          "s3:DeleteObject",
-        ]
-
-        # Replace with your actual bucket ARN
+          "s3:DeleteObject"
+        ],
+        # These apply to the OBJECTS inside the bucket
         Resource = [
-          "arn:aws:s3:::${var.s3_bucket_name}",
           "arn:aws:s3:::${var.s3_bucket_name}/*"
         ]
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "dynamodb:DescribeTable",
+          "dynamodb:GetItem",
+          "dynamodb:PutItem",
+          "dynamodb:DeleteItem"
+        ],
+        # Don't forget DynamoDB permissions for state locking!
+        Resource = "arn:aws:dynamodb:${var.aws_region}:${var.aws_account_id}:table/terraform-state-locking"
       }
     ]
   })
 }
-
 resource "aws_iam_role_policy" "cloudfront_invalidation" {
   name = "CloudFrontInvalidationPolicy"
   role = aws_iam_role.github_actions_role.id
