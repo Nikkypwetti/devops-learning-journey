@@ -4,14 +4,14 @@ variable "aws_region" {
   type        = string
 }
 
-variable "github_repo" {
-  description = "The GitHub repository allowed to assume the role"
-  type        = string
-  default     = "Nikkypwetti/devops-learning-journey"
-}
 
 variable "db_password" {
   description = "RDS root password"
   type        = string
   sensitive   = true
+}
+
+variable "aws_s3_bucket" {
+  description = "The name of the AWS S3 bucket for the three-tier application"
+  type        = string
 }
