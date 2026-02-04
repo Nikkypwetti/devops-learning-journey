@@ -33,6 +33,8 @@
 #   url = "https://ifconfig.me/ip"
 # }
 
+data "aws_caller_identity" "current" {}
+
 # --- NETWORKING ---
 module "vpc" { source = "./modules/vpc" }
 
