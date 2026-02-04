@@ -124,7 +124,7 @@ resource "aws_iam_policy" "web_app_cf" {
     Statement = [{
       Action   = "cloudfront:CreateInvalidation"
       Effect   = "Allow"
-      Resource = "arn:aws:cloudfront::${data.aws_caller_identity.current.account_id}:distribution/${var.cloudfront_distribution_id}"
+      Resource = "*"
     }]
   })
 }

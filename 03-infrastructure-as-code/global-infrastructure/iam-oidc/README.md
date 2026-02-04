@@ -34,9 +34,7 @@ No modules.
 
 ## Inputs
 
-| Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
-| <a name="input_cloudfront_distribution_id"></a> [cloudfront\_distribution\_id](#input\_cloudfront\_distribution\_id) | The ID of the CloudFront distribution | `string` | n/a | yes |
+No inputs.
 
 ## Outputs
 
