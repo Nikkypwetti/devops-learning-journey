@@ -11,7 +11,7 @@ variable "db_password" {
   sensitive   = true
 }
 
-variable "aws_s3_bucket" {
-  description = "The name of the AWS S3 bucket for the three-tier application"
-  type        = string
-}
+# variable "aws_s3_bucket" {
+#   description = "The name of the AWS S3 bucket for the three-tier application"
+#   type        = string
+# }

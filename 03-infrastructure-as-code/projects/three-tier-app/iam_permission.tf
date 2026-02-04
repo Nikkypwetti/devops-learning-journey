@@ -32,7 +32,7 @@ resource "aws_iam_policy" "three_tier_permissions" {
         Effect = "Allow"
         Action = ["s3:PutObject", "s3:GetObject", "s3:DeleteObject"]
         Resource = [
-          "arn:aws:s3:::${var.aws_s3_bucket}/*",
+          "arn:aws:s3:::nikky-three-tier-portfolio/*",
           "arn:aws:s3:::nikky-techies-devops-portfolio/*"
         ]
       },
@@ -68,6 +68,7 @@ resource "aws_iam_policy" "three_tier_permissions" {
     ]
   })
 }
+
 
 # 4. Snap it onto the Shared Role
 resource "aws_iam_role_policy_attachment" "attach_three_tier" {
