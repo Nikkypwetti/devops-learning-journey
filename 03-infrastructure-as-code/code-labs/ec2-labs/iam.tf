@@ -31,6 +31,7 @@ resource "aws_iam_policy" "ec2_testing_access" {
           "ec2:DescribeSecurityGroups",
           "ec2:DescribeSubnets",
           "ec2:DescribeVpcs",
+          "ec2:DescribeImages",
           "ec2:DescribeImages"
         ]
         Resource = "*"

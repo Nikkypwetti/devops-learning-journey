@@ -9,33 +9,56 @@ data "aws_caller_identity" "current" {}
 # 3. Create the Three-Tier Permission Brick
 resource "aws_iam_policy" "three_tier_permissions" {
   name        = "ThreeTierProjectPermissions"
-  description = "Permissions for Three-Tier Networking, EC2, and RDS"
+  description = "Refined permissions for S3 Sync, State, and Global EC2 Discovery"
 
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
       {
-        # Permission to manage the state bucket for this project
-        Effect   = "Allow"
-        Action   = ["s3:ListBucket", "s3:GetBucketLocation"]
-        Resource = "arn:aws:s3:::${var.aws_s3_bucket}"
+        Effect = "Allow"
+        Action = [
+          "s3:ListBucket",
+          "s3:GetBucketLocation",
+          "s3:GetBucketVersioning"
+        ]
+        # Include ALL buckets the GitHub Action needs to 'see'
+        Resource = [
+          "arn:aws:s3:::nikky-three-tier-portfolio",
+          "arn:aws:s3:::nikky-techies-devops-portfolio"
+        ]
       },
+      # 2. Full Object Permissions for State and Sync
       {
-        Effect   = "Allow"
-        Action   = ["s3:PutObject", "s3:GetObject", "s3:DeleteObject"]
-        Resource = "arn:aws:s3:::${var.aws_s3_bucket}/*"
+        Effect = "Allow"
+        Action = ["s3:PutObject", "s3:GetObject", "s3:DeleteObject"]
+        Resource = [
+          "arn:aws:s3:::${var.aws_s3_bucket}/*",
+          "arn:aws:s3:::nikky-techies-devops-portfolio/*"
+        ]
       },
+      # 3. EC2 Read-Only Permissions (Global Discovery)
       {
-        # Permission for networking and servers (The "Three Tiers")
+        # These actions do NOT support region/resource conditions well
+        Effect = "Allow"
+        Action = [
+          "ec2:DescribeImages",
+          "ec2:DescribeInstances",
+          "ec2:DescribeVpcs",
+          "ec2:DescribeSubnets",
+          "ec2:DescribeSecurityGroups",
+          "ec2:DescribeAvailabilityZones"
+        ]
+        Resource = "*"
+      },
+      # 4. Regional Tiered Permissions
+      {
         Effect = "Allow"
         Action = [
           "ec2:*",
           "rds:*",
           "elasticloadbalancing:*",
           "autoscaling:*",
-          "ec2:DetachNetworkInterface",
-          "ec2:DescribeNetworkInterfaces",
-          "iam:CreateServiceLinkedRole" # Required for ALB first-time setup
+          "iam:CreateServiceLinkedRole"
         ]
         Resource = "*"
         Condition = {
