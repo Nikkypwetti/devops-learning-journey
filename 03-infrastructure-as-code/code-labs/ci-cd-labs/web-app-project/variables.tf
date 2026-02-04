@@ -1,10 +1,5 @@
-variable "s3_bucket_name" {
+variable "aws_s3_bucket" {
   description = "The name of the S3 bucket for deployment"
-  type        = string
-}
-
-variable "cloudfront_distribution_id" {
-  description = "The ID of the CloudFront distribution"
   type        = string
 }
 

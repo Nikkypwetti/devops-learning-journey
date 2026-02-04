@@ -1,0 +1,13 @@
+# Local .terraform folder (don't push the binaries)
+.terraform/
+
+# Terraform state files (SENSITIVE - contains your current infra map)
+*.tfstate
+*.tfstate.*
+
+# Variable files (SENSITIVE - contains your secrets)
+*.tfvars
+*.tfvars.json
+
+# Log files
+*.log
