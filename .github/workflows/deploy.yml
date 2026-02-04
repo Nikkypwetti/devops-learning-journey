@@ -28,7 +28,7 @@ jobs:
     env:
       AWS_REGION: "us-east-1"
       # This maps your GitHub Secret to the Terraform variable var.db_password
-      TF_VAR_db_password: ${{ secrets.TF_VAR_DB_PASSWORD }}
+      TF_VAR_db_password: ${{ secrets.TF_VAR_db_password}}
 
     defaults:
       run:

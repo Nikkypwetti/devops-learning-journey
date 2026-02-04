@@ -30,9 +30,9 @@ resource "aws_db_instance" "main" {
   storage_encrypted                   = false
   iam_database_authentication_enabled = true  # Fix: IAM Auth 
   deletion_protection                 = false # Fix: Deletion Protection
-  backup_retention_period             = 1     # Fix: Retention 
+  backup_retention_period             = 0     # Fix: Retention 
   auto_minor_version_upgrade          = true  # Fix: Auto Upgrade
-  performance_insights_enabled        = true  # Fix: Monitoring 
+  performance_insights_enabled        = false # Fix: Monitoring 
   multi_az                            = false # Fix: High Availability
   publicly_accessible                 = false
 
