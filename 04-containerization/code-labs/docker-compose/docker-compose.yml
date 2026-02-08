@@ -1,0 +1,14 @@
+services:
+  product-services:
+    build: ../docker-basics/products
+    volumes:
+    - ../docker-basics/products:/usr/src/app
+    ports:
+      - "5001:80"
+  #   depends_on:
+  #     - db
+  # db:
+  #   image: mysql:5.7
+  #   environment:
+  #     MYSQL_ROOT_PASSWORD: example
+  #     MYSQL_DATABASE: mydb
