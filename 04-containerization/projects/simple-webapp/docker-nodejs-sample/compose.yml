@@ -1,0 +1,72 @@
+services:
+  app-test:
+    build:
+      context: .
+      target: test
+    container_name: todoapp-test
+    environment:
+      NODE_ENV: test
+      POSTGRES_HOST: db
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - todoapp-network
+  app-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    container_name: todoapp-dev
+    ports:
+      - '${APP_PORT:-3000}:3000'
+      - '${VITE_PORT:-5173}:5173'
+      - '${DEBUG_PORT:-9229}:9229'
+    environment:
+      NODE_ENV: development
+      POSTGRES_HOST: db
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS}
+    volumes:
+      - ./src:/app/src:ro
+      - ./package.json:/app/package.json
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - todoapp-network
+
+  db:
+    image: postgres:15-alpine
+    container_name: todoapp-db
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - '${DB_PORT:-5432}:5432'
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - todoapp-network
+
+volumes:
+  postgres_data:
+    name: todoapp-postgres-data
+
+networks:
+  todoapp-network:
+    name: todoapp-network
+
+  
