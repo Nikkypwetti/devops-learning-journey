@@ -20,3 +20,4 @@ jobs:
         # Notice the 'working-directory' line added here
         working-directory: ./04-containerization/projects/simple-webapp/docker-nodejs-sample
         run: docker compose up app-test --exit-code-from app-test
+        
