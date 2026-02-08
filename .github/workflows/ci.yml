@@ -13,11 +13,23 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # PRO STEP: Cache Docker layers to speed up builds
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
+      - name: Cache Docker layers
+        uses: actions/cache@v3
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+
       - name: Run Tests in Docker
-        # Notice the 'working-directory' line added here
         working-directory: ./04-containerization/projects/simple-webapp/docker-nodejs-sample
+        # We pass env vars here so the DB healthcheck works perfectly in the cloud
+        env:
+          POSTGRES_DB: todoapp
+          POSTGRES_USER: todoapp
+          POSTGRES_PASSWORD: todoapp_password
         run: docker compose up app-test --exit-code-from app-test
-        
