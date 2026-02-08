@@ -1,35 +1,43 @@
-name: CI
+name: CI/CD Pipeline
 
 on:
   push:
     branches: [ main ]
-  pull_request:
-    branches: [ main ]
 
 jobs:
+  # Job 1: Verify the code
   test:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      # PRO STEP: Cache Docker layers to speed up builds
+      - uses: actions/checkout@v4
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-
-      - name: Cache Docker layers
-        uses: actions/cache@v3
-        with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-buildx-
-
-      - name: Run Tests in Docker
+      - name: Run Tests
         working-directory: ./04-containerization/projects/simple-webapp/docker-nodejs-sample
-        # We pass env vars here so the DB healthcheck works perfectly in the cloud
         env:
           POSTGRES_DB: todoapp
           POSTGRES_USER: todoapp
           POSTGRES_PASSWORD: todoapp_password
         run: docker compose up app-test --exit-code-from app-test
+
+  # Job 2: Build and Push to Registry
+  deploy:
+    needs: test # This ensures we don't push broken code!
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and Push Production Image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./04-containerization/projects/simple-webapp/docker-nodejs-sample
+          target: production # Uses the optimized production stage in your Dockerfile
+          push: true
+          # Replace <your-username> with your actual Docker Hub username
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/todo-app:latest
