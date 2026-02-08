@@ -17,4 +17,6 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: Run Tests in Docker
+        # Notice the 'working-directory' line added here
+        working-directory: ./04-containerization/projects/simple-webapp/docker-nodejs-sample
         run: docker compose up app-test --exit-code-from app-test
