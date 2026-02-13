@@ -80,6 +80,10 @@ spec:
       containers:
         - name: postgres
           image: postgres:16-alpine
+          securityContext:
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 1000
           ports:
             - containerPort: 5432
               name: postgres
@@ -122,6 +126,7 @@ spec:
                 - todoapp
             initialDelaySeconds: 5
             periodSeconds: 5
+           
       volumes:
         - name: postgres-storage
           persistentVolumeClaim:

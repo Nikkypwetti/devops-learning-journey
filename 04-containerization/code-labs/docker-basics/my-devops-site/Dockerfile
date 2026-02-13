@@ -5,5 +5,9 @@ FROM nginx:alpine
 # In Nginx, the default folder for HTML is /usr/share/nginx/html/
 COPY index.html /usr/share/nginx/html/index.html
 
+# Add a non-root user
+RUN addgroup -S devopsgroup && adduser -S devopsuser -G devopsgroup
+USER devopsuser
+
 # Step 3: (Optional) Expose port 80 to the outside world
 EXPOSE 80

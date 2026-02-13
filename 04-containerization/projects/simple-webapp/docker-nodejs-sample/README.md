@@ -18,7 +18,7 @@ It is used as part of the [official Docker Node.js sample](https://docs.docker.c
 - **Production-Ready**: Multi-stage Docker builds, security hardening, resource management
 - **Comprehensive Testing**: 101 passing tests with Vitest and React Testing Library
 - **Docker Optimized**: Separate development/production configurations with proper networking
-- **CI/CD Ready**: GitHub Actions workflows, Kubernetes deployment configurations
+- **CI/CD Ready**: GitHub Actions workflows,Docker Hub, Kubernetes deployment configurations
 
 ## 🏃‍♂️ Quick Start
 
