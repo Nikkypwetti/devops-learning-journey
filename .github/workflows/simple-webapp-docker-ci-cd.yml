@@ -18,14 +18,39 @@ on:
           - dark
           - light
 
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
 jobs:
+  pipeline:
+    name: "Deploy to Production"
+    runs-on: ubuntu-latest
+    environment: 
+      name: production
+      url: ${{ steps.get_url.outputs.website_url }}
   terraform-plan:
     name: "Terraform Plan"
     runs-on: ubuntu-latest
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID_DEV }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_DEV }}
+      AWS_DEFAULT_REGION: us-east-1
+
     if: github.event_name == 'pull_request'
+    
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+
+      # Add this step BEFORE Setup Terraform
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_DEV }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_DEV }}
+          aws-region: us-east-1
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
@@ -33,19 +58,21 @@ jobs:
           terraform_wrapper: true
 
       - name: Terraform Init
-        working-directory: ./terraform
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        working-directory: ./04-containerization/projects/simple-webapp/simple-webapp/terraform
+        run: terraform init
+      - name: Terraform Init
+         # Terraform needs to be initialized in the directory where the configuration files are located
+        working-directory: ./04-containerization/projects/simple-webapp/simple-webapp/terraform
+        
         run: terraform init
 
       - name: Terraform Plan
         id: plan
-        working-directory: ./terraform
+        working-directory: ./04-containerization/projects/simple-webapp/simple-webapp/terraform
         env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        run: terraform plan -no-color -var="app_theme=dark"
+          # This variable is key to making the plan pass
+          PLAN: ${{ steps.plan.outputs.stdout }}
+        run: terraform plan -no-color -var="app_theme=dark" -var="docker_hub_username=${{ secrets.DOCKERHUB_USERNAME }}"
 
       - name: Post Plan to PR
         uses: actions/github-script@v7
@@ -75,10 +102,31 @@ jobs:
         env:
           PLAN: ${{ steps.plan.outputs.stdout }}
 
-      - name: Force ECS Redeployment
+      - name: Terraform Apply
+        # IMPORTANT: Only runs when pushing/merging to main
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        working-directory: ./04-containerization/projects/simple-webapp/simple-webapp/terraform
         env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID_DEV }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_DEV }}
+          AWS_DEFAULT_REGION: us-east-1
+        # Use -auto-approve so the pipeline doesn't wait for a human to type 'yes'
+        run: terraform apply -auto-approve -var="app_theme=dark" -var="docker_hub_username=${{ secrets.DOCKERHUB_USERNAME }}"
+
+      - name: Get Website URL
+        id: get_url
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        working-directory: ./04-containerization/projects/simple-webapp/simple-webapp/terraform
+        run: |
+          URL=$(terraform output -raw website_url)
+          echo "website_url=$URL" >> $GITHUB_OUTPUT
+
+      - name: Force ECS Redeployment
+        # This ensures it runs on merges to main, but NOT on the initial PR Plan
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID_DEV }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_DEV }}
           AWS_DEFAULT_REGION: us-east-1
         run: |
           aws ecs update-service --cluster simple-webapp-cluster --service webapp-service --force-new-deployment
