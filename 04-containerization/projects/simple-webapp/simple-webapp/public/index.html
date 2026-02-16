@@ -8,13 +8,33 @@
     <title>Nikky | DevOps Portal</title>
 
     <script>
-    fetch('/api/config')
-        .then(res => res.json())
-        .then(data => {
-            if (data.theme === 'light') {
-                document.body.classList.add('light-theme');
-            }
-        });
+        // 1. Handle Theme
+        fetch('/api/config')
+            .then(res => res.json())
+            .then(data => {
+                if (data.theme === 'light') {
+                    document.body.classList.add('light-theme');
+                }
+            });
+
+        // 2. Fetch real data from your backend API
+        function updateDashboard() {
+            fetch('/api/stats')
+                .then(res => res.json())
+                .then(data => {
+                    // This looks for the IDs we put in the body below
+                    document.getElementById('region').innerText = data.region || 'us-east-1';
+                    document.getElementById('visits').innerText = data.visits || '0';
+                    document.getElementById('runtime').innerText = data.runtime || 'Node.js 20';
+                })
+                .catch(err => console.error("Could not fetch real-time data", err));
+        }
+
+        // Run immediately and then every 10 seconds
+        window.onload = () => {
+            updateDashboard();
+            setInterval(updateDashboard, 10000);
+        };
     </script>
 </head>
 <body>
@@ -32,11 +52,22 @@
                 <h1>Nikky's DevOps Dashboard</h1>
                 <div class="user-status">Status: <span class="pulse"></span> Online</div>
             </header>
+            
             <div class="stats-grid">
-                <div class="stat-card"><h3>Region</h3><p>us-east-1</p></div>
-                <div class="stat-card"><h3>Provider</h3><p>AWS Fargate</p></div>
-                <div class="stat-card"><h3>Runtime</h3><p>Node.js 20</p></div>
+                <div class="stat-card">
+                    <h3>Region</h3>
+                    <p id="region">Loading...</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Total Visits</h3>
+                    <p id="visits">0</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Runtime</h3>
+                    <p id="runtime">Loading...</p>
+                </div>
             </div>
+
             <div class="terminal">
                 <p>> systemctl status simple-webapp</p>
                 <p class="success">● active (running) since Day 7</p>
