@@ -28,15 +28,27 @@ jobs:
       AWS_DEFAULT_REGION: us-east-1
 
     if: github.event_name == 'pull_request'
+    
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+
+      # Add this step BEFORE Setup Terraform
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_wrapper: true
 
+      - name: Terraform Init
+        working-directory: ./04-containerization/projects/simple-webapp/simple-webapp/terraform
+        run: terraform init
       - name: Terraform Init
          # Terraform needs to be initialized in the directory where the configuration files are located
         working-directory: ./04-containerization/projects/simple-webapp/simple-webapp/terraform
@@ -80,6 +92,7 @@ jobs:
           PLAN: ${{ steps.plan.outputs.stdout }}
 
       - name: Force ECS Redeployment
+        if: github.event_name == 'push'
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
