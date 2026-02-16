@@ -18,6 +18,11 @@ on:
           - dark
           - light
 
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+  
 jobs:
   terraform-plan:
     name: "Terraform Plan"
