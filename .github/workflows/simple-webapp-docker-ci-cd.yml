@@ -40,6 +40,22 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_DEV }}
           aws-region: us-east-1
 
+      - name: Login to Docker Hub
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and Push Docker Image
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: docker/build-push-action@v5
+        with:
+          # Make sure this context points to where your Dockerfile is
+          context: ./04-containerization/projects/simple-webapp/simple-webapp
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/simple-webapp:latest
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
@@ -94,3 +110,19 @@ jobs:
         with:
           webhook: ${{ secrets.DISCORD_WEBHOOK }}
           status: ${{ job.status }}
+          content: "Deployment of simple-webapp is ${{ job.status }}!"
+
+      
+
+
+
+
+
+    
+   
+
+
+      
+
+
+      
