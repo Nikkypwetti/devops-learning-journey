@@ -2,13 +2,12 @@
 FROM node:20-slim AS builder
 WORKDIR /app
 COPY package*.json ./
-RUN npm install
+RUN npm install --no-cache
 
 # Stage 2: Production
 FROM node:20-alpine
 WORKDIR /app
-COPY --from=builder /app/node_modules ./node_modules
-RUN npm install --no-cache
+COPY --from=builder /app/node_modules ./node_module
 COPY . .
 
 USER node
