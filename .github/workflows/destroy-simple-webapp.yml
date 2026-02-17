@@ -1,7 +1,7 @@
 name: Cleanup Infrastructure
 
 on:
-  workflow_dispatch: # This adds the "Run workflow" button in GitHub
+  workflow_dispatch:
 
 jobs:
   destroy:
@@ -10,18 +10,21 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      # THIS STEP IS THE FIX
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_DEV }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_DEV }}
+          aws-region: us-east-1
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
       - name: Terraform Destroy
         working-directory: ./04-containerization/projects/simple-webapp/simple-webapp/terraform
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: us-east-1
         run: |
           terraform init
-          # Added the username variable so Terraform doesn't ask for it
           terraform destroy -auto-approve \
             -var="app_theme=dark" \
             -var="docker_hub_username=${{ secrets.DOCKERHUB_USERNAME }}"
@@ -32,5 +35,4 @@ jobs:
         with:
           webhook: ${{ secrets.DISCORD_WEBHOOK }}
           status: ${{ job.status }}
-          content: "Infrastructure Cleanup is ${{ job.status }}! 🗑️"
-          title: "Cleanup Result"
+          content: "Cleanup result: ${{ job.status }}"
