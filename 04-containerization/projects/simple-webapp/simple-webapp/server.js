@@ -1,6 +1,8 @@
 const express = require('express');
 const redis = require('redis');
 const path = require('path');
+const os = require('os'); 
+
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -32,17 +34,29 @@ app.get('/api/config', (req, res) => {
     });
 });
 
-// API for Real-Time Stats
+
 app.get('/api/stats', async (req, res) => {
+    // Calculate Memory Usage
+    const freeMem = os.freemem();
+    const totalMem = os.totalmem();
+    const memUsage = Math.round(((totalMem - freeMem) / totalMem) * 100);
+
+    // Calculate CPU Load (Average over the last minute)
+    const cpuLoad = Math.round(os.loadavg()[0] * 100);
+
     const timestamp = new Date().toLocaleTimeString();
-    // Save a log entry in Redis
-    await client.lPush('site_logs', `[${timestamp}] New visitor detected`);
-    await client.lTrim('site_logs', 0, 9); // Only keep the last 10 logs
+    await client.lPush('site_logs', `[${timestamp}] System Metrics Sampled: CPU ${cpuLoad}% | MEM ${memUsage}%`);
+    await client.lTrim('site_logs', 0, 9);
 
     const visits = await client.incr('dashboard_visits');
+    
     res.json({
         region: process.env.AWS_REGION || 'us-east-1',
-        visits: visits
+        runtime: 'Node.js 20',
+        visits: visits,
+        cpu: cpuLoad,      // New Data
+        memory: memUsage,  // New Data
+        status: 'Online'
     });
 });
 

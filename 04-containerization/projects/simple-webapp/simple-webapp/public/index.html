@@ -19,15 +19,39 @@
 
         // 2. Fetch real data from your backend API
         function updateDashboard() {
-            fetch('/api/stats')
-                .then(res => res.json())
-                .then(data => {
-                    // This looks for the IDs we put in the body below
-                    document.getElementById('region').innerText = data.region || 'us-east-1';
-                    document.getElementById('visits').innerText = data.visits || '0';
-                    document.getElementById('runtime').innerText = data.runtime || 'Node.js 20';
-                })
-                .catch(err => console.error("Could not fetch real-time data", err));
+         fetch('/api/stats')
+         .then(res => res.json())
+         .then(data => {
+            // Update the text
+            const cpuEl = document.getElementById('cpu');
+            const memEl = document.getElementById('memory');
+            
+            cpuEl.innerText = data.cpu;
+            memEl.innerText = data.memory;
+            
+            // Apply Warning Colors
+            // Find the parent 'stat-card' for both
+            const cpuCard = cpuEl.closest('.stat-card');
+            const memCard = memEl.closest('.stat-card');
+
+            // Toggle warning for CPU (80% threshold)
+            if (data.cpu >= 80) {
+                cpuCard.classList.add('warning');
+            } else {
+                cpuCard.classList.remove('warning');
+            }
+
+            // Toggle warning for Memory (80% threshold)
+            if (data.memory >= 80) {
+                memCard.classList.add('warning');
+            } else {
+                memCard.classList.remove('warning');
+            }
+
+            // Also update visits
+            document.getElementById('visits').innerText = data.visits;
+            document.getElementById('region').innerText = data.region;
+        });
         }
 
         // Run immediately and then every 10 seconds
@@ -64,20 +88,22 @@
                 <div class="user-status">Status: <span class="pulse"></span> Online</div>
             </header>
             
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <h3>Region</h3>
-                    <p id="region">Loading...</p>
-                </div>
-                <div class="stat-card">
-                    <h3>Total Visits</h3>
-                    <p id="visits">0</p>
-                </div>
-                <div class="stat-card">
-                    <h3>Runtime</h3>
-                    <p id="runtime">Loading...</p>
-                </div>
-            </div>
+          <div class="stats-grid">
+    <div class="stat-card">
+        <h3>Region</h3>
+        <p id="region">us-east-1</p>
+    </div>
+    <div class="stat-card">
+        <h3>CPU Usage</h3>
+        <p><span id="cpu">0</span>%</p> </div>
+    <div class="stat-card">
+        <h3>Memory</h3>
+        <p><span id="memory">0</span>%</p> </div>
+    <div class="stat-card">
+        <h3>Total Visits</h3>
+        <p id="visits">0</p>
+    </div>
+        </div>
 
            <div class="terminal" id="log-container">
                <p>> Initializing system...</p>
