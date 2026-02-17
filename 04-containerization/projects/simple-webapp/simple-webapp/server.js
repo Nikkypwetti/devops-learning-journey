@@ -87,7 +87,17 @@ window.onload = () => {
     updateDashboard();
     updateHistory();
     setInterval(updateDashboard, 10000);
+    setInterval(updateHistory, 60000); // Refresh history every minute
 };
+// Add this to server.js
+app.get('/api/history', async (req, res) => {
+    try {
+        const history = await client.lRange('deploy_history', 0, -1);
+        res.json(history);
+    } catch (err) {
+        res.status(500).json({ error: "Could not fetch history" });
+    }
+});
 
 app.get('/api/logs', async (req, res) => {
     const logs = await client.lRange('site_logs', 0, -1);

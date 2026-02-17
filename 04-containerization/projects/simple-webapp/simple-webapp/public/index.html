@@ -54,9 +54,27 @@
         });
         }
 
+        function updateHistory() {
+          fetch('/api/history')
+            .then(res => res.json())
+            .then(data => {
+                const list = document.getElementById('history-list');
+                if (data.length === 0) {
+                    list.innerHTML = '<li>No deployments recorded yet.</li>';
+                } else {
+                    list.innerHTML = data.map(item => 
+                        `<li style="padding: 8px 0; border-bottom: 1px solid #233554;">
+                            <i class="fas fa-check-circle" style="color: #64ffda;"></i> ${item}
+                        </li>`
+                    ).join('');
+                }
+            });
+        }
+
         // Run immediately and then every 10 seconds
         window.onload = () => {
             updateDashboard();
+            updateHistory();
             setInterval(updateDashboard, 10000);
         };
 
@@ -89,11 +107,11 @@
             </header>
             
           <div class="stats-grid">
-    <div class="stat-card">
-        <h3>Region</h3>
-        <p id="region">us-east-1</p>
-    </div>
-    <div class="stat-card">
+          <div class="stat-card">
+          <h3>Region</h3>
+           <p id="region">us-east-1</p>
+           </div>
+          <div class="stat-card">
         <h3>CPU Usage</h3>
         <p><span id="cpu">0</span>%</p> </div>
     <div class="stat-card">
@@ -103,23 +121,21 @@
         <h3>Total Visits</h3>
         <p id="visits">0</p>
     </div>
+    </div>
+           <div class="terminal" id="log-container">
         </div>
 
-           <div class="terminal" id="log-container">
-               <p>> Initializing system...</p>
-           </div>
-           <div class="history-section">
-    <h3><i class="fas fa-history"></i> Deployment History</h3>
-    <table id="history-table">
-        <thead>
-            <tr>
-                <th>Event Details</th>
-            </tr>
-        </thead>
-        <tbody id="history-body">
-            </tbody>
-    </table>
-    </div>
+        <div class="history-section">
+    <h3 style="color: #64ffda;"><i class="fas fa-history"></i> Deployment History</h3>
+    <ul id="history-list" style="list-style: none; padding: 0; color: #8892b0;">
+        <li>Loading deployment records...</li>
+    </ul>
+     <table style="width: 100%; color: #fff; background: #252538; border-radius: 5px;">
+            <tbody id="history-body">
+                </tbody>
+        </table>
+      </div> 
+           
         </main>
     </div>
 </body>
@@ -127,5 +143,4 @@
 
 
 
-<script>
-</script>
+
