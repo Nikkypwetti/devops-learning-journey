@@ -5,9 +5,13 @@ const path = require('path');
 const app = express();
 const port = process.env.PORT || 3000;
 
+app.get('/health', (req, res) => {
+    res.status(200).send('OK');
+});
+
 // Connect to Redis (Docker handles the 'redis' hostname)
 const client = redis.createClient({
-    url: process.env.REDIS_URL || 'redis://redis:6379'
+    url: process.env.REDIS_URL || 'redis://localhost:6379'
 });
 
 client.on('error', (err) => console.log('Redis Client Error', err));
