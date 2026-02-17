@@ -90,8 +90,7 @@ jobs:
       - name: Terraform Apply
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         working-directory: ./04-containerization/projects/simple-webapp/simple-webapp/terraform
-        run: terraform apply -auto-approve -var="app_theme=dark" -var="docker_hub_username=${{ secrets.DOCKERHUB_USERNAME }}" -var="deploy_date=$(date +%s)"
-
+        run: terraform apply -auto-approve -var="app_theme=dark" -var="docker_hub_username=${{ secrets.DOCKERHUB_USERNAME }}"
       - name: Get Website URL
         id: get_url
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
