@@ -17,77 +17,66 @@
                 }
             });
 
-        // 2. Fetch real data from your backend API
+        // 2. Fetch Metrics (CPU, Memory, Visits)
         function updateDashboard() {
-         fetch('/api/stats')
-         .then(res => res.json())
-         .then(data => {
-            // Update the text
-            const cpuEl = document.getElementById('cpu');
-            const memEl = document.getElementById('memory');
-            
-            cpuEl.innerText = data.cpu;
-            memEl.innerText = data.memory;
-            
-            // Apply Warning Colors
-            // Find the parent 'stat-card' for both
-            const cpuCard = cpuEl.closest('.stat-card');
-            const memCard = memEl.closest('.stat-card');
+            fetch('/api/stats')
+                .then(res => res.json())
+                .then(data => {
+                    const cpuEl = document.getElementById('cpu');
+                    const memEl = document.getElementById('memory');
+                    
+                    cpuEl.innerText = data.cpu;
+                    memEl.innerText = data.memory;
+                    document.getElementById('visits').innerText = data.visits;
+                    document.getElementById('region').innerText = data.region;
+                    
+                    // Warning Logic
+                    const cpuCard = cpuEl.closest('.stat-card');
+                    const memCard = memEl.closest('.stat-card');
 
-            // Toggle warning for CPU (80% threshold)
-            if (data.cpu >= 80) {
-                cpuCard.classList.add('warning');
-            } else {
-                cpuCard.classList.remove('warning');
-            }
-
-            // Toggle warning for Memory (80% threshold)
-            if (data.memory >= 80) {
-                memCard.classList.add('warning');
-            } else {
-                memCard.classList.remove('warning');
-            }
-
-            // Also update visits
-            document.getElementById('visits').innerText = data.visits;
-            document.getElementById('region').innerText = data.region;
-        });
+                    data.cpu >= 80 ? cpuCard.classList.add('warning') : cpuCard.classList.remove('warning');
+                    data.memory >= 80 ? memCard.classList.add('warning') : memCard.classList.remove('warning');
+                })
+                .catch(err => console.error("Stats fetch error:", err));
         }
 
+        // 3. Fetch Deployment History
         function updateHistory() {
-          fetch('/api/history')
-            .then(res => res.json())
-            .then(data => {
-                const list = document.getElementById('history-list');
-                if (data.length === 0) {
-                    list.innerHTML = '<li>No deployments recorded yet.</li>';
-                } else {
-                    list.innerHTML = data.map(item => 
-                        `<li style="padding: 8px 0; border-bottom: 1px solid #233554;">
-                            <i class="fas fa-check-circle" style="color: #64ffda;"></i> ${item}
-                        </li>`
-                    ).join('');
-                }
-            });
+            fetch('/api/history')
+                .then(res => res.json())
+                .then(data => {
+                    const list = document.getElementById('history-list');
+                    if (!data || data.length === 0) {
+                        list.innerHTML = '<li>No deployments recorded yet.</li>';
+                    } else {
+                        list.innerHTML = data.map(item => 
+                            `<li style="padding: 10px; border-bottom: 1px solid #233554; display: flex; align-items: center;">
+                                <i class="fas fa-rocket" style="color: #64ffda; margin-right: 10px;"></i> ${item}
+                            </li>`
+                        ).join('');
+                    }
+                });
         }
 
-        // Run immediately and then every 10 seconds
+        // 4. Fetch Live Terminal Logs
+        function updateLogs() {
+            fetch('/api/logs')
+                .then(res => res.json())
+                .then(logs => {
+                    const container = document.getElementById('log-container');
+                    container.innerHTML = logs.map(log => `<p class="log-entry">> ${log}</p>`).join('');
+                });
+        }
+
         window.onload = () => {
             updateDashboard();
             updateHistory();
-            setInterval(updateDashboard, 10000);
+            updateLogs();
+            // Refresh rates
+            setInterval(updateDashboard, 5000); 
+            setInterval(updateLogs, 5000);
+            setInterval(updateHistory, 30000); // Check history every 30s
         };
-
-         
-        function updateLogs() {
-           fetch('/api/logs')
-            .then(res => res.json())
-            .then(logs => {
-                const container = document.getElementById('log-container');
-                container.innerHTML = logs.map(log => `<p class="log-entry">${log}</p>`).join('');
-            });
-        }
-        setInterval(updateLogs, 5000); // Check for new logs every 5 seconds        
     </script>
 </head>
 <body>
@@ -100,47 +89,45 @@
                 <div class="nav-item"><i class="fas fa-network-wired"></i> Infrastructure</div>
             </nav>
         </aside>
+
         <main class="content">
             <header>
                 <h1>Nikky's DevOps Dashboard</h1>
                 <div class="user-status">Status: <span class="pulse"></span> Online</div>
             </header>
             
-          <div class="stats-grid">
-          <div class="stat-card">
-          <h3>Region</h3>
-           <p id="region">us-east-1</p>
-           </div>
-          <div class="stat-card">
-        <h3>CPU Usage</h3>
-        <p><span id="cpu">0</span>%</p> </div>
-    <div class="stat-card">
-        <h3>Memory</h3>
-        <p><span id="memory">0</span>%</p> </div>
-    <div class="stat-card">
-        <h3>Total Visits</h3>
-        <p id="visits">0</p>
-    </div>
-    </div>
-           <div class="terminal" id="log-container">
-        </div>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>Region</h3>
+                    <p id="region">us-east-1</p>
+                </div>
+                <div class="stat-card">
+                    <h3>CPU Usage</h3>
+                    <p><span id="cpu">0</span>%</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Memory</h3>
+                    <p><span id="memory">0</span>%</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Total Visits</h3>
+                    <p id="visits">0</p>
+                </div>
+            </div>
 
-        <div class="history-section">
-    <h3 style="color: #64ffda;"><i class="fas fa-history"></i> Deployment History</h3>
-    <ul id="history-list" style="list-style: none; padding: 0; color: #8892b0;">
-        <li>Loading deployment records...</li>
-    </ul>
-     <table style="width: 100%; color: #fff; background: #252538; border-radius: 5px;">
-            <tbody id="history-body">
-                </tbody>
-        </table>
-      </div> 
-           
+            <div class="terminal" id="log-container">
+                <p>> Initializing system components...</p>
+            </div>
+
+            <div class="history-section">
+                <h3 style="color: #64ffda; margin-bottom: 15px;">
+                    <i class="fas fa-history"></i> Deployment Timeline
+                </h3>
+                <ul id="history-list" style="list-style: none; padding: 0; color: #8892b0; background: #1e1e2e; border-radius: 8px;">
+                    <li>Checking records...</li>
+                </ul>
+            </div> 
         </main>
     </div>
 </body>
 </html>
-
-
-
-
