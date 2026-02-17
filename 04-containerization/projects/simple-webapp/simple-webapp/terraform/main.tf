@@ -100,7 +100,9 @@ resource "aws_ecs_task_definition" "app" {
 
       environment = [
         { name = "REDIS_URL", value = "redis://localhost:6379" },
-        { name = "APP_THEME", value = var.app_theme } # This passes the Terraform var to the container
+        { name = "APP_THEME", value = var.app_theme }, # This passes the Terraform var to the container
+        { name = "DEPLOY_TIMESTAMP", value = timestamp() }
+
       ]
     },
 

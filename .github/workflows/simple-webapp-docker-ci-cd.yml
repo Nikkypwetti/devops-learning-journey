@@ -54,6 +54,7 @@ jobs:
           # Make sure this context points to where your Dockerfile is
           context: ./04-containerization/projects/simple-webapp/simple-webapp
           push: true
+          no-cache: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/simple-webapp:latest
 
       - name: Setup Terraform
@@ -89,7 +90,7 @@ jobs:
       - name: Terraform Apply
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         working-directory: ./04-containerization/projects/simple-webapp/simple-webapp/terraform
-        run: terraform apply -auto-approve -var="app_theme=dark" -var="docker_hub_username=${{ secrets.DOCKERHUB_USERNAME }}"
+        run: terraform apply -auto-approve -var="app_theme=dark" -var="docker_hub_username=${{ secrets.DOCKERHUB_USERNAME }}" -var="deploy_date=$(date +%s)"
 
       - name: Get Website URL
         id: get_url
@@ -102,7 +103,7 @@ jobs:
       - name: Force ECS Redeployment
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
-          aws ecs update-service --cluster simple-webapp-cluster --service webapp-service --force-new-deployment
+          aws ecs update-service --cluster simple-webapp-cluster --service webapp-service --force-new-deployment --region us-east-1
 
       - name: Discord Notification
         if: always()
@@ -117,9 +118,6 @@ jobs:
 
 
 
-
-    
-   
 
 
       
