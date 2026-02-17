@@ -20,9 +20,22 @@ client.on('error', (err) => console.log('Redis Client Error', err));
 
 async function connectRedis() {
     await client.connect();
-    console.log("Connected to Redis for Dashboard Data");
+    console.log("Connected to Redis");
+
+    // LOG THE DEPLOYMENT
+    const deployTime = new Date().toLocaleString();
+    const deployVersion = process.env.DEPLOY_TIMESTAMP || 'v2.0';
+    // Store the last 5 deployments in a Redis List
+    await client.lPush('deploy_history', `Date: ${deployTime} | Version: ${deployVersion}`);
+    await client.lTrim('deploy_history', 0, 4); 
 }
 connectRedis();
+
+// Add an API endpoint to fetch this history
+app.get('/api/history', async (req, res) => {
+    const history = await client.lRange('deploy_history', 0, -1);
+    res.json(history);
+});
 
 // Serve your static CSS and Images
 app.use(express.static('public'));
@@ -59,6 +72,22 @@ app.get('/api/stats', async (req, res) => {
         status: 'Online'
     });
 });
+
+function updateHistory() {
+    fetch('/api/history')
+        .then(res => res.json())
+        .then(data => {
+            const body = document.getElementById('history-body');
+            body.innerHTML = data.map(event => `<tr><td>${event}</td></tr>`).join('');
+        });
+}
+
+// Call this once on load
+window.onload = () => {
+    updateDashboard();
+    updateHistory();
+    setInterval(updateDashboard, 10000);
+};
 
 app.get('/api/logs', async (req, res) => {
     const logs = await client.lRange('site_logs', 0, -1);
