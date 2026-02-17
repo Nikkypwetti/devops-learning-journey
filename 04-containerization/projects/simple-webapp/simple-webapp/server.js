@@ -6,94 +6,59 @@ const os = require('os');
 const app = express();
 const port = process.env.PORT || 3000;
 
-// 1. Health Check (Top priority for AWS ALB)
-app.get('/health', (req, res) => {
-    res.status(200).send('OK');
-});
+// 1. IMMEDIATE HEALTH CHECK
+app.get('/health', (req, res) => res.status(200).send('OK'));
+app.get('/api/config', (req, res) => res.json({ theme: process.env.APP_THEME || 'dark' }));
 
-// 2. Redis Configuration
+// 2. REDIS SETUP
 const client = redis.createClient({
     url: process.env.REDIS_URL || 'redis://localhost:6379'
 });
 
-client.on('error', (err) => console.error('Redis Client Error:', err));
+client.on('error', (err) => console.error('Redis Error:', err));
 
-// 3. Connect to Redis and Log Deployment
-async function connectRedis() {
+async function initApp() {
     try {
         await client.connect();
-        console.log("Successfully connected to Redis at localhost:6379");
-
-        const deployTime = new Date().toLocaleString();
-        const deployVersion = process.env.DEPLOY_TIMESTAMP || 'v2.1';
+        console.log("Connected to Redis");
         
-        await client.lPush('deploy_history', `Date: ${deployTime} | Version: ${deployVersion}`);
-        await client.lTrim('deploy_history', 0, 4); 
+        const deployTime = new Date().toLocaleString();
+        await client.lPush('deploy_history', `Deploy: ${deployTime}`);
+        await client.lTrim('deploy_history', 0, 4);
     } catch (err) {
-        console.error("Failed to connect to Redis. Metrics will be unavailable.", err);
+        console.error("Running without Redis storage.");
     }
 }
-connectRedis();
+initApp();
 
-// 4. Static Files (Serves your CSS and public assets)
-// If your index.html is in the 'public' folder, use this:
+// 3. MIDDLEWARE & ROUTES
 app.use(express.static(path.join(__dirname, 'public')));
-
-// 5. API Endpoints
-app.get('/api/config', (req, res) => {
-    res.json({ theme: process.env.APP_THEME || 'dark' });
-});
-
-app.get('/api/history', async (req, res) => {
-    try {
-        const history = await client.lRange('deploy_history', 0, -1);
-        res.json(history || []);
-    } catch (err) {
-        res.status(500).json({ error: "History unavailable" });
-    }
-});
-
-app.get('/api/logs', async (req, res) => {
-    try {
-        const logs = await client.lRange('site_logs', 0, -1);
-        res.json(logs || []);
-    } catch (err) {
-        res.status(500).json({ error: "Logs unavailable" });
-    }
-});
 
 app.get('/api/stats', async (req, res) => {
     try {
-        const freeMem = os.freemem();
-        const totalMem = os.totalmem();
-        const memUsage = Math.round(((totalMem - freeMem) / totalMem) * 100);
-        const cpuLoad = Math.round(os.loadavg()[0] * 100);
-
-        const timestamp = new Date().toLocaleTimeString();
-        await client.lPush('site_logs', `[${timestamp}] CPU: ${cpuLoad}% | MEM: ${memUsage}%`);
-        await client.lTrim('site_logs', 0, 9);
-
-        const visits = await client.incr('dashboard_visits');
-        
+        const visits = await client.incr('dashboard_visits').catch(() => 0);
         res.json({
             region: process.env.AWS_REGION || 'us-east-1',
-            runtime: 'Node.js 20',
             visits: visits,
-            cpu: cpuLoad,
-            memory: memUsage,
-            status: 'Online'
+            cpu: Math.round(os.loadavg()[0] * 100),
+            memory: Math.round(((os.totalmem() - os.freemem()) / os.totalmem()) * 100)
         });
-    } catch (err) {
-        res.status(500).json({ error: "Stats unavailable" });
-    }
+    } catch (e) { res.status(500).json({ error: 'Stats error' }); }
 });
 
-// 6. Serve the Frontend
+app.get('/api/history', async (req, res) => {
+    const history = await client.lRange('deploy_history', 0, -1).catch(() => []);
+    res.json(history);
+});
+
 app.get('/', (req, res) => {
-    // This sends your index.html to the browser
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-app.listen(port, () => {
-    console.log(`Server is live! Access it at http://localhost:${port}`);
+// 4. START SERVER
+app.listen(port, () => console.log(`Server live on ${port}`));
+
+// 5. GRACEFUL SHUTDOWN (Important for ECS)
+process.on('unhandledRejection', (reason, promise) => {
+    console.error('Unhandled Rejection at:', promise, 'reason:', reason);
 });

@@ -8,6 +8,7 @@ RUN npm install
 FROM node:20-alpine
 WORKDIR /app
 COPY --from=builder /app/node_modules ./node_modules
+RUN npm install --no-cache
 COPY . .
 
 USER node
