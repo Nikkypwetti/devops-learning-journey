@@ -35,6 +35,17 @@
             updateDashboard();
             setInterval(updateDashboard, 10000);
         };
+
+         
+        function updateLogs() {
+           fetch('/api/logs')
+            .then(res => res.json())
+            .then(logs => {
+                const container = document.getElementById('log-container');
+                container.innerHTML = logs.map(log => `<p class="log-entry">${log}</p>`).join('');
+            });
+        }
+        setInterval(updateLogs, 5000); // Check for new logs every 5 seconds        
     </script>
 </head>
 <body>
@@ -68,13 +79,15 @@
                 </div>
             </div>
 
-            <div class="terminal">
-                <p>> systemctl status simple-webapp</p>
-                <p class="success">● active (running) since Day 7</p>
-                <p>> fetching environment metrics...</p>
-                <p>Environment: Production</p>
-            </div>
+           <div class="terminal" id="log-container">
+               <p>> Initializing system...</p>
+           </div>
         </main>
     </div>
 </body>
 </html>
+
+
+
+<script>
+</script>

@@ -30,20 +30,21 @@ app.get('/api/config', (req, res) => {
 
 // API for Real-Time Stats
 app.get('/api/stats', async (req, res) => {
-    try {
-        // This is where the 'Real' website magic happens:
-        // Every time the dashboard refreshes, it increments a counter in Redis
-        const visits = await client.incr('dashboard_visits');
-        
-        res.json({
-            region: process.env.AWS_REGION || 'us-east-1',
-            runtime: 'Node.js 20',
-            visits: visits,
-            status: 'Online'
-        });
-    } catch (err) {
-        res.status(500).json({ error: "Failed to fetch from Redis" });
-    }
+    const timestamp = new Date().toLocaleTimeString();
+    // Save a log entry in Redis
+    await client.lPush('site_logs', `[${timestamp}] New visitor detected`);
+    await client.lTrim('site_logs', 0, 9); // Only keep the last 10 logs
+
+    const visits = await client.incr('dashboard_visits');
+    res.json({
+        region: process.env.AWS_REGION || 'us-east-1',
+        visits: visits
+    });
+});
+
+app.get('/api/logs', async (req, res) => {
+    const logs = await client.lRange('site_logs', 0, -1);
+    res.json(logs);
 });
 
 // Serve index.html for the root route
