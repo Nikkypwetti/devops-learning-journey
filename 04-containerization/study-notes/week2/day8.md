@@ -146,6 +146,52 @@ What I Learned
 
     Data Persistence: I practiced backing up data from a Docker Volume using the --volumes-from flag.
 
+    Build Context Errors: I learned that the build: path in docker-compose.yml must exactly match the directory structure on my disk.
+
+    Task Scheduling: I learned how to use crontab to schedule recurring DevOps tasks like database backups.
+
+    The Power of chmod: I practiced making scripts executable so they can be run by the system scheduler.
+
+    Build Context: I learned that build: ./backend requires an actual directory named backend containing a Dockerfile.
+
+    Infrastructure Scaffolding: I learned how to "scaffold" a project by creating the necessary directory structure before running orchestration tools.
+
+    Placeholder Strategy: Using light images like nginx:alpine is a great way to test if your Compose networking and volumes are working before writing the actual application code.
+
+    The Compose Lifecycle: I moved from "Unknown Command" and "Broken Kernel" to a fully running 3-tier application stack.
+
+    Orchestration Success: I successfully created a custom Network and Volume automatically using a YAML file.
+
+    Debugging & Perseverance: I learned that DevOps is 50% configuration and 50% troubleshooting system-level issues like apt locks and broken dkms modules.
+
+    Service Execution: I practiced using docker compose exec to run commands inside a container that is already running, which is vital for database management.
+
+    Database Security: I learned that enabling MONGO_INITDB_ROOT_USERNAME prevents unauthorized access, requiring a db.auth() call or login flags.
+
+    Volume Persistence: I verified that data stored in a named volume survives even when the containers are completely removed with docker compose down.
+
+    Authentication & Security: I learned that enabling root security in MongoDB requires explicit authentication (db.auth) even after switching to a specific database.
+
+    Volume Persistence: I successfully mapped a named volume to ensure my my_portfolio data survives container restarts.
+
+    Authentication Scoping: I learned that root users created via Docker environment variables are stored in the admin database. To authenticate while using a different database, I must reference the admin database.
+
+    Persistence Confirmed: I successfully proved that data survives a docker compose down and up cycle, confirming my volume configuration is correct.
+
+    System Troubleshooting: I successfully navigated a total system recovery from a broken kernel and apt lock to a fully running 3-tier stack.
+
+    Image Tagging: I learned that images must be tagged with my Docker Hub username before they can be pushed to a remote registry.
+
+    Registry Push: I successfully moved my local images to the cloud (Docker Hub), making my project portable.
+
+    System Maintenance: I practiced using docker system prune -a to manage disk space on my HP EliteBook without losing my persistent data.
+
+    Node.js Containerization: I learned how to containerize a real Express/Mongoose app, moving away from Nginx placeholders.
+
+    Environment Variable Injection: I practiced using process.env.DATABASE_URL in Node.js to connect to a database defined in Docker Compose.
+
+    CI/CD Fundamentals: I created a GitHub Actions workflow to automate my image delivery to Docker Hub.
+
 Commands Practice
 Bash
 
@@ -176,7 +222,59 @@ sudo apt install docker-compose-plugin
 # Run backup script
 ./backup.sh
 
-1. Check the Connection Logs
+# Check directory structure
+ls -F
+
+# Edit the system scheduler
+crontab -e
+
+# Create directory structure
+mkdir backend frontend
+
+# Scaffold Dockerfiles
+echo "FROM nginx:alpine" > backend/Dockerfile
+
+# Enter a running container to run commands
+docker compose exec db mongosh
+
+# List databases inside the container
+show dbs
+
+# Login with credentials
+docker compose exec db mongosh -u <user> -p <password>
+
+# Create and query data
+db.collection.insertOne({key: "value"})
+db.collection.find()
+
+# Database commands
+use my_portfolio
+db.projects.find().pretty()
+
+# Login to a specific DB using admin credentials from the terminal
+docker compose exec db mongosh -u <user> -p <password> --authenticationDatabase admin
+
+# Authenticate inside the shell if already connected
+db.getSiblingDB("admin").auth("user", "password")
+
+# Verify record persistence after a restart
+db.getSiblingDB("admin").auth("user", "password")
+db.projects.find()
+
+# Exit the shell safely
+exit
+
+# Tagging for the cloud
+docker tag local-image:latest username/repo:v1
+
+# Pushing to registry
+docker push username/repo:v1
+
+# Total system cleanup
+docker system df      # Check space first
+docker system prune -a # Reclaim space
+
+#1. Check the Connection Logs
 
 To see if your backend successfully reached the MongoDB container, run:
 Bash
@@ -237,6 +335,28 @@ Challenges
     Problem: The docker compose command was unrecognized because the V2 plugin wasn't installed, and VirtualBox was locking the kernel.
 
     Solution: Purged VirtualBox, updated the kernel, and installed the docker-compose-plugin from the official Docker repo.
+
+    Problem: docker compose failed because it couldn't find the backend folder.
+
+    Solution: I am checking my folder naming conventions to ensure the YAML build context matches the actual project structure.
+
+    Problem: docker compose failed with "path not found" error.
+
+    Solution: Realized I was missing the service directories; created them with placeholder Dockerfiles to satisfy the build context requirements.
+
+    Problem: show dbs failed with an Unauthorized error.
+
+    Solution: Authenticated using the credentials defined in my environment variables.
+
+    Problem: Authentication failed error after restarting the stack, even with the correct password.
+
+    Solution: Identified that the user belongs to the admin database and used getSiblingDB to authenticate properly.
+
+    Problem: Authentication failed because I was trying to log in directly to my_portfolio.
+
+    Solution: Switched the authentication context to the admin database where the root user was initially created by Docker Compose.
+
+
 
 Resources
 
