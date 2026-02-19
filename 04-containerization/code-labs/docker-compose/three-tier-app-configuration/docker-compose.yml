@@ -1,15 +1,15 @@
 services:
-  frontend:
-    build: ./frontend
-    ports:
-      - "${PORT_FRONTEND}:3000"
-  
   backend:
-    build: ./backend
+    image: your-username/fiddly-backend:latest # It pulls from the cloud!
+    ports:
+      - "3001:3001"
     environment:
       - DATABASE_URL=mongodb://${DB_USER}:${DB_PASSWORD}@db:27017/my_portfolio?authSource=admin
-    depends_on:
-      - db
+
+  frontend:
+    image: your-username/fiddly-frontend:latest
+    ports:
+      - "80:80"
 
   db:
     image: mongo:latest

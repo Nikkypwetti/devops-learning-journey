@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nikky's DevOps Lab</title>
+    <style>
+        body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background: #0f172a; color: white; margin: 0; }
+        .card { background: #1e293b; padding: 2rem; border-radius: 12px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); text-align: center; border: 1px solid #334155; }
+        h1 { color: #38bdf8; }
+        .status { color: #4ade80; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>Nikky's DevOps Lab</h1>
+        <p>Status: <span class="status" id="api-status">Connecting...</span></p>
+        <div id="api-response" style="margin-top: 10px; font-size: 0.9em; color: #94a3b8;"></div>
+    </div>
+
+    <script>
+        // We call the backend. Since they are both on localhost in your browser:
+        fetch('http://localhost:3001/')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('api-status').innerText = "Full Stack Online ✅";
+                document.getElementById('api-response').innerText = "Backend says: " + data;
+            })
+            .catch(err => {
+                document.getElementById('api-status').innerText = "Backend Offline ❌";
+                document.getElementById('api-status').style.color = "#ef4444";
+            });
+    </script>
+</body>
+</html>
