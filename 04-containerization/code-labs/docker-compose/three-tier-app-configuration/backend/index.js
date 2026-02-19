@@ -1,6 +1,9 @@
 const express = require('express');
+const cors = require('cors');
 const mongoose = require('mongoose');
 const app = express();
+
+app.use(cors());
 
 // Use the environment variable we set in docker-compose.yml
 const mongoUrl = process.env.DATABASE_URL || 'mongodb://localhost:27017/vidly';

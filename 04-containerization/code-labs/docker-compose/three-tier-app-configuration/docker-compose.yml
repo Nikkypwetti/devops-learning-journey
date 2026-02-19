@@ -1,13 +1,13 @@
 services:
   backend:
-    image: your-username/fiddly-backend:latest # It pulls from the cloud!
+    image: ${{ secrets.DOCKERHUB_USERNAME }}/fiddly-backend:latest # It pulls from the cloud!
     ports:
       - "3001:3001"
     environment:
       - DATABASE_URL=mongodb://${DB_USER}:${DB_PASSWORD}@db:27017/my_portfolio?authSource=admin
 
   frontend:
-    image: your-username/fiddly-frontend:latest
+    image: ${{ secrets.DOCKERHUB_USERNAME }}/fiddly-frontend:latest
     ports:
       - "80:80"
 

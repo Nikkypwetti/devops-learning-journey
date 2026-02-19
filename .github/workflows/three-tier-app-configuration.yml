@@ -11,14 +11,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Start Stack with Docker Compose
+      - name: Start Stack
         run: |
-          # Use a dummy .env for testing
+          # Create dummy .env
           echo "DB_USER=test_user" >> .env
           echo "DB_PASSWORD=test_pass" >> .env
           echo "DATABASE_URL=mongodb://test_user:test_pass@db:27017/test_db?authSource=admin" >> .env
           
-          docker compose up -d
+          # Use --build to ensure it uses the code in the repo
+          docker compose up -d --build 
         working-directory: ./04-containerization/code-labs/docker-compose/three-tier-app-configuration
 
       - name: Check Container Status
