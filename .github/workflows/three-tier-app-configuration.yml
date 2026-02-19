@@ -26,3 +26,11 @@ jobs:
           file: ./04-containerization/code-labs/docker-compose/three-tier-app-configuration/backend/Dockerfile
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/fiddly-backend:latest
+
+      - name: Build and Push Frontend
+        uses: docker/build-push-action@v4
+        with:
+          context: ./04-containerization/code-labs/docker-compose/three-tier-app-configuration/frontend
+          file: ./04-containerization/code-labs/docker-compose/three-tier-app-configuration/frontend/Dockerfile
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/fiddly-frontend:latest
