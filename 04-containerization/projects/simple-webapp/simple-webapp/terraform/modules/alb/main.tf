@@ -16,6 +16,9 @@ resource "aws_lb_target_group" "app" {
   vpc_id      = var.vpc_id
   target_type = "ip"
 
+  # Add this line to speed up destruction/deployment
+  deregistration_delay = 30
+
   health_check {
     path                = "/health"
     interval            = 30
