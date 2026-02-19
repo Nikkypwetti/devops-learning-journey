@@ -20,7 +20,9 @@ jobs:
       - name: Build and Push Backend
         uses: docker/build-push-action@v4
         with:
-          # Update this path to match exactly where 'backend' is on GitHub
-          context: ./04-containerization/code-labs/docker-compose/three-tier-app-configuration 
+          # This is the folder where your code lives
+          context: ./04-containerization/code-labs/docker-compose/three-tier-app-configuration/backend
+          # This tells Docker exactly where the Dockerfile is inside that folder
+          file: ./04-containerization/code-labs/docker-compose/three-tier-app-configuration/backend/Dockerfile
           push: true
-          tags: nikkytechies/fiddly-backend:latest
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/fiddly-backend:latest
