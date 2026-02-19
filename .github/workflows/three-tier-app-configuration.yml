@@ -20,6 +20,7 @@ jobs:
       - name: Build and Push Backend
         uses: docker/build-push-action@v4
         with:
-          context: ./backend
+          # Update this path to match exactly where 'backend' is on GitHub
+          context: ./04-containerization/code-labs/docker-compose/three-tier-app-configuration 
           push: true
-          tags: your-username/fiddly-backend:latest
+          tags: nikkytechies/fiddly-backend:latest
