@@ -1,13 +1,17 @@
 services:
   backend:
-    image: nikkytechies/fiddly-frontend:latest # Use your real username here # It pulls from the cloud!
+    # Fix: Point to the backend image here
+    image: nikkytechies/fiddly-backend:latest 
     ports:
       - "3001:3001"
     environment:
       - DATABASE_URL=mongodb://${DB_USER}:${DB_PASSWORD}@db:27017/my_portfolio?authSource=admin
+    depends_on:
+      - db
 
   frontend:
-    image: nikkytechies/fiddly-backend:latest # Use your real username here
+    # Fix: Point to the frontend image here
+    image: nikkytechies/fiddly-frontend:latest 
     ports:
       - "80:80"
 
