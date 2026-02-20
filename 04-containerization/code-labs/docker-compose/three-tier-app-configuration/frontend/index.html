@@ -19,38 +19,48 @@
         
         <hr style="border: 0; border-top: 1px solid #334155; margin: 1.5rem 0;">
         
-        <button onclick="resetCounter()" style="background: #ef4444; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer;">
-            Reset Database Count
-        </button>
-    </div>
+        <button id="resetBtn" style="background: #ef4444; color: white; padding: 10px 20px; border-radius: 6px; cursor: pointer; border: none;">
+    Reset Database Count
+</button>
 
-    <script>
-       const API_URL = 'http://localhost:3001';
+<script>
+    const API_URL = 'http://localhost:3001';
 
-    // 1. Call this once when page opens to add +1
-    function logVisit() {
-        fetch(`${API_URL}/visit`, { method: 'POST' })
-            .then(() => getStatus());
+    // Function to refresh the UI
+    async function getStatus() {
+        try {
+            const res = await fetch(`${API_URL}/status`);
+            const data = await res.json();
+            document.getElementById('api-status').innerText = "Full Stack Online ✅";
+            document.getElementById('api-response').innerHTML = `<p>Database Records: <strong>${data.db_count || 0}</strong></p>`;
+        } catch (err) {
+            document.getElementById('api-status').innerText = "Backend Offline ❌";
+        }
     }
 
-    // 2. Use this to just see the current number
-    function getStatus() {
-        fetch(`${API_URL}/status`)
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('api-status').innerText = "Full Stack Online ✅";
-                document.getElementById('api-response').innerHTML = `
-                    <p>Database Records: <strong>${data.db_count || 0}</strong></p>
-                `;
-            });
+    // Function to log a visit
+    async function logVisit() {
+        try {
+            await fetch(`${API_URL}/visit`, { method: 'POST' });
+            getStatus();
+        } catch (e) { console.log("Visit error"); }
     }
 
-    function resetCounter() {
-        fetch(`${API_URL}/reset`, { method: 'POST' })
-            .then(() => getStatus()); // Now this will show 0!
-    }
+    // The Reset Logic
+    document.getElementById('resetBtn').addEventListener('click', async () => {
+        console.log("Reset button was clicked!"); // This tells us the button is "alive"
+        try {
+            const res = await fetch(`${API_URL}/reset`, { method: 'POST' });
+            const data = await res.json();
+            console.log("Server says:", data.message);
+            getStatus(); // Refresh to show 0
+        } catch (err) {
+            console.error("Reset failed:", err);
+        }
+    });
 
-    logVisit(); // Log the initial visit
-    </script>
+    // Run when page opens
+    logVisit();
+</script>
 </body>
 </html>

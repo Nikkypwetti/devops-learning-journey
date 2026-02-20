@@ -54,8 +54,10 @@ jobs:
           context: ./04-containerization/code-labs/docker-compose/three-tier-app-configuration/frontend
           file: ./04-containerization/code-labs/docker-compose/three-tier-app-configuration/frontend/Dockerfile
           push: true
-          tags: nikkytechies/fiddly-frontend:latest
-
+          tags: |
+            nikkytechies/fiddly-frontend:latest
+            nikkytechies/fiddly-frontend:v${{ github.run_number }}
+            nikkytechies/fiddly-frontend:${{ github.sha }}
       - name: Verify Handshake
         run: |
           sleep 20

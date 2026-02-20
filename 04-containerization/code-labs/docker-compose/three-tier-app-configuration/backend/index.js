@@ -14,6 +14,7 @@ mongoose.connect(mongoUrl)
 const VisitSchema = new mongoose.Schema({ count: Number });
 const Visit = mongoose.model('Visit', VisitSchema);
 
+// Change /status to ONLY read the data
 app.get('/status', async (req, res) => {
     let visit = await Visit.findOne();
     if (!visit) visit = new Visit({ count: 0 });
@@ -25,13 +26,19 @@ app.get('/status', async (req, res) => {
     });
 });
 
-
+// Create a new route just for "logging a visit"
 app.post('/visit', async (req, res) => {
     let visit = await Visit.findOne();
     if (!visit) visit = new Visit({ count: 0 });
     visit.count++;
     await visit.save();
     res.json({ count: visit.count });
+});
+
+app.post('/reset', async (req, res) => {
+    await Visit.deleteMany({});
+    console.log("🗑️ Database has been reset");
+    res.json({ message: "Counter Reset Successfully!" });
 });
 
 app.listen(3001, () => console.log('🚀 API running on 3001'));
