@@ -54,10 +54,13 @@ jobs:
           context: ./04-containerization/code-labs/docker-compose/three-tier-app-configuration/frontend
           file: ./04-containerization/code-labs/docker-compose/three-tier-app-configuration/frontend/Dockerfile
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/fiddly-frontend:latest
+          tags: nikkytechies/fiddly-frontend:latest
 
-      - name: Verify Backend Handshake
+      - name: Verify Handshake
         run: |
-          sleep 15
-          docker compose logs backend | grep "Connected to MongoDB"
+          sleep 20
+          # We check ALL logs to see if there is a connection error
+          docker compose logs
+          # This line will still fail the build if the message isn't there
+          docker compose logs | grep "Connected to MongoDB"
         working-directory: ./04-containerization/code-labs/docker-compose/three-tier-app-configuration

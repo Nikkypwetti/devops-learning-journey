@@ -6,7 +6,9 @@ const app = express();
 app.use(cors());
 
 const mongoUrl = process.env.DATABASE_URL || 'mongodb://localhost:27017/vidly';
-mongoose.connect(mongoUrl);
+mongoose.connect(mongoUrl)
+    .then(() => console.log("✅ Connected to MongoDB..."))
+    .catch(err => console.error("❌ Connection error:", err));
 
 // Define a simple Schema
 const VisitSchema = new mongoose.Schema({ count: Number });

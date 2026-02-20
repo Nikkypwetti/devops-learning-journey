@@ -27,17 +27,18 @@
 # after building the image
 services:
   backend:
-    # Fix: Point to the backend image here
+    build: ./backend
     image: nikkytechies/fiddly-backend:latest 
     ports:
       - "3001:3001"
     environment:
       - DATABASE_URL=mongodb://${DB_USER}:${DB_PASSWORD}@db:27017/my_portfolio?authSource=admin
     depends_on:
-      - db
-
+      -db:
+          condition: service_healthy # Wait for the healthcheck to pass!
+          
   frontend:
-    # Fix: Point to the frontend image here
+    build: ./frontend
     image: nikkytechies/fiddly-frontend:latest 
     ports:
       - "80:80"
@@ -47,8 +48,17 @@ services:
     environment:
       - MONGO_INITDB_ROOT_USERNAME=${DB_USER}
       - MONGO_INITDB_ROOT_PASSWORD=${DB_PASSWORD}
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     volumes:
       - mongo_data:/data/db
 
 volumes:
   mongo_data:
+
+  
+
+ 
