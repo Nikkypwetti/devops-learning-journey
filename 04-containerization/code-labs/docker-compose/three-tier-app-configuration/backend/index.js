@@ -1,19 +1,29 @@
 const express = require('express');
-const cors = require('cors');
 const mongoose = require('mongoose');
+const cors = require('cors');
 const app = express();
 
 app.use(cors());
 
-// Use the environment variable we set in docker-compose.yml
 const mongoUrl = process.env.DATABASE_URL || 'mongodb://localhost:27017/vidly';
+mongoose.connect(mongoUrl);
 
-mongoose.connect(mongoUrl)
-  .then(() => console.log('✅ Connected to MongoDB...'))
-  .catch(err => console.error('❌ Could not connect to MongoDB...', err));
+// Define a simple Schema
+const VisitSchema = new mongoose.Schema({ count: Number });
+const Visit = mongoose.model('Visit', VisitSchema);
 
-app.get('/', (req, res) => {
-  res.send('Nikky\'s API is Live and Connected!');
+app.get('/status', async (req, res) => {
+    // Increment visit count in DB
+    let visit = await Visit.findOne();
+    if (!visit) visit = new Visit({ count: 0 });
+    visit.count++;
+    await visit.save();
+
+    res.json({
+        message: "Nikky's Stack is Healthy!",
+        db_count: visit.count,
+        timestamp: new Date()
+    });
 });
 
-app.listen(3001, () => console.log('🚀 Listening on port 3001...'));
+app.listen(3001, () => console.log('🚀 API running on 3001'));

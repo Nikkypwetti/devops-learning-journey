@@ -19,17 +19,18 @@
     </div>
 
     <script>
-        // We call the backend. Since they are both on localhost in your browser:
-        fetch('http://localhost:3001/')
-            .then(response => response.text())
-            .then(data => {
-                document.getElementById('api-status').innerText = "Full Stack Online ✅";
-                document.getElementById('api-response').innerText = "Backend says: " + data;
-            })
-            .catch(err => {
-                document.getElementById('api-status').innerText = "Backend Offline ❌";
-                document.getElementById('api-status').style.color = "#ef4444";
-            });
-    </script>
+    fetch('http://localhost:3001/status')
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('api-status').innerText = "Full Stack Online ✅";
+            document.getElementById('api-response').innerHTML = `
+                <p>Database Records: <strong>${data.db_count}</strong></p>
+                <p>Last Sync: ${new Date(data.timestamp).toLocaleTimeString()}</p>
+            `;
+        })
+        .catch(err => {
+            document.getElementById('api-status').innerText = "Backend Offline ❌";
+        });
+</script>
 </body>
 </html>
