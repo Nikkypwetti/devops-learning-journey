@@ -28,14 +28,14 @@
 services:
   backend:
     build: ./backend
-    image: nikkytechies/fiddly-backend:latest 
+    image: nikkytechies/fiddly-backend:latest
+    depends_on:
+      db: 
+        condition: service_healthy
     ports:
       - "3001:3001"
     environment:
       - DATABASE_URL=mongodb://${DB_USER}:${DB_PASSWORD}@db:27017/my_portfolio?authSource=admin
-    depends_on:
-      -db:
-          condition: service_healthy # Wait for the healthcheck to pass!
           
   frontend:
     build: ./frontend

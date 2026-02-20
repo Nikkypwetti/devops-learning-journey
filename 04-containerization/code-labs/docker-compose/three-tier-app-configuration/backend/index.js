@@ -28,4 +28,9 @@ app.get('/status', async (req, res) => {
     });
 });
 
+app.post('/reset', async (req, res) => {
+    await Visit.deleteMany({});
+    res.json({ message: "Counter Reset Successfully!" });
+});
+
 app.listen(3001, () => console.log('🚀 API running on 3001'));

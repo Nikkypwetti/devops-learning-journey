@@ -16,21 +16,38 @@
         <h1>Nikky's DevOps Lab</h1>
         <p>Status: <span class="status" id="api-status">Connecting...</span></p>
         <div id="api-response" style="margin-top: 10px; font-size: 0.9em; color: #94a3b8;"></div>
+        
+        <hr style="border: 0; border-top: 1px solid #334155; margin: 1.5rem 0;">
+        
+        <button onclick="resetCounter()" style="background: #ef4444; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer;">
+            Reset Database Count
+        </button>
     </div>
 
     <script>
-    fetch('http://localhost:3001/status')
-        .then(response => response.json())
-        .then(data => {
-            document.getElementById('api-status').innerText = "Full Stack Online ✅";
-            document.getElementById('api-response').innerHTML = `
-                <p>Database Records: <strong>${data.db_count}</strong></p>
-                <p>Last Sync: ${new Date(data.timestamp).toLocaleTimeString()}</p>
-            `;
-        })
-        .catch(err => {
-            document.getElementById('api-status').innerText = "Backend Offline ❌";
-        });
-</script>
+        const API_URL = 'http://localhost:3001';
+
+        function getStatus() {
+            fetch(`${API_URL}/status`)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('api-status').innerText = "Full Stack Online ✅";
+                    document.getElementById('api-response').innerHTML = `
+                        <p>Database Records: <strong>${data.db_count || 0}</strong></p>
+                    `;
+                })
+                .catch(err => {
+                    document.getElementById('api-status').innerText = "Backend Offline ❌";
+                });
+        }
+
+        function resetCounter() {
+            fetch(`${API_URL}/reset`, { method: 'POST' })
+                .then(() => getStatus()); // Refresh the count after resetting
+        }
+
+        // Initial load
+        getStatus();
+    </script>
 </body>
 </html>
