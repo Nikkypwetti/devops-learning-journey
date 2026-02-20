@@ -25,29 +25,32 @@
     </div>
 
     <script>
-        const API_URL = 'http://localhost:3001';
+       const API_URL = 'http://localhost:3001';
 
-        function getStatus() {
-            fetch(`${API_URL}/status`)
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById('api-status').innerText = "Full Stack Online ✅";
-                    document.getElementById('api-response').innerHTML = `
-                        <p>Database Records: <strong>${data.db_count || 0}</strong></p>
-                    `;
-                })
-                .catch(err => {
-                    document.getElementById('api-status').innerText = "Backend Offline ❌";
-                });
-        }
+    // 1. Call this once when page opens to add +1
+    function logVisit() {
+        fetch(`${API_URL}/visit`, { method: 'POST' })
+            .then(() => getStatus());
+    }
 
-        function resetCounter() {
-            fetch(`${API_URL}/reset`, { method: 'POST' })
-                .then(() => getStatus()); // Refresh the count after resetting
-        }
+    // 2. Use this to just see the current number
+    function getStatus() {
+        fetch(`${API_URL}/status`)
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('api-status').innerText = "Full Stack Online ✅";
+                document.getElementById('api-response').innerHTML = `
+                    <p>Database Records: <strong>${data.db_count || 0}</strong></p>
+                `;
+            });
+    }
 
-        // Initial load
-        getStatus();
+    function resetCounter() {
+        fetch(`${API_URL}/reset`, { method: 'POST' })
+            .then(() => getStatus()); // Now this will show 0!
+    }
+
+    logVisit(); // Log the initial visit
     </script>
 </body>
 </html>

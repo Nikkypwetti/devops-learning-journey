@@ -15,12 +15,9 @@ const VisitSchema = new mongoose.Schema({ count: Number });
 const Visit = mongoose.model('Visit', VisitSchema);
 
 app.get('/status', async (req, res) => {
-    // Increment visit count in DB
     let visit = await Visit.findOne();
     if (!visit) visit = new Visit({ count: 0 });
-    visit.count++;
-    await visit.save();
-
+    
     res.json({
         message: "Nikky's Stack is Healthy!",
         db_count: visit.count,
@@ -28,9 +25,13 @@ app.get('/status', async (req, res) => {
     });
 });
 
-app.post('/reset', async (req, res) => {
-    await Visit.deleteMany({});
-    res.json({ message: "Counter Reset Successfully!" });
+
+app.post('/visit', async (req, res) => {
+    let visit = await Visit.findOne();
+    if (!visit) visit = new Visit({ count: 0 });
+    visit.count++;
+    await visit.save();
+    res.json({ count: visit.count });
 });
 
 app.listen(3001, () => console.log('🚀 API running on 3001'));
