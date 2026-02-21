@@ -6,7 +6,7 @@ on:
   pull_request:
     branches: [ "main" ]
     paths:
-      - '04-containerization/projects/simple-webapp/**'
+      - '04-containerization/projects/simple-webapp/simple-webapp/**'
   workflow_dispatch:
     inputs:
       theme:

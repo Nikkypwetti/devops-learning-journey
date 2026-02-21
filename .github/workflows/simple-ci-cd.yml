@@ -4,6 +4,14 @@ on:
   push:
     branches: [ main ]
 
+    paths:
+      - '04-containerization/projects/simple-webapp/docker-nodejs-sample/**'
+  pull_request:
+    paths:
+      - '**/docker-nodejs-sample/**'
+  #Added: Allows you to trigger the build manually from the GitHub Actions tab
+  workflow_dispatch:
+
 jobs:
   # Job 1: Verify the code
   test:
