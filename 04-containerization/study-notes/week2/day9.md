@@ -178,3 +178,112 @@ Resources
     Video Tutorial: NetworkChuck - Docker Compose
 
     Documentation: Docker Compose File Reference
+
+Day 9: Compose File Structure (Consolidated)
+What I Learned
+
+    Microservices Architecture: I learned that a professional docker-compose.yml is a blueprint for an entire ecosystem. It allows for the orchestration of frontend, backend, and database services as a single unit.
+
+    Network Isolation & "Zero-Trust": I implemented a dual-network strategy. By creating a private backend-nw and a public frontend-nw, I ensured that the database is completely hidden from the host and the internet, accessible only by the backend.
+
+    Internal DNS & Service Discovery: I discovered that containers within a Compose network don't need IP addresses to talk; they use the Service Name (e.g., http://backend:3001) via Docker's internal DNS.
+
+    Service Health Synchronization: I mastered the use of healthcheck paired with depends_on. This ensures the Backend waits until MongoDB is "Healthy" (responding to pings) before it attempts to connect, preventing startup crashes.
+
+    Environment Variable Security: I practiced using a .env file to inject secrets (DB_USER, DB_PASSWORD) into the containers, keeping my main code safe for GitHub.
+
+    CI/CD & Versioning: I learned how to link my local development to GitHub Actions, implementing a multi-tagging strategy (latest, v17, and Git-SHA) to track releases on Docker Hub.
+
+    Maintenance & Pruning: I practiced analyzing disk usage with docker system df and learned the difference between Anonymous volumes (removable via prune) and Named volumes (protected by Docker).
+
+Commands Practice
+Bash
+
+# --- Deployment & Syncing ---
+# Pull the verified images from Docker Hub (nikkytechies account)
+docker compose pull
+
+# Start the stack and recreate containers with the newest images
+docker compose up -d
+
+# --- Verification & Security ---
+# Test the 'Healthy' status and port mappings
+docker compose ps
+
+# Verify internal connectivity from the frontend container
+docker compose exec frontend curl http://backend:3001/status
+
+# Confirm network isolation (This SHOULD fail from the host)
+curl localhost:3001/status
+
+# --- Storage Cleanup ---
+# Reclaim space from unused images and networks
+docker system prune -a
+
+# Specifically remove orphaned volumes to save disk space
+docker volume prune
+
+Containers Created
+
+    three-tier-app-configuration-db-1 Purpose: Secured MongoDB storage.
+
+    Network: backend-nw (Isolated).
+
+    Volume: three-tier-app-configuration_mongo_data.
+
+    three-tier-app-configuration-backend-1 Purpose: Node.js API logic.
+
+    Network: Bridge (Connected to both backend-nw and frontend-nw).
+
+    Version: nikkytechies/fiddly-backend:latest (Synced with v17).
+
+    three-tier-app-configuration-frontend-1 Purpose: Nginx UI server.
+
+    Network: frontend-nw.
+
+    Ports: Exposed on 80:80 for public access.
+
+Dockerfiles Used
+Backend (/backend/Dockerfile)
+Dockerfile
+
+FROM node:18-alpine
+WORKDIR /app
+COPY package*.json ./
+RUN npm install
+COPY . .
+EXPOSE 3001
+CMD ["node", "index.js"]
+
+Frontend (/frontend/Dockerfile)
+Dockerfile
+
+FROM nginx:alpine
+COPY index.html /usr/share/nginx/html/index.html
+EXPOSE 80
+
+Challenges
+
+    Naming Conventions: Encountered Access Denied and Manifest Unknown errors.
+
+    Solution: Identified a typo in the username (nikky-techies vs nikkytechies) and the tag name (vlatest vs latest). Standardized the namespace across all files.
+
+    Host Connectivity: curl failed when hitting Port 3001 from the laptop.
+
+    Solution: Validated that this is a security feature of the "Zero-Trust" network design. Verified internal connectivity using docker compose exec.
+
+    Space Management: The HP EliteBook showed 1.8GB of reclaimable volume space.
+
+    Solution: Used docker volume prune to remove anonymous volumes while preserving named volumes for future projects.
+
+    GitHub Action Tags: Docker Hub initially only showed the latest tag.
+
+    Solution: Updated the main.yml workflow to include a list of tags: ${{ github.sha }} and v${{ github.run_number }}.
+
+Resources
+
+    Video Tutorial: NetworkChuck - Docker Compose tutorial
+
+    Reading: Docker Compose Networking & Volumes Documentation
+
+    Documentation: Docker Hub Repository Management
