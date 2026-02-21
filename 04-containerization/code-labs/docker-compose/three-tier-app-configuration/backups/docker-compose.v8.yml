@@ -1,0 +1,64 @@
+# for building the image
+# services:
+#   frontend:
+#     build: ./frontend
+#     ports:
+#       - "${PORT_FRONTEND}:3000"
+  
+#   backend:
+#     build: ./backend
+#     environment:
+#       # These variables are passed to your Node.js/Python code
+#       - DATABASE_URL=mongodb://${DB_USER}:${DB_PASSWORD}@db:27017/${DB_NAME}
+#     depends_on:
+#       - db
+
+#   db:
+#     image: mongo:latest
+#     environment:
+#       - MONGO_INITDB_ROOT_USERNAME=${DB_USER}
+#       - MONGO_INITDB_ROOT_PASSWORD=${DB_PASSWORD}
+#     volumes:
+#       - mongo_data:/data/db
+
+# volumes:
+#   mongo_data:
+
+# after building the image
+services:
+  backend:
+    build: ./backend
+    image: nikkytechies/fiddly-backend:latest
+    depends_on:
+      db: 
+        condition: service_healthy
+    ports:
+      - "3001:3001"
+    environment:
+      - DATABASE_URL=mongodb://${DB_USER}:${DB_PASSWORD}@db:27017/my_portfolio?authSource=admin
+          
+  frontend:
+    build: ./frontend
+    image: nikkytechies/fiddly-frontend:latest 
+    ports:
+      - "80:80"
+
+  db:
+    image: mongo:latest
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${DB_USER}
+      - MONGO_INITDB_ROOT_PASSWORD=${DB_PASSWORD}
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - mongo_data:/data/db
+
+volumes:
+  mongo_data:
+
+  
+
+ 
