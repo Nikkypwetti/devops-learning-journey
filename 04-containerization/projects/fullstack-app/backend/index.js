@@ -1,16 +1,18 @@
-const { Pool } = require('pg');
 const express = require('express');
+const { Pool } = require('pg');
+const cors = require('cors'); 
 const app = express();
+
+app.use(cors()); 
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
 });
 
-// Simple endpoint to get milestones
 app.get('/', async (req, res) => {
   try {
     const dbRes = await pool.query('SELECT * FROM milestones ORDER BY day_number ASC');
-    res.json(dbRes.rows); // Return as JSON
+    res.json(dbRes.rows);
   } catch (err) {
     console.error(err);
     res.status(500).send('Database connection error');
