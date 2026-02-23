@@ -1,0 +1,67 @@
+services:
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend/seed.sql:/docker-entrypoint-initdb.d/seed.sql
+    networks:
+      - backend-network
+
+  backend:
+    build: ./backend
+    container_name: node_backend_dev
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgres://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}
+      NODE_ENV: development
+    ports:
+      - "5000:5000"
+    # MODERN HOT RELOAD (Docker Compose Watch)
+    develop:
+      watch:
+        - action: sync
+          path: ./backend
+          target: /app
+          ignore:
+            - node_modules/
+        - action: rebuild
+          path: ./backend/package.json
+    networks:
+      - backend-network
+      - frontend-network
+
+  frontend:
+    build: 
+      context: ./frontend
+      dockerfile: Dockerfile.dev # Uses node image directly for dev server
+    container_name: react_frontend_dev
+    ports:
+      - "3000:3000"
+    develop:
+      watch:
+        - action: sync
+          path: ./frontend
+          target: /app
+          ignore:
+            - node_modules/
+    networks:
+      - frontend-network
+      - backend-network
+
+networks:
+  backend-network:
+  frontend-network:
+
+volumes:
+  postgres_data:

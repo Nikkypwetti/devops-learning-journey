@@ -1,0 +1,21 @@
+# Use Node as the base (no Nginx here)
+FROM node:18-alpine
+
+# Set the working directory
+WORKDIR /app
+
+# Copy package files and install dependencies
+COPY package*.json ./
+RUN npm install
+
+# Copy the rest of the code
+COPY . .
+
+# Set environment variable to ensure React handles Docker networking
+ENV WDS_SOCKET_PORT=0
+
+# Expose the default React port
+EXPOSE 3000
+
+# Start the development server
+CMD ["npm", "start"]

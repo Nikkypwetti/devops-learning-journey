@@ -17,7 +17,7 @@ services:
     networks:
       - backend-nw
 
- # 2. BACKEND SERVICE
+  # 2. BACKEND SERVICE
   backend:
     build: ./backend
     image: nikkytechies/fiddly-backend:${BUILD_NUMBER:-latest}
@@ -26,15 +26,6 @@ services:
         condition: service_healthy
     environment:
       - DATABASE_URL=mongodb://${DB_USER}:${DB_PASSWORD}@db:27017/my_portfolio?authSource=admin
-    develop:
-      watch:
-        - action: sync
-          path: ./backend        # Watch this folder on your laptop
-          target: /app           # Sync to this folder in the container
-          ignore:
-            - node_modules/     # Don't sync heavy dependencies
-        - action: rebuild
-          path: ./backend/package.json # Rebuild image only if dependencies change
     networks:
       - backend-nw
       - frontend-nw
@@ -45,11 +36,6 @@ services:
     image: nikkytechies/fiddly-frontend:latest
     ports:
       - "80:80"
-    develop:
-      watch:
-        - action: sync
-          path: ./frontend
-          target: /usr/share/nginx/html # Or your app directory
     networks:
       - frontend-nw
 

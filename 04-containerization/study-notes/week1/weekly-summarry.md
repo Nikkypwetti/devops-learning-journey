@@ -64,5 +64,6 @@ text
 
 *Remember: Containers package applications with their dependencies, ensuring consistent behavior across environments.*
 
+mkdir -p frontend/src backend && touch docker-compose.yml frontend/Dockerfile frontend/package.json backend/Dockerfile backend/index.js backend/package.json
 ---
 [Back to Main Dashboard](../README.md)

@@ -1,0 +1,63 @@
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: postgres_db
+    restart: always
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend/seed.sql:/docker-entrypoint-initdb.d/seed.sql # New Volume Mount for Seeding
+    healthcheck:
+      # We use CMD-SHELL to allow variable substitution in the command
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - backend-network
+
+  backend:
+    build: ./backend
+    container_name: node_backend
+    restart: on-failure
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      # Constructing the URL using multiple variables
+      DATABASE_URL: postgres://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}
+      NODE_ENV: ${NODE_ENV}
+    expose:
+      - "${PORT}"
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    networks:
+      - backend-network
+      - frontend-network
+
+  frontend:
+    build: ./frontend
+    container_name: react_frontend
+    restart: always
+    ports:
+      - "3000:80"
+    # volumes:
+      # - ./frontend:/app
+      # - /app/node_modules
+    stdin_open: true
+    tty: true
+    networks:
+      - frontend-network
+      - backend-network
+
+networks:
+  backend-network: 
+    internal: true
+  frontend-network:
+
+volumes:
+  postgres_data:

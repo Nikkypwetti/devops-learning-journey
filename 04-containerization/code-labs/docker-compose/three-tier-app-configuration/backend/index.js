@@ -41,4 +41,6 @@ app.post('/reset', async (req, res) => {
     res.json({ message: "Counter Reset Successfully!" });
 });
 
+console.log("Nikky DevOps Pro");
+
 app.listen(3001, () => console.log('🚀 API running on 3001'));
