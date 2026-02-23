@@ -5,13 +5,16 @@ const App = () => {
   const [loading, setLoading] = useState(true);
   const [dbStatus, setDbStatus] = useState('Checking...');
 
-  useEffect(() => {
-    const isDev = window.location.port === '3000';
-    const apiUrl = isDev ? 'http://localhost:5000' : '/api/';
+useEffect(() => {
+    // Check if we are running the 'Production' version
+    // If we are served by Nginx, we use the relative path
+    const isDevServer = window.location.hostname === 'localhost' && window.location.port === '3000' && process.env.NODE_ENV === 'development';
+    
+    const apiUrl = isDevServer ? 'http://localhost:5000' : '/api/';
 
     fetch(apiUrl)
       .then(res => {
-        if (!res.ok) throw new Error('Backend Unreachable');
+        if (!res.ok) throw new Error('API Error');
         setDbStatus('Connected');
         return res.json();
       })
@@ -20,7 +23,6 @@ const App = () => {
         setLoading(false);
       })
       .catch(err => {
-        console.error("Fetch error:", err);
         setDbStatus('Disconnected');
         setLoading(false);
       });
