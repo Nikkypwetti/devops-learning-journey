@@ -153,5 +153,15 @@ This project is no longer just "running a website." It is a Production-Ready Sys
 
     Automation: Provided by GitHub Actions.
 
+
+Project: Enterprise-Grade Full-Stack Orchestration (Day 14)
+
+    Engineered a 3-tier containerized architecture using React, Node.js, and PostgreSQL, achieving complete environment isolation.
+
+    Implemented a security-first networking model with Nginx Reverse Proxy, ensuring backend and database services remain private and inaccessible from the public internet.
+
+    Developed a robust CI/CD pipeline via GitHub Actions to automate image builds, security secret management, and deployment to Docker Hub.
+
+    Optimized developer experience by configuring Docker Compose for both hot-reload development and production-ready multi-stage builds.
 ---
 [Back to Main Dashboard](../README.md)
