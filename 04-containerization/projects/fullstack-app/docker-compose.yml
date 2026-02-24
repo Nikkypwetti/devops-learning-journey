@@ -6,7 +6,8 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_NAME}
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+         - postgres_data:/var/lib/postgresql/data
+         - ./backend/seed.sql:/docker-entrypoint-initdb.d/seed.sql
     networks:
       - backend-network
 

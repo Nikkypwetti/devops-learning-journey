@@ -7,7 +7,7 @@ endif
 DEV_COMPOSE = docker-compose.dev.yml
 PROD_COMPOSE = docker-compose.yml
 
-.PHONY: dev watch prod build-prod down clean logs-backend
+.PHONY: dev watch prod build-prod down clean nuclear logs-backend
 
 # --- DEVELOPMENT COMMANDS ---
 
@@ -35,7 +35,14 @@ down:
 # Full cleanup (removes volumes - use with caution!)
 clean:
 	docker compose -f $(DEV_COMPOSE) down -v
+	docker compose -f $(PROD_COMPOSE) down -v
 	docker system prune -f
+
+# The "Nuclear Option" - Wipes EVERYTHING including build cache and starts fresh
+nuclear:
+	docker compose -f $(PROD_COMPOSE) down -v --remove-orphans
+	docker builder prune -af
+	docker compose -f $(PROD_COMPOSE) up -d --build --force-recreate
 
 # Follow backend logs
 logs-backend:
