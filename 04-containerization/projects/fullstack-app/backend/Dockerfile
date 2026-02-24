@@ -1,20 +1,22 @@
-# Use a lightweight Node image
 FROM node:18-alpine
 
-# Set the working directory inside the container
 WORKDIR /app
 
-# Copy only package files first to leverage Docker's layer caching
+# 1. Create a system group and user
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+
+# 2. Copy dependency files
 COPY package*.json ./
 
-# Install dependencies
-RUN npm install
+# 3. Install production dependencies
+RUN npm install --only=production
 
-# Copy the rest of the application code
-COPY . .
+# 4. Copy the rest of the code and CHANGE OWNERSHIP to appuser
+COPY --chown=appuser:appgroup . .
 
-# Expose the port the backend runs on
+# 5. Tell Docker to run everything after this as the non-root user
+USER appuser
+
 EXPOSE 5000
 
-# Start the application
 CMD ["node", "index.js"]

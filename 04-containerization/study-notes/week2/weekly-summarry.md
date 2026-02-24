@@ -163,5 +163,7 @@ Project: Enterprise-Grade Full-Stack Orchestration (Day 14)
     Developed a robust CI/CD pipeline via GitHub Actions to automate image builds, security secret management, and deployment to Docker Hub.
 
     Optimized developer experience by configuring Docker Compose for both hot-reload development and production-ready multi-stage builds.
+
+    "I architected a secure 3-tier containerized stack using Nginx as a reverse proxy to shield the Node.js API and PostgreSQL database. I implemented a CI/CD pipeline with GitHub Actions and used Infrastructure as Code via Docker Compose and Makefiles to ensure environment consistency and easy troubleshooting."
 ---
 [Back to Main Dashboard](../README.md)
