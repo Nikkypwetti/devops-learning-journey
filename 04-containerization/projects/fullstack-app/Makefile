@@ -6,44 +6,56 @@ endif
 # Variables
 DEV_COMPOSE = docker-compose.dev.yml
 PROD_COMPOSE = docker-compose.yml
+BACKEND_IMG = $(DOCKERHUB_USERNAME)/fullstack-backend:latest
+FRONTEND_IMG = $(DOCKERHUB_USERNAME)/fullstack-frontend:latest
 
-.PHONY: dev watch prod build-prod down clean nuclear logs-backend
+.PHONY: dev watch prod down clean nuclear pull scan scan-scout logs-backend
 
 # --- DEVELOPMENT COMMANDS ---
 
-# Start development environment
 dev:
 	docker compose -f $(DEV_COMPOSE) up -d
 
-# Start development with Hot Reload (Watch mode)
 watch: 
 	docker compose -f $(DEV_COMPOSE) watch
 
 # --- PRODUCTION COMMANDS ---
 
-# Build and start production (Nginx) environment
 prod:
 	docker compose -f $(PROD_COMPOSE) up -d --build
 
+# Pull fresh images built by GitHub Actions (Critical for seeing 0 CVE updates!)
+pull:
+	docker compose -f $(PROD_COMPOSE) pull
+
+# --- SECURITY COMMANDS (Day 16) ---
+
+# Scan local backend image with Trivy
+scan:
+	docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
+		-v $(HOME)/.cache:/root/.cache \
+		aquasec/trivy:latest image $(BACKEND_IMG)
+
+# Quick security report with Docker Scout
+scan-scout:
+	@echo "🔍 Running Security Audit for Backend..."
+	docker scout quickview $(BACKEND_IMG)
+
 # --- UTILITIES ---
 
-# Stop all containers
 down:
 	docker compose -f $(DEV_COMPOSE) down
 	docker compose -f $(PROD_COMPOSE) down
 
-# Full cleanup (removes volumes - use with caution!)
 clean:
 	docker compose -f $(DEV_COMPOSE) down -v
 	docker compose -f $(PROD_COMPOSE) down -v
 	docker system prune -f
 
-# The "Nuclear Option" - Wipes EVERYTHING including build cache and starts fresh
 nuclear:
 	docker compose -f $(PROD_COMPOSE) down -v --remove-orphans
 	docker builder prune -af
 	docker compose -f $(PROD_COMPOSE) up -d --build --force-recreate
 
-# Follow backend logs
 logs-backend:
 	docker compose logs -f backend
