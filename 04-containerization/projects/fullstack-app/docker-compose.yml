@@ -10,6 +10,11 @@ services:
          - ./backend/seed.sql:/docker-entrypoint-initdb.d/seed.sql
     networks:
       - backend-network
+    deploy:
+      resources:
+        limits:
+          memory: 512M    # Databases need a bit more room than APIs
+    
 
   backend:
     # Pulling directly from Docker Hub instead of building!
@@ -19,6 +24,14 @@ services:
     networks:
       - backend-network
       - frontend-network
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'     # Use max 50% of 1 CPU core
+          memory: 256M    # Max 256MB RAM
+        reservations:
+          memory: 128M    # Guaranteed minimum 128MB RAM
+    read_only: true  # Marking backend as read-only for extra security
 
   frontend:
     image: ${DOCKERHUB_USERNAME}/fullstack-frontend:latest
@@ -29,6 +42,10 @@ services:
     networks:
       - frontend-network
       - backend-network
+    read_only: true
+    tmpfs:
+      - /var/cache/nginx
+      - /var/run
 
 networks:
   backend-network:

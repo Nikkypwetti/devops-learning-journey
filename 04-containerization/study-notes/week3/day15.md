@@ -73,29 +73,87 @@ docker compose exec backend whoami
 
 If it says root, your container is insecure. If it says appuser (or the name you chose), you passed!
 
-Task 2: Limit Resources
-Update your docker-compose.yml to prevent a container from "stealing" all your computer's power:
+🛠️ Task 2: Resource Limits (Preventing Crashes)
+
+If your backend has a memory leak or is attacked by a bot, it could consume all the RAM on your server, crashing Nginx and your Database. We set "Limits" to keep it in a "box."
+
+Update the backend and db sections in your docker-compose.yml:
 YAML
 
-services:
   backend:
-    image: ...
+    # ... your existing config ...
     deploy:
       resources:
         limits:
-          cpus: '0.5'
-          memory: 512M
+          cpus: '0.50'     # Use max 50% of 1 CPU core
+          memory: 256M    # Max 256MB RAM
+        reservations:
+          memory: 128M    # Guaranteed minimum 128MB RAM
 
-Task 3: Read-Only Filesystem
-In production, your code shouldn't change while running. Try making your container filesystem "Read-Only" in your docker-compose.yml:
+  db:
+    # ... your existing config ...
+    deploy:
+      resources:
+        limits:
+          memory: 512M    # Databases need a bit more room than APIs
+
+Test : The Resource Test
+Check if Docker is actually enforcing the limits:
+Bash
+
+docker stats --no-stream
+
+    Expected Result: You should see the MEM LIMIT column showing 256MiB for the backend and 512MiB for the DB.
+
+🛡️ Task 3: Read-Only Filesystem (Immortal Mode)
+
+A major security goal is making your container "Immutable." If a hacker manages to break in as appuser, a Read-Only filesystem prevents them from creating new scripts or modifying your code.
+
+Update your frontend and backend in docker-compose.yml:
+For the Backend:
+YAML
+
+  backend:
+    # ... 
+    read_only: true
+
+For the Frontend (Nginx):
+
+Nginx is tricky because it needs to write temp files and logs. To make it read-only, we give it a "scratchpad" in memory using tmpfs.
 YAML
 
   frontend:
-    image: ...
+    # ...
     read_only: true
-    volumes:
-      - /tmp  # Nginx needs a place to write temp files
+    tmpfs:
+      - /var/cache/nginx
+      - /var/run
+
+🚀 The "Verification" Test
+
+After updating your docker-compose.yml, run:
+Bash
+
+make nuclear
+
+How to verify Task 3 (Read-Only):
+Try to create a file inside your running backend. It should fail!
+Bash
+
+docker compose exec backend touch test.txt
+
+If it says "touch: test.txt: Read-only file system", you have achieved Day 15 mastery!
 
 🧠 DevOps Mindset Check
 
 When you finish Day 15, you should be able to answer: "If a hacker finds a bug in my code, what is the smallest amount of damage they can do?" By using Non-root users, Resource limits, and Nginx Proxies, you have made that "damage" almost zero. Ready to start hardening your DevOps Lab?
+
+🏆 Day 15 Summary for your Portfolio
+
+You can now add these points to your project README:
+
+    Immutable Infrastructure: Implemented read_only filesystems to prevent runtime tampering.
+
+    Resource Quotas: Applied CPU and RAM limits to ensure service availability and prevent DoS.
+
+    Service Isolation: Leveraged tmpfs for minimal writable surface area in the Nginx frontend.
