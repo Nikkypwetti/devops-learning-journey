@@ -16,6 +16,11 @@
     "pg": "^8.11.0",
     "tar": "^7.5.9"
   },
+   "overrides": {
+    "tar": "^7.5.9",
+    "glob": "^13.0.6",
+    "cross-spawn": "^7.0.6"
+  },
   "devDependencies": {
     "nodemon": "^3.0.1"
   }
