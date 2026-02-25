@@ -6,7 +6,6 @@
 # --- Dependencies ---
 node_modules/
 jspm_packages/
-package-lock.json
 yarn.lock
 
 # --- Docker & Logs ---
