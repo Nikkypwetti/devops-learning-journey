@@ -1,54 +1,110 @@
+# services:
+#   db:
+#     image: postgres:15-alpine
+#     environment:
+#       POSTGRES_USER: ${DB_USER}
+#       POSTGRES_PASSWORD: ${DB_PASSWORD}
+#       POSTGRES_DB: ${DB_NAME}
+#     volumes:
+#          - postgres_data:/var/lib/postgresql/data
+#          - ./backend/seed.sql:/docker-entrypoint-initdb.d/seed.sql
+#     networks:
+#       - backend-network
+#     deploy:
+#       resources:
+#         limits:
+#           memory: 512M    # Databases need a bit more room than APIs
+    
+
+#   backend:
+#     # Pulling directly from Docker Hub instead of building!
+#     image: ${DOCKERHUB_USERNAME}/fullstack-backend:latest
+#     environment:
+#       DATABASE_URL: postgres://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}
+#     networks:
+#       - backend-network
+#       - frontend-network
+#     deploy:
+#       resources:
+#         limits:
+#           cpus: '0.50'     # Use max 50% of 1 CPU core
+#           memory: 256M    # Max 256MB RAM
+#         reservations:
+#           memory: 128M    # Guaranteed minimum 128MB RAM
+#     read_only: true  # Marking backend as read-only for extra security
+
+#   frontend:
+#     image: ${DOCKERHUB_USERNAME}/fullstack-frontend:latest
+#     ports:
+#       - "3000:80"
+#     volumes:
+#       - ./frontend/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+#     networks:
+#       - frontend-network
+#       - backend-network
+#     read_only: true
+#     tmpfs:
+#       - /var/cache/nginx
+#       - /var/run
+
+# networks:
+#   backend-network:
+#   frontend-network:
+
+# volumes:
+#   postgres_data:
+
 services:
   db:
     image: postgres:15-alpine
+    restart: always # Critical for Prod
     environment:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_NAME}
     volumes:
-         - postgres_data:/var/lib/postgresql/data
-         - ./backend/seed.sql:/docker-entrypoint-initdb.d/seed.sql
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend/seed.sql:/docker-entrypoint-initdb.d/seed.sql
     networks:
       - backend-network
     deploy:
       resources:
         limits:
-          memory: 512M    # Databases need a bit more room than APIs
-    
+          memory: 512M
 
   backend:
-    # Pulling directly from Docker Hub instead of building!
     image: ${DOCKERHUB_USERNAME}/fullstack-backend:latest
+    restart: unless-stopped
     environment:
       DATABASE_URL: postgres://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}
+      NODE_ENV: production
     networks:
       - backend-network
       - frontend-network
+    read_only: true
+    tmpfs: /tmp # Allow Node.js to write temporary files if needed
     deploy:
       resources:
         limits:
-          cpus: '0.50'     # Use max 50% of 1 CPU core
-          memory: 256M    # Max 256MB RAM
-        reservations:
-          memory: 128M    # Guaranteed minimum 128MB RAM
-    read_only: true  # Marking backend as read-only for extra security
+          cpus: '0.5'
+          memory: 256M
 
   frontend:
     image: ${DOCKERHUB_USERNAME}/fullstack-frontend:latest
     ports:
-      - "3000:80"
-    volumes:
-      - ./frontend/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - "80:80" # Standard web port for Prod
     networks:
       - frontend-network
-      - backend-network
     read_only: true
     tmpfs:
       - /var/cache/nginx
       - /var/run
+    depends_on:
+      - backend
 
 networks:
   backend-network:
+    internal: true # Security: DB/Backend network is totally isolated
   frontend-network:
 
 volumes:

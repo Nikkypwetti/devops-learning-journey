@@ -3,6 +3,9 @@ name: DevOps Pro CI/CD
 on:
   push:
     branches: [ "main" ]
+    # Added path filter to ensure it only runs for your work folder
+    paths:
+      - '04-containerization/projects/simple-webapp/simple-webapp/**'
   pull_request:
     branches: [ "main" ]
     paths:
@@ -51,7 +54,6 @@ jobs:
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: docker/build-push-action@v5
         with:
-          # Make sure this context points to where your Dockerfile is
           context: ./04-containerization/projects/simple-webapp/simple-webapp
           push: true
           no-cache: true
@@ -91,6 +93,7 @@ jobs:
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         working-directory: ./04-containerization/projects/simple-webapp/simple-webapp/terraform
         run: terraform apply -auto-approve -var="app_theme=dark" -var="docker_hub_username=${{ secrets.DOCKERHUB_USERNAME }}"
+      
       - name: Get Website URL
         id: get_url
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
@@ -111,15 +114,3 @@ jobs:
           webhook: ${{ secrets.DISCORD_WEBHOOK }}
           status: ${{ job.status }}
           content: "Deployment of simple-webapp is ${{ job.status }}!"
-
-      
-
-
-
-
-
-
-      
-
-
-      
