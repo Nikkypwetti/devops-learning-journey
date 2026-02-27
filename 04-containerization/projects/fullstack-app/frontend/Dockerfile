@@ -1,10 +1,13 @@
-# STAGE 1: Build
+# STAGE 1: Build (The "Kitchen")
 FROM node:20-alpine AS build
 WORKDIR /app
-# Add this line to debug the path
-RUN ls -la
+
+# Copy the files first
 COPY package*.json ./
-# Professional Tip: Use 'npm ci' for predictable builds in CI/CD
+
+# NOW check what Docker actually received
+RUN ls -la
+
 RUN npm ci 
 COPY . .
 RUN npm run build
@@ -27,22 +30,3 @@ USER nginx
 
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
-
-
-# # Build Stage
-# FROM node:18-alpine AS build
-# WORKDIR /app
-# COPY package*.json ./
-# RUN npm install
-# COPY . .
-# RUN npm run build
-
-# # Production Stage
-# FROM nginx:stable-alpine
-# # Copy the built React files
-# COPY --from=build /app/build /usr/share/nginx/html
-# # Copy our custom Nginx reverse proxy config
-# COPY nginx.conf /etc/nginx/conf.d/default.conf 
-
-# EXPOSE 80
-# CMD ["nginx", "-g", "daemon off;"]
