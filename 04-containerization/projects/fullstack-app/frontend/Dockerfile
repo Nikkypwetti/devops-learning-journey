@@ -8,7 +8,7 @@ COPY package*.json ./
 # NOW check what Docker actually received
 RUN ls -la
 
-RUN npm ci 
+RUN npm ci --legacy-peer-deps
 COPY . .
 RUN npm run build
 
