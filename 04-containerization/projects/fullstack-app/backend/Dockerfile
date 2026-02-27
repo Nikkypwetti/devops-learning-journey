@@ -39,10 +39,13 @@ WORKDIR /app
 # 1. Security: Create non-root user
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 
-# 2. Optimization: Copy ONLY production files from the builder stage
-# This keeps the image tiny because it doesn't include npm cache or dev-tools
+# 2. Optimization: Copy ONLY what is needed
+# We take the node_modules and the source code, leaving behind the npm cache
 COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app .
+COPY --from=builder /app/package.json ./
+COPY --from=builder /app/index.js ./
+# If you have other folders like /src or /routes, copy them too:
+# COPY --from=builder /app/src ./src
 
 # 3. Security: Set permissions
 RUN chown -R appuser:appgroup /app

@@ -30,6 +30,7 @@ jobs:
         with:
             
           context: ./04-containerization/projects/fullstack-app/backend
+          file: ./04-containerization/projects/fullstack-app/backend/Dockerfile
           push: true
           no-cache: true
           tags: |
@@ -40,7 +41,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: ./04-containerization/projects/fullstack-app/frontend
-          file: ./04-containerization/projects/fullstack-app/frontend/Dockerfile.dev 
+          file: ./04-containerization/projects/fullstack-app/frontend/Dockerfile
           push: true
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/fullstack-frontend:latest
