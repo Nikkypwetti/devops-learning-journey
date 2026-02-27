@@ -28,7 +28,6 @@ jobs:
       - name: Build and Push Backend
         uses: docker/build-push-action@v5
         with:
-            
           context: ./04-containerization/projects/fullstack-app/backend
           file: ./04-containerization/projects/fullstack-app/backend/Dockerfile
           push: true
