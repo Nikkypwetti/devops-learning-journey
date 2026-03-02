@@ -1,7 +1,9 @@
 Day 11: Volumes & Data Management 
+
 I. Technical Theory: The Persistence & Configuration Layer
 
 In professional DevOps, we separate the Compute (the container) from the State (the data). Containers are ephemeral—they should be able to die and be replaced at any time. To achieve this, we use two distinct storage strategies.
+
 1. The Hybrid Storage Model
 
     Named Volumes (mongo_data): These handle Dynamic State. They are high-performance, managed by Docker, and reside in a protected area of your host (/var/lib/docker/volumes/). This ensures your portfolio data survives even if you delete the container.
@@ -41,12 +43,15 @@ security:
   authorization: enabled # Enforces mandatory user authentication
 
 III. The Troubleshooting Log (Nikky's DevOps Journey)
-Issue Encountered	Root Cause	Professional Solution
-cat: /etc/mongod.conf: No such file	Container not re-created after YAML update.	Ran docker compose up -d to refresh the "mount contract" between host and container.
-Container exited (1)	YAML Syntax error in mongod.conf.	Analyzed docker compose logs db; found a YAMLException at line 6 (indentation error).
-YAML Syntax Error	Hidden tabs or misaligned spaces.	Replaced all tabs with exactly 2 spaces. YAML is strictly space-sensitive.
-Command find requires auth	Security hardening was active.	Proved that the mongod.conf successfully overrode default behavior to block unauthorized access.
-Variable Scope Issues	Shell vs. Container variables.	Used sh -c inside the container to correctly access $MONGO_INITDB_ROOT_USERNAME.
+
+| Issue Encountered | Root Cause | Professional Solution |
+|---|---|---|
+| cat: /etc/mongod.conf: No such file | Container not re-created after YAML update. | Ran docker compose up -d to refresh the "mount contract" between host and container. |
+| Container exited (1) | YAML Syntax error in mongod.conf. | Analyzed docker compose logs db; found a YAMLException at line 6 (indentation error). |
+| YAML Syntax Error | Hidden tabs or misaligned spaces. | Replaced all tabs with exactly 2 spaces. YAML is strictly space-sensitive. |
+| Command find requires auth | Security hardening was active. | Proved that the mongod.conf successfully overrode default behavior to block unauthorized access. |
+| Variable Scope Issues | Shell vs. Container variables. | Used sh -c inside the container to correctly access $MONGO_INITDB_ROOT_USERNAME. |
+
 IV. Verification & Mastery Workflow
 
 To reach "Perfect Understanding," we performed the following validation sequence:

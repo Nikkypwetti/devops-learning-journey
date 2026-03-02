@@ -1,0 +1,51 @@
+services:
+  app:
+    image: secure-app:latest
+    container_name: production-app
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - BUILDKIT_PROGRESS=plain
+    env_file:
+      - .env
+    ports:
+      - "${APP_PORT}:3000"
+    read_only: true 
+    tmpfs:
+      - /tmp
+    environment:
+      - NODE_ENV=${NODE_ENV}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/health', (r) => {r.statusCode === 200 ? process.exit(0) : process.exit(1)})"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # Example of a decoupled monitoring service (cAdvisor)
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    container_name: monitoring-cadvisor
+    ports:
+      - "8080:8080"
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+    devices:
+      - /dev/kmsg
+    privileged: false
+    restart: unless-stopped

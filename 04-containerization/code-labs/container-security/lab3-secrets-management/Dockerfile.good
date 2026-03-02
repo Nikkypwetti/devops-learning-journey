@@ -1,0 +1,17 @@
+# Dockerfile for secure application with secrets management best practices:uses build args and runtime secrets
+FROM node:18-alpine
+
+# Build args (not persisted in final image if used correctly)
+ARG DB_HOST
+ENV DB_HOST=${DB_HOST}
+
+WORKDIR /app
+COPY . .
+
+# Build time secret (used but not persisted)
+RUN --mount=type=secret,id=db_password \
+    cat /run/secrets/db_password > /dev/null && \
+    echo "Secret used but not stored"
+
+USER node
+CMD ["node", "app.js"]

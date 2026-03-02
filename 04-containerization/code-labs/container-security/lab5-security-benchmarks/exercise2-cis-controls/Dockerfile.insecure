@@ -1,0 +1,16 @@
+FROM ubuntu:latest
+
+# Insecure practices:
+# - No user (runs as root)
+# - No version pinning
+# - Installs unnecessary packages
+# - Uses ADD instead of COPY
+# - Stores secrets in image
+
+RUN apt-get update
+RUN apt-get install -y curl wget vim nano
+ADD https://example.com/file.tar.gz /tmp/
+ENV DB_PASSWORD=supersecret123
+COPY . /app
+
+CMD ["bash"]

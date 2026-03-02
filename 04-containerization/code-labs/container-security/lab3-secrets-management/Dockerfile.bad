@@ -1,0 +1,11 @@
+# Dockerfile for insecure application with secrets hardcoded in the image (DO NOT USE IN PRODUCTION)
+FROM node:18
+
+# NEVER do this - secrets in Dockerfile!
+ENV DB_PASSWORD=supersecret123
+ENV API_KEY=sk_live_123456789
+
+COPY . .
+RUN echo $DB_PASSWORD > /app/config.json
+
+CMD ["node", "app.js"]

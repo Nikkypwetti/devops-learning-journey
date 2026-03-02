@@ -163,17 +163,17 @@ By the end of this month, you will be able to:
 └── Practice: Connect web app to database
 
 **Day 11: Volumes & Data Management**
-├── Video: https://www.youtube.com/watch?v=2oN7Og8mrvU (14 mins)
+├── Video: https://www.youtube.com/watch?v=2oN7Og8mrvU
 ├── Reading: https://docs.docker.com/storage/volumes/
 └── Practice: Persistent data with volumes
 
 **Day 12: Environment Configuration**
-├── Video: https://www.youtube.com/watch?v=pGyWdG9pW7c (10 mins)
+├── Video: https://www.youtube.com/watch?v=pGyWdG9pW7c
 ├── Reading: https://docs.docker.com/compose/environment-variables/
 └── Practice: Use .env files, environment variables
 
 **Day 13: Compose for Development**
-├── Video: https://www.youtube.com/watch?v=MvN5nXQO4eI (12 mins)
+├── Video: https://www.youtube.com/watch?v=MvN5nXQO4eI
 ├── Reading: https://docs.docker.com/develop/develop-images/dockerfile_best-practices/
 └── Practice: Hot reload, debugging setup
 
@@ -185,32 +185,32 @@ By the end of this month, you will be able to:
 ### **Week 3 Resources (Days 15-21): Container Security**
 
 **Day 15: Container Security Fundamentals**
-├── Video: https://www.youtube.com/watch?v=LvLcdPligqw (18 mins)
+├── Video: https://www.youtube.com/watch?v=LvLcdPligqw
 ├── Reading: https://docs.docker.com/engine/security/
 └── Practice: User management, non-root containers
 
 **Day 16: Image Security Scanning**
-├── Video: https://www.youtube.com/watch?v=c7F7W7m3F0U (14 mins)
+├── Video: https://www.youtube.com/watch?v=JofsaZ3H1qM
 ├── Reading: https://docs.docker.com/scout/
 └── Practice: Use Docker Scout, Trivy for vulnerability scanning
 
 **Day 17: Dockerfile Security Best Practices**
-├── Video: https://www.youtube.com/watch?v=uE8E8yWlTaw (16 mins)
+├── Video: https://www.youtube.com/watch?v=JofsaZ3H1qM
 ├── Reading: https://docs.docker.com/develop/develop-images/dockerfile_best-practices/
 └── Practice: Secure Dockerfile writing
 
 **Day 18: Image Optimization**
-├── Video: https://www.youtube.com/watch?v=MtC2iL0LuhM (12 mins)
+├── Video: https://www.youtube.com/watch?v=JofsaZ3H1qM
 ├── Reading: https://docs.docker.com/build/cache/
 └── Practice: Multi-stage builds, layer optimization
 
 **Day 19: Container Monitoring**
-├── Video: https://www.youtube.com/watch?v=8L4PRQphGuA (15 mins)
+├── Video: https://www.youtube.com/watch?v=8L4PRQphGuA
 ├── Reading: https://docs.docker.com/config/containers/runmetrics/
 └── Practice: Use docker stats, cAdvisor, logs
 
 **Day 20: Production Best Practices**
-├── Video: https://www.youtube.com/watch?v=xbJY8tTu8dE (18 mins)
+├── Video: https://www.youtube.com/watch?v=8L4PRQphGuA
 ├── Reading: https://docs.docker.com/develop/dev-best-practices/
 └── Practice: Health checks, resource limits, logging
 
@@ -222,7 +222,7 @@ By the end of this month, you will be able to:
 ### **Week 4 Resources (Days 22-30): Full-Stack Dockerization**
 
 **Day 22: Microservices with Docker**
-├── Video: https://www.youtube.com/watch?v=jPd2gmm3XGc (20 mins)
+├── Video: 
 ├── Reading: https://docs.docker.com/develop/develop-images/multistage-build/
 └── Practice: Dockerize multiple microservices
 
@@ -232,17 +232,17 @@ By the end of this month, you will be able to:
 └── Practice: Run PostgreSQL, MySQL, Redis with Docker
 
 **Day 24: Nginx as Reverse Proxy**
-├── Video: https://www.youtube.com/watch?v=zX4p6qMqQoU (14 mins)
+├── Video: https://www.youtube.com/watch?v=Q6G-J54vgKc
 ├── Reading: https://hub.docker.com/_/nginx
 └── Practice: Configure Nginx with Docker
 
 **Day 25: Docker Registry & Image Management**
-├── Video: https://www.youtube.com/watch?v=7V7iL6RgQyE (12 mins)
+├── Video: https://www.youtube.com/watch?v=-FtY4F7xgkY
 ├── Reading: https://docs.docker.com/registry/
 └── Practice: Push/pull images, private registry
 
 **Day 26: CI/CD with Docker**
-├── Video: https://www.youtube.com/watch?v=ecwqCqYlLRE (18 mins)
+├── Video: https://www.youtube.com/watch?v=R8_veQiYBjI
 ├── Reading: https://docs.docker.com/ci-cd/github-actions/
 └── Practice: GitHub Actions Docker workflow
 

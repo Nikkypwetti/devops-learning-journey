@@ -1,0 +1,16 @@
+# dockerfiles/nodejs/dev.Dockerfile
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Install nodemon for hot-reload
+RUN npm install -g nodemon
+
+COPY projects/day21-secure-setup/app/package*.json ./
+RUN npm install  # Install ALL dependencies (including dev)
+
+COPY projects/day21-secure-setup/app ./
+
+USER node
+
+CMD ["nodemon", "server.js"]

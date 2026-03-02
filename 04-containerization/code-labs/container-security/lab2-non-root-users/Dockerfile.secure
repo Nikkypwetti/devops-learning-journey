@@ -1,0 +1,20 @@
+# Dockerfile for secure application running as non-root user with least privileges
+FROM node:18-alpine
+
+# Create non-root user
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S nodejs -u 1001 -G nodejs
+
+WORKDIR /app
+
+# Copy with correct ownership
+COPY --chown=nodejs:nodejs package*.json ./
+RUN npm ci --only=production && npm cache clean --force
+
+COPY --chown=nodejs:nodejs . .
+
+# Switch to non-root user
+USER nodejs
+
+EXPOSE 3000
+CMD ["node", "server.js"]

@@ -1,0 +1,3 @@
+# libpng: fixed in 1.6.55-r0, but not yet available in Alpine 3.23
+# Risk is minimal as Nginx does not process images in this stack.
+CVE-2026-25646

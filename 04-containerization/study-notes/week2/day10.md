@@ -1,4 +1,5 @@
 Professional DevOps Notes: Day 10 - Multi-Service Applications
+
 1. Core Concept: Service Discovery & Isolation
 
 In a professional environment, we never hardcode IP addresses. Docker Compose provides a built-in DNS server.
@@ -46,6 +47,7 @@ Env Variables	${DB_USER}	You aren't hardcoding secrets. This allows the same fil
 III. Hands-on Practice: Merging & Perfecting
 
 Since you’ve already integrated the network and volumes, let's merge this into your three-tier-app-configuration project perfectly.
+
 1. Handling Build Contexts
 
 Ensure your folder structure matches your build: keys. In a professional repo, it looks like this:
@@ -135,10 +137,10 @@ In a professional DevOps role, you will often work with "Slim" or "Alpine" image
 II. Deep Dive: Why Your Configuration Worked
 
 You succeeded because you applied three pillars of production-grade Docker Compose:
-Pillar	How You Applied It
-Service Discovery	Your DATABASE_URL used the hostname db, which Docker resolved to 172.19.0.2.
-Healthchecks	Your backend didn't try to connect until the db process was actually "Healthy."
-Network Tiers	Your backend-nw allowed the nc and node tests to pass because both containers were on that shared "private" wire.
+Pillar | How You Applied It
+Service Discovery | Your DATABASE_URL used the hostname db, which Docker resolved to 172.19.0.2.
+Healthchecks | Your backend didn't try to connect until the db process was actually "Healthy."
+Network Tiers | Your backend-nw allowed the nc and node tests to pass because both containers were on that shared "private" wire.
 III. Professional Hands-on: What You Just Proved
 
 By running those three commands, you performed a manual smoke test:
@@ -174,6 +176,7 @@ The Stack Configuration (docker-compose.yml)
     Database: Fully isolated in a private network (backend-nw) with a named volume for data.
 
 II. Technical Execution & Commands
+
 1. Service Discovery & Connectivity
 
 We used the service name db as the hostname in the connection string.
@@ -193,6 +196,7 @@ Because the database was hardened with authentication, we had to execute command
 Bash
 
 # Insert a record to verify persistence later
+
 docker compose exec db sh -c 'mongosh -u $MONGO_INITDB_ROOT_USERNAME -p $MONGO_INITDB_ROOT_PASSWORD --authenticationDatabase admin --eval "db.testData.insertOne({item: \"Nikky-Portfolio-Success\", date: new Date()})"'
 
 3. The Destruction Test (Validation)
@@ -205,11 +209,13 @@ docker compose up -d # Resurrects the stack
 docker compose exec db sh -c 'mongosh -u $MONGO_INITDB_ROOT_USERNAME -p $MONGO_INITDB_ROOT_PASSWORD --authenticationDatabase admin --eval "db.testData.find()"' # showing saved data
 
 III. Troubleshooting Log (The "DevOps Journey")
-Issue	Root Cause	Professional Solution
-curl: executable file not found	Using a "Slim/Alpine" image for security.	Use nc -zv (Netcat) or the language runtime (Node) to test ports.
-service "db" is not running	Executing commands while the container was down/stopped.	Ensure docker compose up -d is active and healthchecks have passed.
-Command insert requires authentication	Database hardening was active (Root User/Pass).	Passed -u and -p flags with mongosh using the internal container environment.
-${DB_USER} variables blank in shell	Terminal shell scope vs. Container scope.	Used sh -c inside the container to utilize internal env variables directly.
+
+| Issue | Root Cause | Professional Solution |
+|-------|-----------|----------------------|
+| curl: executable file not found | Using a "Slim/Alpine" image for security. | Use nc -zv (Netcat) or the language runtime (Node) to test ports. |
+| service "db" is not running | Executing commands while the container was down/stopped. | Ensure docker compose up -d is active and healthchecks have passed. |
+| Command insert requires authentication | Database hardening was active (Root User/Pass). | Passed -u and -p flags with mongosh using the internal container environment. |
+| ${DB_USER} variables blank in shell | Terminal shell scope vs. Container scope. | Used sh -c inside the container to utilize internal env variables directly. |
 IV. How to Understand it Perfectly
 
     Networking: You proved that Network Isolation works because the frontend cannot see the DB, but the backend can. This is the "Zero Trust" model.

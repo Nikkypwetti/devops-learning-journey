@@ -1,0 +1,15 @@
+# dockerfiles/nodejs/test.Dockerfile
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Copy all source including tests
+COPY projects/day21-secure-setup/app/ ./
+
+# Install ALL dependencies
+RUN npm ci
+
+# Run as non-root
+USER node
+
+# Test command will be provided by docker-compose

@@ -1,0 +1,9 @@
+# Dockerfile for insecure application running as root (DO NOT USE IN PRODUCTION)
+FROM node:18
+
+WORKDIR /app
+COPY . .
+RUN npm install
+EXPOSE 3000
+CMD ["node", "server.js"]
+# ⚠️ Runs as root - insecure!

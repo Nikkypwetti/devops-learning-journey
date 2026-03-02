@@ -1,3 +1,46 @@
+# Day 8: Docker Compose Fundamentals
+
+## 🎯 Learning Objectives
+
+- Understand Docker Compose purpose and benefits
+- Install Docker Compose (if not using Docker Desktop)
+- Write first docker-compose.yml file
+- Manage multi-container applications
+
+## 📚 Morning Resources (6:00-6:30 AM)
+
+### Video Tutorial (15 mins):
+
+- [**Docker Compose Tutorial**](https://www.youtube.com/watch?v=HG6yIjZapSA) by TechWorld with Nana
+- **Alternative:** [**Docker Compose Crash Course**](https://www.youtube.com/watch?v=DM65_JyGxCo) by Traversy Media
+- **Key Takeaways:**
+  - Why use Docker Compose
+  - Compose file structure
+  - Services, networks, volumes
+
+### Reading Material (10 mins):
+
+- [Docker Compose Overview](https://docs.docker.com/compose/)
+- **Focus on:**
+  - Compose use cases
+  - File format versions
+  - Basic commands
+
+### Concept Examples (5 mins):
+
+```yaml
+# docker-compose.yml structure
+version: '3.8'
+services:
+  web:
+    build: .
+    ports:
+      - "8000:5000"
+  db:
+    image: postgres:13
+    environment:
+      POSTGRES_PASSWORD: secret
+
 Week 2: Orchestration with Docker Compose - Daily Resources
 
 📅 Week Overview
@@ -70,8 +113,6 @@ Create a new directory and define a simple stack with a Web UI and a Database.
 YAML
 
 # docker-compose.yml
-
-version: "3.8" # [00:14:01]
 
 services:
   web:
@@ -369,3 +410,8 @@ Tomorrow's Plan
     Docker Compose Volumes: Deep dive into named vs. anonymous volumes.
 
     Environment Variables: Managing secrets and configurations using .env files in Compose.
+
+🔗 Additional Resources
+https://docs.docker.com/compose/compose-file/
+https://docs.docker.com/compose/reference/
+https://docs.docker.com/get-started/07_multi_container/

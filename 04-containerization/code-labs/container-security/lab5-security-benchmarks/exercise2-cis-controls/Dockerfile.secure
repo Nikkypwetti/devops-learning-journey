@@ -1,0 +1,33 @@
+# CIS 4.1: Use specific base image version
+FROM ubuntu:22.04@sha256:33ac578c735cd86e9cb0331e3a7d74efc7310e650016ef97d845f98785a415c5
+
+# CIS 4.4: Create non-root user
+RUN useradd -m -u 1000 appuser
+
+# CIS 4.9: Use COPY instead of ADD
+WORKDIR /app
+COPY requirements.txt .
+COPY app.py .
+
+# CIS 4.2: Combine RUN commands, clean up
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        python3=3.10.* \
+        python3-pip=22.0.* && \
+    pip3 install --no-cache-dir -r requirements.txt && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# CIS 4.10: No secrets in Dockerfile (use build args or runtime secrets)
+ARG DB_HOST
+ENV DB_HOST=${DB_HOST}
+
+# CIS 4.4: Switch to non-root user
+USER appuser
+
+# CIS 5.31: Healthcheck
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD python3 -c "import urllib.request; urllib.request.urlopen('http://localhost:5000/health')"
+
+EXPOSE 5000
+CMD ["python3", "app.py"]
