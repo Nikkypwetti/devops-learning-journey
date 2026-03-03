@@ -1,0 +1,4 @@
+db_password.txt
+bin/
+obj/
+__pycache__/

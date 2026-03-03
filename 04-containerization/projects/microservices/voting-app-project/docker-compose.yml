@@ -1,0 +1,91 @@
+services:
+  vote:
+    build: ./vote
+    ports:
+      - "5000:80"
+    networks:
+      - frontend
+    depends_on:
+      redis:
+        condition: service_healthy
+    # FEATURE: Resource Limits (Prevents CPU/RAM hogging)
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 128M
+    # FEATURE: Healthcheck (Self-healing if the app crashes)
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    # FEATURE: Security (Immutability)
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /run
+
+  result:
+    build: ./result
+    ports:
+      - "5001:80"
+    networks:
+      - backend
+    depends_on:
+      db:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 128M
+
+  worker:
+    build: ./worker
+    networks:
+      - frontend
+      - backend
+    depends_on:
+      redis:
+        condition: service_healthy
+      db:
+        condition: service_healthy
+
+  redis:
+    image: redis:alpine
+    networks:
+      - frontend
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+
+  db:
+    image: postgres:15-alpine
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    networks:
+      - backend
+    # FEATURE: Docker Secrets (Secure Password Management)
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+    secrets:
+      - db_password
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  frontend:
+  backend:
+
+volumes:
+  db-data:
+
+# FEATURE: Root-level Secret Definition
+secrets:
+  db_password:
+    file: ./db_password.txt
