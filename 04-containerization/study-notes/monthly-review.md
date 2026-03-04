@@ -1,7 +1,9 @@
 # Month 4: Containerization Review
 
 ## Overall Progress: [X]/10
+
 ## Hours Invested: [Number]
+
 ## Projects Completed: [List]
 
 ## Technical Skills Gained:

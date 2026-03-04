@@ -1,7 +1,9 @@
-🚢 Docker Compose - Complete Lab Series
+# 🚢 Docker Compose - Complete Lab Series
+
 📚 Lab Overview
 
 | Lab | Topic | Key Concepts |
+
 |-----|-------|--------------|
 | 1 | First Compose File | up, down, ps, logs, basic syntax |
 | 2 | Multi-Service App | Flask+Redis, WordPress, dependencies |
@@ -11,6 +13,7 @@
 | 6 | Profiles | Selective service activation |
 | 7 | Compose Watch | Hot reload, development workflow |
 | 8 | Multiple Files | Base + overrides, include, extends |
+
 🚀 Quick Start
 bash
 

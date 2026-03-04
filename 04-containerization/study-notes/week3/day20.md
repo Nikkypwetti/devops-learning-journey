@@ -1,6 +1,7 @@
 Day 20: Docker Production Best Practices 🚀
 
 Yesterday, you saw the "heartbeat" of your application through cAdvisor. Today, we solidify everything you’ve learned by applying Production-Grade configurations. In a professional DevOps environment, a "working" container isn't enough—it must be resilient, restricted, and traceable.
+
 1. Health Checks: The "Self-Healing" Mechanism
 
 By default, Docker only checks if the process inside the container is running. If your Backend process is alive but the database connection has timed out and it’s returning "500 Errors," Docker will still think it's "Up."
@@ -12,6 +13,7 @@ The Pro Approach: Use the HEALTHCHECK instruction to verify the application's ac
     For your Database: Use the internal tool pg_isready.
 
 Why it matters: This allows Docker to automatically restart a "zombie" container that is running but not serving requests.
+
 2. Resource Limits: The "Anti-Crash" Guardrail
 
 In production, one "leaky" container can steal all the RAM from your host, causing the entire server (and all other containers) to crash.
