@@ -1,6 +1,10 @@
 # Stage 1: Build dependencies
 FROM python:3.11-slim AS builder
 WORKDIR /app
+
+# NEW: Upgrade pip and setuptools to fix the HIGH vulnerabilities found by Trivy
+RUN pip install --upgrade pip setuptools wheel
+
 COPY requirements.txt .
 RUN pip install --user -r requirements.txt
 
