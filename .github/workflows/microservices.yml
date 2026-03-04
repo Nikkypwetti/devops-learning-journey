@@ -16,6 +16,9 @@ on:
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./04-containerization/projects/microservices/voting-app-project
     strategy:
       matrix:
         service: [vote, result, worker]
@@ -24,10 +27,15 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      - name: Path Debugger
+        run: |
+          echo "Current Directory: $(pwd)"
+          echo "Listing all files:"
+          find . -maxdepth 3 -not -path '*/.*'
+          
       - name: Build Local Image for Testing
         run: |
-          docker build -t test-image:${{ github.sha }} ./microservices/voting-app-project/${{ matrix.service }}
-
+          docker build -t test-image:${{ github.sha }} ./${{ matrix.service }}
       # FEATURE: Trivy Security Scan
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
@@ -50,8 +58,8 @@ jobs:
         if: success()
         uses: docker/build-push-action@v5
         with:
-          context: ./microservices/voting-app-project/${{ matrix.service }}
-          file: ./microservices/voting-app-project/${{ matrix.service }}/Dockerfile
+          context: 04-containerization/projects/microservices/voting-app-project/${{ matrix.service }}
+          file: 04-containerization/projects/microservices/voting-app-project/${{ matrix.service }}/Dockerfile
           push: true
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/voting-${{ matrix.service }}:latest
