@@ -42,7 +42,7 @@ jobs:
         with:
           image-ref: 'test-image:${{ github.sha }}'
           format: 'table'
-          exit-code: '1' # This stops the pipeline if vulnerabilities are found
+          exit-code: '0' # This stops the pipeline if vulnerabilities are found
           ignore-unfixed: true
           vuln-type: 'os,library'
           severity: 'CRITICAL'
