@@ -58,8 +58,9 @@ jobs:
         if: success()
         uses: docker/build-push-action@v5
         with:
-          context: 04-containerization/projects/microservices/voting-app-project/${{ matrix.service }}
-          file: 04-containerization/projects/microservices/voting-app-project/${{ matrix.service }}/Dockerfile
+          # Use the GITHUB_WORKSPACE variable to ensure we always start from the root
+          context: ${{ github.workspace }}/04-containerization/projects/microservices/voting-app-project/${{ matrix.service }}
+          # The Action will automatically find the Dockerfile inside the context
           push: true
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/voting-${{ matrix.service }}:latest
