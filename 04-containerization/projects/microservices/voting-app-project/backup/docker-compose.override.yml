@@ -1,0 +1,24 @@
+services:
+  vote:
+    ports:
+      - "5000:80"
+    volumes:
+      - ./vote:/app # Bind mount for instant code changes
+
+  result:
+    ports:
+      - "5001:80"
+    volumes:
+      - ./result:/app
+      - /app/node_modules # This "anonymous volume" prevents your local folder from overwriting the container's modules
+
+  worker:
+    ports:
+      - "5002:80"
+
+  db:
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
+volumes:
+  db-data:

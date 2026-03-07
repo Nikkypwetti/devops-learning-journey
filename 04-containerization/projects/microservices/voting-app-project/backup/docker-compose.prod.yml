@@ -1,0 +1,121 @@
+services:
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    networks:
+      - frontend
+      - backend
+    configs:
+      - source: nginx_config
+        target: /etc/nginx/nginx.conf
+    deploy:
+      replicas: 1
+      placement:
+        constraints: [node.role == manager]
+      restart_policy:
+        condition: on-failure
+
+    # FEATURE: Production Hardening
+    # read_only: true
+    # tmpfs:
+    #   - /var/cache/nginx:uid=101,gid=101
+    #   - /var/run:uid=101,gid=101
+    #   - /tmp:uid=101,gid=101
+
+    # FEATURE: Self-Healing (Checks if Port 80 is responding)
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
+
+  vote:
+    deploy:
+      replicas: 3 # FEATURE: Docker Swarm Basics
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 128M
+      restart_policy:
+        condition: on-failure
+
+  result:
+    deploy:
+      replicas: 2
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 128M
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor-amd64:v0.47.2
+    privileged: true
+    user: root
+    ports:
+      - "8080:8080"
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw # Changed to Read/Write
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+    networks:
+      - backend
+  
+  
+  db:
+    volumes:
+      - prod-db-data:/var/lib/postgresql/data
+    deploy:
+      placement:
+        constraints: [node.role == manager] # Keep DB on manager node
+
+  # FEATURE: Visualization (Grafana)
+  grafana:
+    image: grafana/grafana:latest
+    user: "472" # Standard Grafana User ID
+    ports:
+      - "3000:3000"
+    networks:
+      - backend
+    deploy:
+      restart_policy:
+        condition: on-failure
+
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
+
+  prometheus:
+    image: prom/prometheus:v2.45.0
+    ports:
+      - "9090:9090"
+    networks:
+      - backend
+    configs:
+      - source: prom_config
+        target: /etc/prometheus/prometheus.yml
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
+
+volumes:
+  prod-db-data:
+
+networks:
+  frontend:
+  backend:
+
+configs:
+  nginx_config:
+    file: ./nginx.conf
+  prom_config:
+    file: ./prometheus.yml

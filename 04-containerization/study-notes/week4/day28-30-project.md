@@ -113,3 +113,12 @@ We will implement GitHub Actions to ensure that every push is verified.
     Log the Errors: In your notes, create a section called "Errors Encountered." If a container fails to connect to Redis, write down the fix (e.g., "Network mismatch"). This is how senior engineers build "muscle memory."
 
     Verify the 'Why': After we write the Compose file, run docker network inspect. Don't just trust that it works—see the internal IP addresses and how they talk.
+
+## 🏗️ Your 3-File Architecture
+
+| File Name | Purpose | How to Run |
+
+|-----------|---------|-----------|
+| docker-compose.yml | The Base: Shared logic (Networks, Secrets, Service Names, Base Images). | Never run alone. |
+| docker-compose.override.yml | Development: Adds Port 5000/5001 and Bind Mounts for live code editing. | docker-compose up |
+| docker-compose.prod.yml | Production: Adds Replicas, Resource Limits, Nginx Proxy, and Monitoring. | docker stack deploy -c docker-compose.yml -c docker-compose.prod.yml voting_stack |
