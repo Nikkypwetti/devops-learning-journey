@@ -3,11 +3,13 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { io } from "socket.io-client";
 
-// Connect to the 'Result' service we built in Swarm
-const socket = io("http://localhost/result"); 
+// This tells Socket.io to use the current domain and hit the /socket.io path Nginx expects
+const socket = io({
+  path: "/socket.io/"
+}); 
 
 export default function VotingPage() {
-  const [votes, setVotes] = useState({ optionA: 0, optionB: 0 });
+  const [votes, setVotes] = useState({ Docker: 0, Kubernetes: 0 });
   const [voted, setVoted] = useState(false);
 
 useEffect(() => {
@@ -15,20 +17,29 @@ useEffect(() => {
     setVotes(data);
   });
 
-  // This is the proper cleanup function (The "Destructor")
+  // Clean up the listener on unmount to prevent memory leaks
   return () => {
     socket.off("updateResults");
   };
 }, []);
 
-  const handleVote = async (choice: string) => {
-    // Send vote to our Nginx gateway
-    await fetch("/api/vote", {
+const handleVote = async (choice: string) => {
+  try {
+    const response = await fetch("/api/vote", {
       method: "POST",
-      body: JSON.stringify({ choice }),
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ choice: choice }), 
     });
-    setVoted(true);
-  };
+    
+    if (response.ok) {
+      setVoted(true);
+    } else {
+      console.error("❌ Vote failed at the server level");
+    }
+  } catch (err) {
+    console.error("❌ Network Error: Unable to connect to Nginx/API");
+  }
+};
 
   return (
     <div className="min-h-screen bg-slate-900 text-white flex flex-col items-center justify-center p-4">
@@ -54,7 +65,7 @@ useEffect(() => {
             <div className="w-full bg-slate-700 h-4 rounded-full overflow-hidden">
               <motion.div 
                 initial={{ width: 0 }}
-                animate={{ width: `${(option === 'Docker' ? votes.optionA : votes.optionB)}%` }}
+                animate={{ width: `${(option === 'Docker' ? votes.Docker : votes.Kubernetes)}%` }}
                 className="h-full bg-cyan-400"
               />
             </div>

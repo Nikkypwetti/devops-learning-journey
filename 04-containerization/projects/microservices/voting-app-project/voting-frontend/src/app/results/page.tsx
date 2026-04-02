@@ -3,28 +3,33 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { io } from "socket.io-client";
 
-// The 'result' service name in your Swarm
-const SOCKET_URL = "http://localhost/result"; 
-
 export default function ResultsPage() {
   const [results, setResults] = useState({ Docker: 0, Kubernetes: 0 });
 
-  useEffect(() => {
-    // 1. Initialize WebSocket connection
-    const socket = io(SOCKET_URL, { path: "/socket.io" });
+ useEffect(() => {
+   const socket = io({
+      path: "/socket.io/",
+      transports: ["websocket"],
+      upgrade: false             
+    });
+    
+    socket.on("connect", () => {
+      console.log("✅ Connected to Real-time Server!");
+    });
 
-    // 2. Listen for 'update' events from the backend
     socket.on("updateResults", (data) => {
-      console.log("New results received:", data);
+      console.log("📈 New results received:", data);
       setResults(data);
     });
 
-    return () => {
-      socket.disconnect();
-    };
+    socket.on("connect_error", (err) => {
+      console.error("❌ Connection Error:", err.message);
+    });
+
+    return () => { socket.disconnect(); };
   }, []);
 
-  const total = results.Docker + results.Kubernetes || 1;
+  const total = (results.Docker || 0) + (results.Kubernetes || 0) || 1;
 
   return (
     <div className="min-h-screen bg-[#0f172a] text-white flex flex-col items-center justify-center p-6">
@@ -53,3 +58,5 @@ export default function ResultsPage() {
     </div>
   );
 }
+
+

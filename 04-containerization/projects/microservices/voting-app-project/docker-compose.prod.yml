@@ -7,7 +7,7 @@ services:
       - frontend
       - backend
     configs:
-      - source: nginx_config
+      - source: nginx_config_v21
         target: /etc/nginx/nginx.conf
     deploy:
       replicas: 1
@@ -54,6 +54,12 @@ services:
       restart_policy:
         condition: on-failure
 
+    logging:
+      driver: "json-file"
+      options:
+       max-size: "10m" # Keep only 10MB of logs
+       max-file: "3"   # Keep only the last 3 files
+
   worker:
     image: nikkytechies/voting-worker:latest
     networks:
@@ -80,6 +86,12 @@ services:
         limits:
           cpus: '0.50'
           memory: 128M
+
+    logging:
+      driver: "json-file"
+      options:
+       max-size: "10m" # Keep only 10MB of logs
+       max-file: "3"   # Keep only the last 3 files
 
    # Redis with Persistence
   redis:
@@ -149,7 +161,7 @@ networks:
   backend:
 
 configs:
-  nginx_config:
+  nginx_config_v21:
     file: ./nginx.conf
   prom_config:
     file: ./prometheus.yml

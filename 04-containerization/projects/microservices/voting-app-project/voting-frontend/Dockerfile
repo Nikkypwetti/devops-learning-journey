@@ -26,13 +26,18 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
-# NEW: Security Hardening (Non-root user)
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
-# Only copy what is strictly necessary (The "Standalone" bundle)
-COPY --from=builder /app/public ./public
+# 1. Copy the standalone build files
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+
+# 2. CRITICAL: Copy node_modules so server.js can find socket.io and ioredis
+COPY --from=deps /app/node_modules ./node_modules
+
+# 3. Copy other assets and your custom server logic
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/server.js ./server.js
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
 USER nextjs
@@ -41,5 +46,4 @@ EXPOSE 3000
 ENV PORT 3000
 ENV HOSTNAME "0.0.0.0"
 
-# The entry point for Next.js standalone is server.js
 CMD ["node", "server.js"]

@@ -14,4 +14,4 @@ COPY --from=build /app .
 # Running as a non-root user (Best Practice)
 RUN adduser --disabled-password --gecos "" appuser && chown -R appuser /app
 USER appuser
-ENTRYPOINT ["dotnet", "Worker.dll"]
+ENTRYPOINT ["dotnet", "worker.dll"]

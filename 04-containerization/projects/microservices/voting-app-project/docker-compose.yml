@@ -1,42 +1,73 @@
 services:
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    configs:
+      - source: nginx_config_v21
+        target: /etc/nginx/nginx.conf
+    networks:
+      - frontend
+      - backend
+    deploy:
+      replicas: 1
   vote:
-    build: ./vote
-    image: ${DOCKER_REGISTRY}/voting-vote:${VERSION:-latest}
+    image: nikkytechies/voting-app-vote:latest
     environment:
       - REDIS_HOST=redis
-    security_opt:
-      - no-new-privileges:true
     networks:
       - frontend
+      - backend
+    depends_on:
+      - redis
 
   result:
-    build: ./result
-    image: ${DOCKER_REGISTRY}/voting-result:${VERSION:-latest}
+    image: nikkytechies/voting-app-result:latest
+    ports:
+      - "5001:3000"  
+    networks:
+      - frontend     # To talk to Nginx
+      - backend      # To talk to Redis
+    environment:
+      - PORT=3000
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - db
+    deploy:
+      replicas: 1
+    
+
+  db:
+    image: postgres:15-alpine
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD_FILE=/run/secrets/db_password
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=postgres
     networks:
       - backend
+    secrets:
+      - db_password
 
   worker:
-    build: ./worker
-    image: ${DOCKER_REGISTRY}/voting-worker:${VERSION:-latest}
+    image: nikkytechies/voting-worker:latest
     networks:
       - frontend
       - backend
+    secrets:
+      - db_password
 
   redis:
     image: redis:alpine
     networks:
-      - frontend
-
-  db:
-    image: postgres:15-alpine
-    networks:
       - backend
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
-    secrets:
-      - db_password
+      
 
+volumes:
+  db-data:
+  
 networks:
   frontend:
   backend:
@@ -44,134 +75,8 @@ networks:
 secrets:
   db_password:
     file: ./db_password.txt
-# services:
-#   vote:
-#     build: ./vote
-#     image: ${DOCKER_REGISTRY}/voting-vote:latest
-#     environment:
-#       - REDIS_HOST=redis
-#     ports:
-#       - "5000:80"
-#     # FEATURE: Container Security (Non-privileged)
-#     security_opt:
-#       - no-new-privileges:true
-#     depends_on:
-#       redis:
-#         condition: service_healthy
-#       db:
-#         condition: service_healthy
-#     # FEATURE: Resource Limits (Prevents CPU/RAM hogging)
-#     deploy:
-#       resources:
-#         limits:
-#           cpus: '0.50'
-#           memory: 128M
-#       replicas: 2  # FEATURE: Docker Swarm Basics (High Availability)
-#       restart_policy:
-#         condition: on-failure   
-#     networks:
-#       - frontend
+    external: true
 
-#   # FEATURE: Nginx as Reverse Proxy
-#   nginx:
-#     image: nginx:alpine
-#     ports:
-#       - "80:80"
-#     volumes:
-#       - ./nginx.conf:/etc/nginx/nginx.conf:ro
-#     depends_on:
-#       - vote
-#       - result
-#     networks:
-#       - frontend
-#     # FEATURE: Healthcheck (Self-healing if the app crashes)
-#     healthcheck:
-#       test: ["CMD", "curl", "-f", "http://localhost:80/"]
-#       interval: 30s
-#       timeout: 10s
-#       retries: 3
-#     # FEATURE: Security (Immutability)
-#     read_only: true
-#     tmpfs:
-#       - /tmp
-#       - /run
-
-#   # FEATURE: Container Monitoring (cAdvisor)
-#   cadvisor:
-#     image: gcr.io/cadvisor/cadvisor:latest
-#     ports:
-#       - "8080:8080"
-#     volumes:
-#       - /:/rootfs:ro
-#       - /var/run:/var/run:ro
-#       - /sys:/sys:ro
-#       - /var/lib/docker/:/var/lib/docker:ro
-#     networks:
-#       - backend
-
-
-#   result:
-#     build: ./result
-#     ports:
-#       - "5001:80"
-#     networks:
-#       - backend
-#     depends_on:
-#       redis:
-#         condition: service_healthy
-#       db:
-#         condition: service_healthy
-#     deploy:
-#       resources:
-#         limits:
-#           cpus: '0.50'
-#           memory: 128M
-
-#   worker:
-#     build: ./worker
-#     networks:
-#       - frontend
-#       - backend
-#     depends_on:
-#       redis:
-#         condition: service_healthy
-#       db:
-#         condition: service_healthy
-
-#   redis:
-#     image: redis:alpine
-#     networks:
-#       - frontend
-#     healthcheck:
-#       test: ["CMD", "redis-cli", "ping"]
-#       interval: 10s
-
-#   db:
-#     image: postgres:15-alpine
-#     volumes:
-#       - db-data:/var/lib/postgresql/data
-#     networks:
-#       - backend
-#     # FEATURE: Docker Secrets (Secure Password Management)
-#     environment:
-#       POSTGRES_USER: postgres
-#       POSTGRES_PASSWORD_FILE: /run/secrets/db_password
-#     secrets:
-#       - db_password
-#     healthcheck:
-#       test: ["CMD-SHELL", "pg_isready -U postgres"]
-#       interval: 10s
-#       timeout: 5s
-#       retries: 5
-
-# networks:
-#   frontend:
-#   backend:
-
-# volumes:
-#   db-data:
-
-# # FEATURE: Root-level Secret Definition
-# secrets:
-#   db_password:
-#     file: ./db_password.txt
+configs:
+  nginx_config_v21:
+    file: ./nginx.conf 
