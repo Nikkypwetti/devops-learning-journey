@@ -3,14 +3,12 @@ name: CI/CD Final Project
 on:
   push:
     branches: [ "main" ]
-
     paths:
-      - '04-containerization/projects/microservices/**'
-  pull_request:
-    branches: [ main ]
-    paths:
-      - '**/microservices/**'
-  #Added: Allows you to trigger the build manually from the GitHub Actions tab
+      # Watch the entire microservices project folder
+      - '04-containerization/projects/microservices/voting-app-project/**'
+      # ALSO watch the workflow file itself so it triggers when you edit the YAML!
+      - '.github/workflows/microservices.yml'
+  
   workflow_dispatch:
 
 jobs:
@@ -21,13 +19,14 @@ jobs:
         working-directory: ./04-containerization/projects/microservices/voting-app-project
     strategy:
       matrix:
+        service: [vote, worker, result] # Base list
         include:
           - service: vote
             folder: vote
           - service: worker
             folder: worker
           - service: result
-            folder: voting-frontend 
+            folder: voting-frontend
 
     steps:
       - name: Checkout Code
