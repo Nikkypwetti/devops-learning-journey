@@ -21,7 +21,13 @@ jobs:
         working-directory: ./04-containerization/projects/microservices/voting-app-project
     strategy:
       matrix:
-        service: [vote, result, worker]
+        include:
+          - service: vote
+            folder: vote
+          - service: worker
+            folder: worker
+          - service: result
+            folder: voting-frontend 
 
     steps:
       - name: Checkout Code
@@ -35,7 +41,9 @@ jobs:
           
       - name: Build Local Image for Testing
         run: |
-          docker build -t test-image:${{ github.sha }} ./${{ matrix.service }}
+          # Use the 'folder' variable from our matrix
+          docker build -t test-image:${{ github.sha }} ./${{ matrix.folder }}
+
       # FEATURE: Trivy Security Scan
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
@@ -58,10 +66,12 @@ jobs:
         if: success()
         uses: docker/build-push-action@v5
         with:
-          # Use the GITHUB_WORKSPACE variable to ensure we always start from the root
-          context: ${{ github.workspace }}/04-containerization/projects/microservices/voting-app-project/${{ matrix.service }}
-          # The Action will automatically find the Dockerfile inside the context
+          context: ${{ github.workspace }}/04-containerization/projects/microservices/voting-app-project/${{ matrix.folder }}
           push: true
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/voting-${{ matrix.service }}:latest
-            ${{ secrets.DOCKERHUB_USERNAME }}/voting-${{ matrix.service }}:${{ github.sha }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/voting-app-${{ matrix.service }}:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/voting-app-${{ matrix.service }}:${{ github.sha }}
+
+
+
+     
