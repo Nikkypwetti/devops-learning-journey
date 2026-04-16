@@ -107,7 +107,17 @@ make watch
 Production Simulation
 Bash
 
-make prod
+## 🔧 Makefile Commands
+
+| Command | Description |
+|---------|-------------|
+| `make dev` | Start development mode with hot-reload |
+| `make prod` | Start production mode with Nginx reverse proxy |
+| `make nuclear` | Wipe everything and rebuild from scratch |
+| `make logs-backend` | Check backend logs for debugging |
+| `make logs-frontend` | Check frontend logs |
+| `make down` | Stop all containers |
+| `make clean` | Remove containers, networks, and volumes |
 
 📈 Learning Outcomes
 
