@@ -1,0 +1,16 @@
+# ConfigMap from file content
+# Create with: kubectl create configmap app-properties --from-file=application.properties
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-properties
+  namespace: default
+data:
+  # Key is filename, value is file content
+  application.properties: |
+    app.name=MyKubernetesApp
+    app.version=1.0.0
+    database.host=postgres.default.svc.cluster.local
+    database.port=5432
+    cache.ttl=3600
+    feature.new-ui=true

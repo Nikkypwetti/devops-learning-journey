@@ -1,0 +1,67 @@
+# Pod using ConfigMap in multiple ways
+apiVersion: v1
+kind: Pod
+metadata:
+  name: configmap-demo-pod
+  namespace: default
+spec:
+  containers:
+  - name: app
+    image: nginx:alpine
+    env:
+    # Individual env vars from ConfigMap
+    - name: NODE_ENV
+      valueFrom:
+        configMapKeyRef:
+          name: env-config
+          key: NODE_ENV
+    - name: DB_HOST
+      valueFrom:
+        configMapKeyRef:
+          name: env-config
+          key: DB_HOST
+    - name: DB_PORT
+      valueFrom:
+        configMapKeyRef:
+          name: env-config
+          key: DB_PORT
+    
+    # All env vars from ConfigMap (using envFrom)
+    envFrom:
+    - configMapRef:
+        name: env-config
+    - configMapRef:
+        name: app-config
+        optional: true
+    
+    # Mount ConfigMap as volume (files)
+    volumeMounts:
+    - name: config-volume
+      mountPath: /etc/nginx/conf.d
+      readOnly: true
+    
+    - name: nginx-config-volume
+      mountPath: /etc/nginx/nginx.conf
+      subPath: nginx.conf
+      readOnly: true
+  
+  volumes:
+  - name: config-volume
+    configMap:
+      name: nginx-config
+      # Mount specific items with custom permissions
+      items:
+      - key: security-headers.conf
+        path: security-headers.conf
+        mode: 0644
+      - key: config.json
+        path: app-config.json
+        mode: 0644
+  
+  - name: nginx-config-volume
+    configMap:
+      name: nginx-config
+      items:
+      - key: nginx.conf
+        path: nginx.conf
+      defaultMode: 0644

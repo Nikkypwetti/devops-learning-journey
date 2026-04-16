@@ -1,0 +1,45 @@
+# ConfigMap mounted as volume (for configuration files)
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-config
+  namespace: default
+data:
+  # Full configuration files
+  nginx.conf: |
+    events {
+      worker_connections 1024;
+    }
+    http {
+      upstream backend {
+        server backend-service:3000;
+      }
+      server {
+        listen 80;
+        location / {
+          proxy_pass http://backend;
+        }
+        location /health {
+          return 200 'healthy\n';
+        }
+      }
+    }
+  
+  # Partial config snippets
+  security-headers.conf: |
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header X-XSS-Protection "1; mode=block" always;
+  
+  # JSON configuration
+  config.json: |
+    {
+      "rate_limit": {
+        "window_ms": 60000,
+        "max_requests": 100
+      },
+      "retry_policy": {
+        "max_attempts": 3,
+        "backoff_factor": 2
+      }
+    }

@@ -1,0 +1,54 @@
+# Production deployment using ConfigMaps
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: configmap-app
+  namespace: default
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: configmap-app
+  template:
+    metadata:
+      labels:
+        app: configmap-app
+    spec:
+      containers:
+      - name: app
+        image: nginx:alpine
+        ports:
+        - containerPort: 80
+        
+        # Environment from ConfigMap
+        envFrom:
+        - configMapRef:
+            name: env-config
+        
+        # Volume mounts for config files
+        volumeMounts:
+        - name: nginx-config
+          mountPath: /etc/nginx/conf.d
+          readOnly: true
+        
+        - name: app-config
+          mountPath: /app/config
+          readOnly: true
+      
+      volumes:
+      - name: nginx-config
+        configMap:
+          name: nginx-config
+          defaultMode: 0644
+      
+      - name: app-config
+        configMap:
+          name: app-properties
+          defaultMode: 0644
+  
+  # Rolling update strategy
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0

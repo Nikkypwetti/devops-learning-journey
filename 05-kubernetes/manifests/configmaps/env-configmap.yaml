@@ -1,0 +1,25 @@
+# ConfigMap designed for environment variables
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: env-config
+  namespace: default
+data:
+  # Database configuration
+  DB_HOST: postgres-service
+  DB_PORT: "5432"
+  DB_NAME: mydatabase
+  
+  # Application settings
+  NODE_ENV: production
+  PORT: "3000"
+  LOG_LEVEL: info
+  
+  # Feature flags
+  ENABLE_CACHE: "true"
+  ENABLE_METRICS: "false"
+  MAX_UPLOAD_SIZE: "10485760"
+  
+  # API endpoints
+  API_BASE_URL: https://api.example.com/v1
+  AUTH_SERVICE_URL: http://auth-service.default.svc.cluster.local:8080

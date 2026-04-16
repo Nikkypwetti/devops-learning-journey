@@ -1,0 +1,34 @@
+# ConfigMap from directory with multiple files
+# Create with: kubectl create configmap multi-config --from-file=./configs/
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: multi-config
+  namespace: default
+data:
+  # Each file becomes a key-value pair
+  nginx.conf: |
+    server {
+      listen 80;
+      server_name localhost;
+      location / {
+        root /usr/share/nginx/html;
+        index index.html;
+      }
+    }
+  
+  app.json: |
+    {
+      "name": "myapp",
+      "version": "1.0",
+      "environment": "production"
+    }
+  
+  logging.yaml: |
+    version: 1
+    handlers:
+      console:
+        class: logging.StreamHandler
+    root:
+      level: INFO
+      handlers: [console]
