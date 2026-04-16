@@ -67,9 +67,22 @@ Markdown
 
 **Day 14 Project - DevOps Learning Journey**
 
+# Multi-Tier Containerized Full-Stack Application
+
 ## 📖 Project Overview
 
 This project is a high-availability, 3-tier application stack (React, Node.js, PostgreSQL) architected with a "Security-First" mindset. It demonstrates the transition from local development to a production-grade automated CI/CD pipeline.
+
+## 🚀 Overview
+
+This project demonstrates a production-ready DevOps architecture for a full-stack application. It features a React frontend, a Node.js API, and a PostgreSQL database, all orchestrated via Docker with a focus on security, scalability, and automation.
+
+## 🏗️ Architecture Features
+
+- **Network Isolation:** The Database and Backend are isolated in a private internal network. Only the Nginx Reverse Proxy is exposed to the public.
+- **Reverse Proxy:** Nginx handles traffic routing, ensuring the frontend can communicate with the private backend without exposing sensitive ports.
+- **CI/CD Pipeline:** Automated via GitHub Actions. Every push builds, tags with Git SHA, and deploys versioned images to Docker Hub.
+- **Environment Management:** Uses `.env` for credential management and Docker Compose Watch for instant hot-reloading during development.
 
 ## 🏗️ Technical Architecture
 
@@ -96,6 +109,19 @@ I implemented a **Private Network Topology** to ensure maximum security:
 | **Orchestration** | Docker Compose |
 | **CI/CD** | GitHub Actions, Docker Hub |
 | **Automation** | Makefile, Bash Scripting |
+
+## 📊 CI/CD Workflow
+
+The .github/workflows/main.yml automates the following:
+
+    Authenticates with Docker Hub.
+
+    Extracts the short-sha from the Git commit.
+
+    Builds and pushes multi-stage images with both latest and sha-unique tags.
+
+
+---
 
 ## 🚦 How to Run
 
@@ -127,8 +153,6 @@ Successfully mastered service discovery, healthcheck synchronization, volume per
 ---
 
 ### 🏆 Master DevOps Achievement Note
-Since you requested a summary for your achievement, here is a concise breakdown you can use for your personal records or as a "Project Summary" on your CV:
-
 > **Enterprise Containerization & CI/CD Pipeline (2026)**
 > * **Architected** a secure 3-tier environment using Docker Compose, achieving 100% network isolation for sensitive data services.
 > * **Automated** a full deployment lifecycle through GitHub Actions, reducing manual build steps to zero.
@@ -136,48 +160,7 @@ Since you requested a summary for your achievement, here is a concise breakdown 
 
 **Would you like me to help you create a final "Handover Document" that explains exactly how to scale this backend from one container to three using Docker Compose's `deploy: replicas` feature?**
 
-Markdown
 
-# Multi-Tier Containerized Full-Stack Application
-
-## 🚀 Overview
-This project demonstrates a production-ready DevOps architecture for a full-stack application. It features a React frontend, a Node.js API, and a PostgreSQL database, all orchestrated via Docker with a focus on security, scalability, and automation.
-
-## 🏗️ Architecture Features
-- **Network Isolation:** The Database and Backend are isolated in a private internal network. Only the Nginx Reverse Proxy is exposed to the public.
-- **Reverse Proxy:** Nginx handles traffic routing, ensuring the frontend can communicate with the private backend without exposing sensitive ports.
-- **CI/CD Pipeline:** Automated via GitHub Actions. Every push builds, tags with Git SHA, and deploys versioned images to Docker Hub.
-- **Environment Management:** Uses `.env` for credential management and Docker Compose Watch for instant hot-reloading during development.
-
-## 🛠️ Tech Stack
-- **Frontend:** React + Nginx (Production) / Node (Dev)
-- **Backend:** Node.js + Express
-- **Database:** PostgreSQL 15 (Alpine)
-- **DevOps:** Docker, Docker Compose, GitHub Actions, Makefile
-
-## 🚦 Getting Started
-
-### Development (Hot Reload)
-```bash
-make watch
-
-Production (Nginx Proxy)
-Bash
-
-make prod
-
-📊 CI/CD Workflow
-
-The .github/workflows/main.yml automates the following:
-
-    Authenticates with Docker Hub.
-
-    Extracts the short-sha from the Git commit.
-
-    Builds and pushes multi-stage images with both latest and sha-unique tags.
-
-
----
 
 ### 🌟 What's next?
 You've built the foundation. From here, you can go even deeper:
