@@ -120,6 +120,31 @@ The .github/workflows/main.yml automates the following:
 
     Builds and pushes multi-stage images with both latest and sha-unique tags.
 
+## 🧠 Challenges Overcome
+
+1. The Reverse Proxy Challenge
+
+Solved complex networking issues where the React frontend was hardcoded to localhost:5000. Implemented a dynamic routing system in Nginx so the browser only ever talks to port 3000, which Nginx then proxies internally to the backend service.
+2. Build Cache & Environment Sync
+
+Encountered "phantom bugs" where old code persisted after rebuilds. Created a "Nuclear" clean command in the Makefile that prunes the Docker builder cache and recreates containers to ensure 100% environment consistency.
+3. Database Persistence
+
+Implemented Docker Volumes to ensure that learning milestones are preserved even when containers are destroyed and recreated.
+
+---
+
+### 🏆 Master DevOps Achievement Note
+> **Enterprise Containerization & CI/CD Pipeline (2026)**
+> * **Architected** a secure 3-tier environment using Docker Compose, achieving 100% network isolation for sensitive data services.
+> * **Automated** a full deployment lifecycle through GitHub Actions, reducing manual build steps to zero.
+> * **Optimized** production reliability by implementing Nginx reverse proxies and Docker healthchecks, ensuring seamless service inter-dependency.
+
+---
+
+## 📈 Learning Outcomes
+
+Successfully mastered service discovery, healthcheck synchronization, volume persistence, and secret management using .env files and GitHub Secrets.
 
 ---
 
@@ -145,18 +170,6 @@ Bash
 | `make down` | Stop all containers |
 | `make clean` | Remove containers, networks, and volumes |
 
-📈 Learning Outcomes
-
-Successfully mastered service discovery, healthcheck synchronization, volume persistence, and secret management using .env files and GitHub Secrets.
-
-
----
-
-### 🏆 Master DevOps Achievement Note
-> **Enterprise Containerization & CI/CD Pipeline (2026)**
-> * **Architected** a secure 3-tier environment using Docker Compose, achieving 100% network isolation for sensitive data services.
-> * **Automated** a full deployment lifecycle through GitHub Actions, reducing manual build steps to zero.
-> * **Optimized** production reliability by implementing Nginx reverse proxies and Docker healthchecks, ensuring seamless service inter-dependency.
 
 **Would you like me to help you create a final "Handover Document" that explains exactly how to scale this backend from one container to three using Docker Compose's `deploy: replicas` feature?**
 
