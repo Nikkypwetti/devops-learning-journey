@@ -1,83 +1,157 @@
-# 🚀 DevOps Learning Journey
+# Cloud & DevOps Engineering Labs
 
-**Transitioning from Full Stack Developer to DevOps Engineer | Timeline: 6 Months**
+A hands-on repository documenting my work across **cloud infrastructure, containerization, CI/CD, networking, Linux and infrastructure automation**.
 
-## 📊 Progress Dashboard
+My current professional focus is Operations, RevOps, CRM and Business Systems. This repository demonstrates the technical depth I bring to automation, integrations, system troubleshooting and infrastructure-oriented work.
 
-### 🎯 Goals
-- [ ] AWS Cloud Practitioner Certified
-- [ ] Terraform Associate Certified  
-- [ ] Build complete CI/CD pipeline
-- [ ] Master Docker & Kubernetes
-- [ ] Land DevOps role
+## Featured Engineering Projects
 
-### 📅 Timeline Progress
-| Month | Topic | Status | Projects | Start Date | End Date |
-|-------|-------|--------|----------|------------|----------|
-| 1 | [Cloud Foundations](./01-cloud-foundations/) | 🔄 In Progress | [Static S3 Website](./projects/month1-static-website/) | 2024-01-01 | 2024-01-31 |
-| 2 | [Linux & Networking](./02-linux-networking/) | 🔄 In Progress| [EC2 Automation](./projects/month2-ec2-automation/) | 2024-02-01 | 2024-02-29 |
-| 3 | [Infrastructure as Code](./03-infrastructure-as-code/) | 🔄 In Progress | [Terraform Infrastructure](./projects/month3-terraform-infra/) | 2024-03-01 | 2024-03-31 |
-| 4 | [Containerization](./04-containerization/) | ⏳ Upcoming | Dockerized Apps | 2024-04-01 | 2024-04-30 |
-| 5 | [Kubernetes](./05-kubernetes/) | ⏳ Upcoming | K8s Deployment | 2024-05-01 | 2024-05-31 |
-| 6 | [CI/CD & Monitoring](./06-ci-cd-monitoring/) | ⏳ Upcoming | Complete Pipeline | 2024-06-01 | 2024-06-30 |
+### Real-Time Microservices Voting System
 
-## 🛠️ Skills Matrix
-| Technology | Level | Projects | Target Date |
-|------------|-------|----------|-------------|
-| AWS | 🟡 Intermediate | 2 | 2024-01-31 |
-| Linux | 🟢 Beginner | 0 | 2024-02-29 |
-| Terraform | 🔴 Learning | 0 | 2024-03-31 |
-| Docker | 🔴 Learning | 0 | 2024-04-30 |
-| Kubernetes | 🔴 Learning | 0 | 2024-05-31 |
-| CI/CD | 🔴 Learning | 0 | 2024-06-30 |
+A distributed application built around multiple services and orchestrated with Docker Swarm.
 
-## 📚 Learning Path
+**Stack**
 
-### Monthly Focus
-1. **[Month 1: Cloud Foundations](./01-cloud-foundations/)**
-   - AWS Cloud Practitioner Certification
-   - Core AWS Services (EC2, S3, IAM, VPC)
-   - Cloud Security & Architecture
+- Docker Swarm
+- Nginx
+- Redis
+- PostgreSQL
+- Python / Flask
+- .NET / C#
+- Node.js
+- Next.js / React
+- GitHub Actions
+- Trivy
 
-2. **[Month 2: Linux & Networking](./02-linux-networking/)**
-   - Linux Command Line Mastery
-   - Networking Fundamentals
-   - Shell Scripting
+**What I implemented**
 
-3. **[Month 3: Infrastructure as Code](./03-infrastructure-as-code/)**
-   - Terraform Fundamentals
-   - AWS Resource Provisioning
-   - Terraform Best Practices
+- Multi-service container orchestration
+- Redis-based message processing
+- PostgreSQL persistence
+- Docker Swarm Secrets for database credentials
+- Frontend and backend network isolation
+- Nginx reverse proxy configuration
+- WebSocket proxying for real-time result updates
+- Container health checks
+- GitHub Actions multi-service builds
+- Trivy vulnerability scanning
+- Image tagging with Git commit SHAs
 
-4. **[Month 4: Containerization](./04-containerization/)**
-   - Docker Deep Dive
-   - Container Orchestration
-   - Docker Compose
+➡️ [View the project](./04-containerization/projects/microservices/voting-app-project)
 
-5. **[Month 5: Kubernetes](./05-kubernetes/)**
-   - K8s Fundamentals
-   - Pods, Services, Deployments
-   - Helm Charts
+---
 
-6. **[Month 6: CI/CD & Monitoring](./06-ci-cd-monitoring/)**
-   - Jenkins/GitHub Actions
-   - Monitoring with Prometheus/Grafana
-   - Final Portfolio Project
+### Enterprise 3-Tier Containerized Application
 
-## 🎓 Certifications
+A containerized full-stack application structured across frontend, backend and database layers.
 
-- [AWS Cloud Practitioner](./certificates/aws-cloud-practitioner.md) - Target: 2024-01-31
-- [Terraform Associate](./certificates/terraform-associate.md) - Target: 2024-03-31
+**Stack**
 
-## 📁 Repository Structure
+- React
+- Node.js / Express
+- PostgreSQL
+- Nginx
+- Docker
+- Docker Compose
+- GitHub Actions
 
-## Check out our learning paths at KodeKloud to get started:
+**What it demonstrates**
 
-▶️HashiCorp: https://kode.wiki/HashiCorp_LearningP...
-▶️ Kubernetes: https://bit.ly/KubernetesLearningPath
-▶️ Cloud:https://kode.wiki/CloudLearningPath
-▶️ Linux: https://bit.ly/LinuxLearningPath
-▶️ DevOps Learning Path: https://bit.ly/DevOpsLearningPath-YT
-▶️ Docker: https://bit.ly/DockerLearningPath
-▶️ Infrastructure as Code(IAC): https://bit.ly/IACLearningPath
-▶️ Programming: https://bit.ly/ProgrammingLearningPath
+- Multi-container application architecture
+- Development and production environment separation
+- Reverse proxy configuration
+- Persistent database storage
+- Container networking
+- Automated build workflows
+
+➡️ [View the project](./04-containerization/projects/fullstack-app)
+
+---
+
+### AWS Infrastructure & Terraform
+
+My cloud infrastructure work also includes dedicated AWS repositories covering networking, compute, databases, availability and Infrastructure as Code.
+
+#### AWS Multi-Tier Infrastructure with Terraform
+
+Terraform-based AWS architecture using:
+
+- VPC
+- Public and private subnets
+- EC2
+- RDS
+- IAM
+- Security Groups
+
+➡️ https://github.com/Nikkypwetti/aws-terraform-multi-tier-app
+
+#### AWS High-Availability Web Architecture
+
+Multi-AZ AWS environment using:
+
+- Application Load Balancer
+- Auto Scaling Groups
+- EC2
+- RDS Multi-AZ
+- VPC networking
+- Private application and database layers
+
+➡️ https://github.com/Nikkypwetti/aws-ha-webapp
+
+## Technical Areas
+
+### Cloud & Infrastructure
+
+- AWS
+- EC2
+- VPC
+- RDS
+- IAM
+- Application Load Balancer
+- Auto Scaling
+
+### Infrastructure as Code
+
+- Terraform
+- Variable-driven infrastructure
+- Reusable resource configuration
+
+### Containers
+
+- Docker
+- Docker Compose
+- Docker Swarm
+- Multi-container architecture
+- Persistent volumes
+- Container networking
+
+### CI/CD & Security
+
+- GitHub Actions
+- Automated container builds
+- Trivy image scanning
+- Git-based versioning and tagging
+
+### Systems & Networking
+
+- Linux
+- Bash
+- Nginx
+- Reverse proxying
+- WebSockets
+- Public/private network design
+
+### Data Services
+
+- PostgreSQL
+- Redis
+
+## Repository Structure
+
+```text
+01-cloud-foundations/
+02-linux-networking/
+03-infrastructure-as-code/
+04-containerization/
+05-kubernetes/
+06-ci-cd-monitoring/
