@@ -1,4 +1,4 @@
-🏗️ Part 1: The Architecture Breakdown
+# 🏗️ Part 1: The Architecture Breakdown
 
 “I built a 3-tier containerized stack focused on Security-First principles. Instead of exposing everything, I implemented a private network topology.”
 
@@ -11,6 +11,7 @@
 🛠️ Part 2: High-Level DevOps Features
 
 “The project isn't just about the code; it’s about the lifecycle automation.”
+
 1. Multi-Stage Docker Builds
 
 I used multi-stage builds to keep production images lean. We use a heavy node image for building the React assets, then discard it and copy only the final static files into a lightweight nginx:alpine image.
@@ -147,6 +148,31 @@ Implemented Docker Volumes to ensure that learning milestones are preserved even
 Successfully mastered service discovery, healthcheck synchronization, volume persistence, and secret management using .env files and GitHub Secrets.
 
 ---
+
+## Verification of Reverse Proxy routing
+
+<!-- $ curl -I http://localhost:3000/api/ -->
+HTTP/1.1 200 OK
+Server: nginx/1.30.0
+Date: Fri, 17 Apr 2026 09:17:27 GMT
+Content-Type: application/json; charset=utf-8
+Content-Length: 325
+Connection: keep-alive
+X-Powered-By: Express
+Access-Control-Allow-Origin: *
+ETag: W/"145-U5BMM1oCNbe6cqgap4HH3VML6fE"
+
+...
+
+## 📸 Evidence of Work
+
+### CI/CD Pipeline
+
+![GitHub Actions Workflow](./screenshots/workflow-proof.png)
+
+### Production Environment
+
+![Dashboard App](./screenshots/ui-connected.png)
 
 ## 🚦 How to Run
 
