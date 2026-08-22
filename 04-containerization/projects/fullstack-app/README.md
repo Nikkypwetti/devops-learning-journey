@@ -1,209 +1,210 @@
-# 🏗️ Part 1: The Architecture Breakdown
-
-“I built a 3-tier containerized stack focused on Security-First principles. Instead of exposing everything, I implemented a private network topology.”
-
-    Layer 1 (The Gateway): Nginx serves as the Reverse Proxy. It handles incoming traffic on port 80 and routes /api requests to the internal network.
-
-    Layer 2 (The Logic): A Node.js Express API. This is completely isolated from the public internet in production.
-
-    Layer 3 (The Data): A PostgreSQL database persisted with Docker Volumes.
-
-🛠️ Part 2: High-Level DevOps Features
-
-“The project isn't just about the code; it’s about the lifecycle automation.”
-
-1. Multi-Stage Docker Builds
-
-I used multi-stage builds to keep production images lean. We use a heavy node image for building the React assets, then discard it and copy only the final static files into a lightweight nginx:alpine image.
-2. CI/CD with GitHub Actions
-
-I developed a pipeline that:
-
-    Authenticates with Docker Hub.
-
-    Tags images with a Git Short-SHA for versioning.
-
-    Pushes images to the registry only after the build succeeds.
-
-3. Developer Experience (DX)
-
-Using docker compose watch, I implemented Hot Reloading. When I change code in VS Code, the change syncs into the container instantly without a rebuild.
-🧪 Part 3: The "Demo" Script (What to show)
-
-Step 1: The Build
-
-    "I manage the entire stack with a Makefile. By running make prod, Docker orchestrates the networks, volumes, and containers."
-
-Step 2: The Security Proof
-
-    "If I try to access the backend directly via curl localhost:5000, the connection is refused. This proves the backend is protected inside the internal Docker network. Only the Nginx proxy can talk to it."
-
-Step 3: The UI
-
-    "On localhost:3000, the UI displays real-time milestones fetched from the database. This proves the end-to-end data flow is healthy."
-
-📝 Part 4: Technical Challenges Overcome
-
-“A true engineer talks about the problems they solved.”
-
-    CORS (Cross-Origin Resource Sharing): In development, the frontend and backend live on different ports. I implemented CORS middleware in Express to allow secure communication during local testing.
-
-    Permission Management: I handled Linux EACCES issues by correctly managing ownership (chown) of node_modules when syncing files between the host and the container.
-
-    Reverse Proxy Routing: I configured Nginx with a specific proxy_pass to handle the transition from relative React paths to internal Docker service names.
-
-🏆 Summary Checklist for Nikky
-
-Before you post or record, make sure you have:
-
-    [ ] A screenshot of your Green GitHub Actions tab.
-
-    [ ] A screenshot of your Docker Hub repository with the versioned tags.
-
-    [ ] A screenshot of your UI showing the database milestones.
-
-Markdown
-
-# 🌐 Full-Stack DevOps Orchestration Lab
-
-**Day 14 Project - DevOps Learning Journey**
-
 # Multi-Tier Containerized Full-Stack Application
 
-## 📖 Project Overview
+A hands-on DevOps project demonstrating how a React frontend, Node.js/Express API and PostgreSQL database can be containerized and operated as a multi-service application using Docker Compose.
 
-This project is a high-availability, 3-tier application stack (React, Node.js, PostgreSQL) architected with a "Security-First" mindset. It demonstrates the transition from local development to a production-grade automated CI/CD pipeline.
+The project focuses on container networking, service health, persistent data, image automation, security controls and CI/CD.
 
-## 🚀 Overview
+## Architecture
 
-This project demonstrates a production-ready DevOps architecture for a full-stack application. It features a React frontend, a Node.js API, and a PostgreSQL database, all orchestrated via Docker with a focus on security, scalability, and automation.
+```text
+Browser
+  ↓
+React + Nginx
+  ↓
+Node.js / Express API
+  ↓
+PostgreSQL
 
-## 🏗️ Architecture Features
+The application is separated into frontend, backend and database layers.
 
-- **Network Isolation:** The Database and Backend are isolated in a private internal network. Only the Nginx Reverse Proxy is exposed to the public.
-- **Reverse Proxy:** Nginx handles traffic routing, ensuring the frontend can communicate with the private backend without exposing sensitive ports.
-- **CI/CD Pipeline:** Automated via GitHub Actions. Every push builds, tags with Git SHA, and deploys versioned images to Docker Hub.
-- **Environment Management:** Uses `.env` for credential management and Docker Compose Watch for instant hot-reloading during development.
+The frontend is exposed to the host through Nginx.
+The backend communicates with both the frontend and database networks.
+PostgreSQL is placed on an internal backend network.
+Database data is persisted using a Docker volume.
+cAdvisor provides container monitoring.
+Technology Stack
+Area	Technology
+Frontend	React, Nginx
+Backend	Node.js, Express
+Database	PostgreSQL 15
+Containers	Docker, Docker Compose
+Networking	Docker bridge networks
+CI/CD	GitHub Actions
+Registry	Docker Hub
+Security Scanning	Trivy
+Monitoring	cAdvisor
+Container Architecture
 
-## 🏗️ Technical Architecture
+The Docker Compose configuration runs four services:
 
-I implemented a **Private Network Topology** to ensure maximum security:
-- **Frontend Layer:** React application served by an Nginx Reverse Proxy.
-- **API Layer:** Node.js/Express service isolated from the public internet.
-- **Data Layer:** PostgreSQL database persisted via Docker Volumes.
+frontend
+backend
+db
+cadvisor
+Frontend
 
-## 🌟 Key DevOps Implementations
+The React frontend is served through Nginx and exposed locally at:
 
-- **Network Isolation:** Utilized Docker internal bridge networks to prevent direct public access to the database and backend API.
-- **Continuous Integration (CI):** Built a GitHub Actions workflow to automate image testing and versioning using Git SHAs.
-- **Continuous Deployment (CD):** Integrated automated image pushes to Docker Hub for seamless deployment across environments.
-- **Developer Productivity:** Configured `docker compose watch` for real-time hot-reloading, reducing the feedback loop during local coding.
-- **Optimization:** Used Multi-stage Docker builds to reduce image size by ~70%, ensuring faster deployment and a smaller attack surface.
+http://localhost:3000
 
-## 🛠️ Project Toolbox
+The container itself listens on port 8080:
 
-| Category | Technology |
-| :--- | :--- |
-| **Frontend** | React, Nginx (Reverse Proxy) |
-| **Backend** | Node.js, Express.js |
-| **Database** | PostgreSQL 15 (Alpine) |
-| **Orchestration** | Docker Compose |
-| **CI/CD** | GitHub Actions, Docker Hub |
-| **Automation** | Makefile, Bash Scripting |
+ports:
+  - "3000:8080"
 
-## 📊 CI/CD Workflow
+The frontend filesystem is configured as read-only with temporary writable directories provided through tmpfs.
 
-The .github/workflows/main.yml automates the following:
+Backend
 
-    Authenticates with Docker Hub.
+The Node.js/Express backend:
 
-    Extracts the short-sha from the Git commit.
+Connects to the frontend and backend networks
+Uses a read-only filesystem
+Uses /tmp as temporary writable storage
+Waits for the database health check before starting
+Includes a /health container health check
+Uses Docker logging limits to control log growth
+Database
 
-    Builds and pushes multi-stage images with both latest and sha-unique tags.
+PostgreSQL:
 
-## 🧠 Challenges Overcome
+Runs using postgres:15-alpine
+Stores data in a persistent Docker volume
+Uses a health check with pg_isready
+Runs only on the internal backend network
+Reads its password from a Docker Compose secret
+Network Isolation
 
-1. The Reverse Proxy Challenge
+Two Docker networks separate application traffic:
 
-Solved complex networking issues where the React frontend was hardcoded to localhost:5000. Implemented a dynamic routing system in Nginx so the browser only ever talks to port 3000, which Nginx then proxies internally to the backend service.
-2. Build Cache & Environment Sync
+frontend-network
+backend-network
 
-Encountered "phantom bugs" where old code persisted after rebuilds. Created a "Nuclear" clean command in the Makefile that prunes the Docker builder cache and recreates containers to ensure 100% environment consistency.
-3. Database Persistence
+The backend network is configured as internal:
 
-Implemented Docker Volumes to ensure that learning milestones are preserved even when containers are destroyed and recreated.
+backend-network:
+  internal: true
 
----
+This keeps the database layer away from direct host exposure while allowing the backend to communicate with it.
 
-### 🏆 Master DevOps Achievement Note
-> **Enterprise Containerization & CI/CD Pipeline (2026)**
-> * **Architected** a secure 3-tier environment using Docker Compose, achieving 100% network isolation for sensitive data services.
-> * **Automated** a full deployment lifecycle through GitHub Actions, reducing manual build steps to zero.
-> * **Optimized** production reliability by implementing Nginx reverse proxies and Docker healthchecks, ensuring seamless service inter-dependency.
+Health Checks
 
----
+The stack includes service-health coordination.
 
-## 📈 Learning Outcomes
+PostgreSQL uses:
 
-Successfully mastered service discovery, healthcheck synchronization, volume persistence, and secret management using .env files and GitHub Secrets.
+pg_isready
 
----
+The backend uses:
 
-## Verification of Reverse Proxy routing
+http://localhost:5000/health
 
-<!-- $ curl -I http://localhost:3000/api/ -->
-HTTP/1.1 200 OK
-Server: nginx/1.30.0
-Date: Fri, 17 Apr 2026 09:17:27 GMT
-Content-Type: application/json; charset=utf-8
-Content-Length: 325
-Connection: keep-alive
-X-Powered-By: Express
-Access-Control-Allow-Origin: *
-ETag: W/"145-U5BMM1oCNbe6cqgap4HH3VML6fE"
+Docker Compose waits for PostgreSQL to report healthy before starting the backend.
 
-...
+Persistent Storage
 
-## 📸 Evidence of Work
+PostgreSQL data is stored using:
 
-### CI/CD Pipeline
+postgres_data
 
-![GitHub Actions Workflow](./screenshots/workflow-proof.png)
+This allows database data to survive container recreation.
 
-### Production Environment
+Container Security
 
-![Dashboard App](./screenshots/ui-connected.png)
+The project includes several container-focused security controls:
 
-## 🚦 How to Run
+Internal database networking
+Read-only frontend and backend filesystems
+Temporary writable directories with tmpfs
+Docker Compose secrets for the PostgreSQL password
+Resource limits
+Container health checks
+Trivy image scanning in CI/CD
+Monitoring
 
-### Development Mode (with Hot Reload)
+The Compose stack includes cAdvisor for container-level visibility.
 
-```bash
-make watch
+After starting the application, cAdvisor is available at:
 
-Production Simulation
-Bash
+http://localhost:8080
+CI/CD Pipeline
 
-## 🔧 Makefile Commands
+The GitHub Actions workflow builds both application images and pushes them to Docker Hub.
 
-| Command | Description |
-|---------|-------------|
-| `make dev` | Start development mode with hot-reload |
-| `make prod` | Start production mode with Nginx reverse proxy |
-| `make nuclear` | Wipe everything and rebuild from scratch |
-| `make logs-backend` | Check backend logs for debugging |
-| `make logs-frontend` | Check frontend logs |
-| `make down` | Stop all containers |
-| `make clean` | Remove containers, networks, and volumes |
+The pipeline:
 
+Checks out the repository
+Authenticates with Docker Hub
+Configures Docker Buildx
+Generates a short Git commit SHA
+Builds and pushes the backend image
+Runs a Trivy critical-vulnerability scan
+Builds and pushes the frontend image
+Runs a Trivy critical-vulnerability scan
+Tags images with both latest and the short Git SHA
 
-**Would you like me to help you create a final "Handover Document" that explains exactly how to scale this backend from one container to three using Docker Compose's `deploy: replicas` feature?**
+Example image tags:
 
+fullstack-backend:latest
+fullstack-backend:a1b2c3d
 
+fullstack-frontend:latest
+fullstack-frontend:a1b2c3d
+Local Setup
 
-### 🌟 What's next?
-You've built the foundation. From here, you can go even deeper:
-- **Day 15-20:** You could look into **Kubernetes (K8s)**. Now that your images are on Docker Hub, you can learn how to deploy them into a cluster where they can "self-heal" if a container crashes.
-- **Monitoring:** You could try adding a **Prometheus/Grafana** container to your Compose file to see real-time stats of your app's performance.
+Create your local environment file:
 
-**Would you like me to help you summarize this entire journey into a single "Master DevOps Note" so you have a quick reference for these commands and concepts later?**
+cp .env.example .env
+
+Configure the required values:
+
+DB_USER=
+DB_PASSWORD=
+DB_NAME=
+PORT=5000
+NODE_ENV=
+DOCKERHUB_USERNAME=
+
+Create a local database-password file used by Docker Compose:
+
+printf '%s\n' 'your-local-password' > db_password.txt
+
+Do not commit .env or db_password.txt.
+
+Start the stack:
+
+docker compose up -d
+
+Check container status:
+
+docker compose ps
+
+Open the application:
+
+http://localhost:3000
+
+Stop the stack:
+
+docker compose down
+Engineering Skills Demonstrated
+
+This project provides hands-on evidence of:
+
+Multi-container application architecture
+Docker Compose orchestration
+Container networking
+Reverse proxy configuration
+Persistent database storage
+Health-check dependency management
+Read-only container filesystems
+Docker secrets
+CI/CD with GitHub Actions
+Docker image versioning
+Container vulnerability scanning
+Basic container monitoring
+Troubleshooting across frontend, API and database layers
+Repository Context
+
+This project is part of my broader Cloud, DevOps and Infrastructure Engineering portfolio.
+
+Back to the main DevOps portfolio
