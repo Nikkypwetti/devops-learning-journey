@@ -34,6 +34,12 @@ COPY . .
 
 # STAGE 2: Run (The "Dining Room")
 FROM node:20-alpine
+
+# Runtime does not need npm/npx.
+# Remove them to reduce the final image attack surface.
+RUN rm -rf /usr/local/lib/node_modules/npm \
+    && rm -f /usr/local/bin/npm /usr/local/bin/npx
+
 WORKDIR /app
 
 # 1. Security: Create non-root user
