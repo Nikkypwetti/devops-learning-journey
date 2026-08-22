@@ -3,9 +3,15 @@ name: Terraform CI/CD & Security
 on:
   push:
     branches: [ main ]
+    paths:
+      - "03-infrastructure-as-code/code-labs/terraform-testing-lab/**"
+      - ".github/workflows/terraform-test.yml"
+
   pull_request:
     branches: [ main ]
-
+    paths:
+      - "03-infrastructure-as-code/code-labs/terraform-testing-lab/**"
+      - ".github/workflows/terraform-test.yml"
 permissions:
   id-token: write      # For OIDC
   contents: read       # For checkout
