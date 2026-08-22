@@ -25,8 +25,5 @@ backend/dist/
 *.swp
 
 # Local secrets
-db_password.txt
-db_password.txt
-# Local secrets
 /db_password.txt
 /db_password.txt.
