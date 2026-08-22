@@ -18,12 +18,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
@@ -37,7 +31,8 @@ jobs:
         with:
           context: ./04-containerization/projects/fullstack-app/backend
           file: ./04-containerization/projects/fullstack-app/backend/Dockerfile
-          push: true
+          push: false
+          load: true
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/fullstack-backend:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/fullstack-backend:${{ steps.vars.outputs.sha_short }}
@@ -47,6 +42,7 @@ jobs:
           docker run --rm \
             -v /var/run/docker.sock:/var/run/docker.sock \
             aquasec/trivy:0.49.1 image \
+            --exit-code 1 \
             --severity CRITICAL \
             --ignore-unfixed \
             ${{ secrets.DOCKERHUB_USERNAME }}/fullstack-backend:latest
@@ -57,7 +53,8 @@ jobs:
         with:
           context: ./04-containerization/projects/fullstack-app/frontend
           file: ./04-containerization/projects/fullstack-app/frontend/Dockerfile
-          push: true
+          push: false
+          load: true
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/fullstack-frontend:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/fullstack-frontend:${{ steps.vars.outputs.sha_short }}
@@ -67,10 +64,26 @@ jobs:
           docker run --rm \
             -v /var/run/docker.sock:/var/run/docker.sock \
             aquasec/trivy:0.49.1 image \
+            --exit-code 1 \
             --severity CRITICAL \
             --ignore-unfixed \
             ${{ secrets.DOCKERHUB_USERNAME }}/fullstack-frontend:latest
       
+      - name: Login to Docker Hub
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Push Verified Images
+        if: github.event_name != 'pull_request'
+        run: |
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/fullstack-backend:latest
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/fullstack-backend:${{ steps.vars.outputs.sha_short }}
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/fullstack-frontend:latest
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/fullstack-frontend:${{ steps.vars.outputs.sha_short }}
+
       - name: Verify Deployment
         run: |
           echo "Build Success!"
